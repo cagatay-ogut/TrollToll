@@ -13,6 +13,9 @@
 		2D4D694D2F0417C1009C9A7B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 2D4D694C2F0417C1009C9A7B /* Localizable.xcstrings */; };
 		2D4D69542F041986009C9A7B /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69532F041985009C9A7B /* Router.swift */; };
 		2D4D69562F041A61009C9A7B /* GameLobbyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69552F041A5E009C9A7B /* GameLobbyView.swift */; };
+		2DFFCE142F04285A00EFA68C /* MultiplayerInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE132F04285400EFA68C /* MultiplayerInterface.swift */; };
+		2DFFCE162F04287A00EFA68C /* MultiplayerServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE152F04287500EFA68C /* MultiplayerServer.swift */; };
+		2DFFCE182F0429FD00EFA68C /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE172F0429FC00EFA68C /* Logger.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +26,10 @@
 		2D4D694C2F0417C1009C9A7B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		2D4D69532F041985009C9A7B /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		2D4D69552F041A5E009C9A7B /* GameLobbyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLobbyView.swift; sourceTree = "<group>"; };
+		2DFFCE132F04285400EFA68C /* MultiplayerInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerInterface.swift; sourceTree = "<group>"; };
+		2DFFCE152F04287500EFA68C /* MultiplayerServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerServer.swift; sourceTree = "<group>"; };
+		2DFFCE172F0429FC00EFA68C /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		2DFFCE192F042DB900EFA68C /* TrollToll.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TrollToll.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,7 +62,11 @@
 		2D4D69482F0417B1009C9A7B /* TrollToll */ = {
 			isa = PBXGroup;
 			children = (
+				2DFFCE192F042DB900EFA68C /* TrollToll.entitlements */,
 				2D4D69522F04190D009C9A7B /* View */,
+				2DFFCE172F0429FC00EFA68C /* Logger.swift */,
+				2DFFCE132F04285400EFA68C /* MultiplayerInterface.swift */,
+				2DFFCE152F04287500EFA68C /* MultiplayerServer.swift */,
 				2D4D69532F041985009C9A7B /* Router.swift */,
 				2D4D69472F0417B1009C9A7B /* TrollTollApp.swift */,
 				2D4D69452F0417B1009C9A7B /* Assets.xcassets */,
@@ -172,10 +183,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2DFFCE142F04285A00EFA68C /* MultiplayerInterface.swift in Sources */,
 				2D4D694A2F0417B1009C9A7B /* MainView.swift in Sources */,
 				2D4D69542F041986009C9A7B /* Router.swift in Sources */,
 				2D4D694B2F0417B1009C9A7B /* TrollTollApp.swift in Sources */,
+				2DFFCE182F0429FD00EFA68C /* Logger.swift in Sources */,
 				2D4D69562F041A61009C9A7B /* GameLobbyView.swift in Sources */,
+				2DFFCE162F04287A00EFA68C /* MultiplayerServer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,6 +324,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = TrollToll/TrollToll.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = SCHMT432RZ;
@@ -321,6 +336,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -343,6 +359,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = TrollToll/TrollToll.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = SCHMT432RZ;
@@ -354,6 +371,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
