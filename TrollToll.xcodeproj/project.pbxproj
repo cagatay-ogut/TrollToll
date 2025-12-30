@@ -8,17 +8,21 @@
 
 /* Begin PBXBuildFile section */
 		2D4D69492F0417B1009C9A7B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D4D69452F0417B1009C9A7B /* Assets.xcassets */; };
-		2D4D694A2F0417B1009C9A7B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69462F0417B1009C9A7B /* ContentView.swift */; };
+		2D4D694A2F0417B1009C9A7B /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69462F0417B1009C9A7B /* MainView.swift */; };
 		2D4D694B2F0417B1009C9A7B /* TrollTollApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69472F0417B1009C9A7B /* TrollTollApp.swift */; };
 		2D4D694D2F0417C1009C9A7B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 2D4D694C2F0417C1009C9A7B /* Localizable.xcstrings */; };
+		2D4D69542F041986009C9A7B /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69532F041985009C9A7B /* Router.swift */; };
+		2D4D69562F041A61009C9A7B /* GameLobbyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69552F041A5E009C9A7B /* GameLobbyView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		2D4D692E2F0412D2009C9A7B /* TrollToll.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrollToll.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D4D69452F0417B1009C9A7B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		2D4D69462F0417B1009C9A7B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2D4D69462F0417B1009C9A7B /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		2D4D69472F0417B1009C9A7B /* TrollTollApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrollTollApp.swift; sourceTree = "<group>"; };
 		2D4D694C2F0417C1009C9A7B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		2D4D69532F041985009C9A7B /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
+		2D4D69552F041A5E009C9A7B /* GameLobbyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLobbyView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,12 +55,22 @@
 		2D4D69482F0417B1009C9A7B /* TrollToll */ = {
 			isa = PBXGroup;
 			children = (
-				2D4D69462F0417B1009C9A7B /* ContentView.swift */,
+				2D4D69522F04190D009C9A7B /* View */,
+				2D4D69532F041985009C9A7B /* Router.swift */,
 				2D4D69472F0417B1009C9A7B /* TrollTollApp.swift */,
 				2D4D69452F0417B1009C9A7B /* Assets.xcassets */,
 				2D4D694C2F0417C1009C9A7B /* Localizable.xcstrings */,
 			);
 			path = TrollToll;
+			sourceTree = "<group>";
+		};
+		2D4D69522F04190D009C9A7B /* View */ = {
+			isa = PBXGroup;
+			children = (
+				2D4D69552F041A5E009C9A7B /* GameLobbyView.swift */,
+				2D4D69462F0417B1009C9A7B /* MainView.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -158,8 +172,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2D4D694A2F0417B1009C9A7B /* ContentView.swift in Sources */,
+				2D4D694A2F0417B1009C9A7B /* MainView.swift in Sources */,
+				2D4D69542F041986009C9A7B /* Router.swift in Sources */,
 				2D4D694B2F0417B1009C9A7B /* TrollTollApp.swift in Sources */,
+				2D4D69562F041A61009C9A7B /* GameLobbyView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
