@@ -11,11 +11,16 @@ import SwiftUI
 class Router {
     enum Destination: Hashable {
         case gameLobby(isHost: Bool)
+        case game
     }
 
     var navPath = NavigationPath()
 
     func navigate(to destination: Destination) {
         navPath.append(destination)
+    }
+
+    func navigateToRoot() {
+        navPath.removeLast(navPath.count)
     }
 }

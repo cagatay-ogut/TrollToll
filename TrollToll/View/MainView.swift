@@ -26,14 +26,17 @@ struct MainView: View {
                         .padding(4)
                 }
             }
-            .buttonStyle(.glassProminent)
+            .buttonStyle(.borderedProminent)
             .navigationDestination(for: Router.Destination.self) { destination in
                 switch destination {
                 case .gameLobby(let isHost):
                     GameLobbyView(isHost: isHost)
+                case .game:
+                    GameView()
                 }
             }
         }
+        .environment(router)
     }
 }
 

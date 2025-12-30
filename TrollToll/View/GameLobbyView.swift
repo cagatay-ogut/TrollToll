@@ -9,6 +9,7 @@ import GameKit
 import SwiftUI
 
 struct GameLobbyView: View {
+    @Environment(Router.self) private var router
     @State private var server: MultiplayerInterface
     let isHost: Bool
 
@@ -31,6 +32,16 @@ struct GameLobbyView: View {
         }
         .onAppear {
             server.authenticate()
+        }
+        .onChange(of: server.authState) {
+            if server.authState == .authenticated {
+                server.findMatch()
+            }
+        }
+        .onChange(of: server.match) {
+            guard server.match != nil else { return }
+            router.navigateToRoot()
+            router.navigate(to: .game)
         }
     }
 }
