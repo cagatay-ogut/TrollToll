@@ -6,17 +6,20 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		2D4D69492F0417B1009C9A7B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D4D69452F0417B1009C9A7B /* Assets.xcassets */; };
+		2D4D694A2F0417B1009C9A7B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69462F0417B1009C9A7B /* ContentView.swift */; };
+		2D4D694B2F0417B1009C9A7B /* TrollTollApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69472F0417B1009C9A7B /* TrollTollApp.swift */; };
+		2D4D694D2F0417C1009C9A7B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 2D4D694C2F0417C1009C9A7B /* Localizable.xcstrings */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		2D4D692E2F0412D2009C9A7B /* TrollToll.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrollToll.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2D4D69452F0417B1009C9A7B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2D4D69462F0417B1009C9A7B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2D4D69472F0417B1009C9A7B /* TrollTollApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrollTollApp.swift; sourceTree = "<group>"; };
+		2D4D694C2F0417C1009C9A7B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		2D4D69302F0412D2009C9A7B /* TrollToll */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = TrollToll;
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		2D4D692B2F0412D2009C9A7B /* Frameworks */ = {
@@ -32,7 +35,7 @@
 		2D4D69252F0412D2009C9A7B = {
 			isa = PBXGroup;
 			children = (
-				2D4D69302F0412D2009C9A7B /* TrollToll */,
+				2D4D69482F0417B1009C9A7B /* TrollToll */,
 				2D4D692F2F0412D2009C9A7B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -43,6 +46,17 @@
 				2D4D692E2F0412D2009C9A7B /* TrollToll.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		2D4D69482F0417B1009C9A7B /* TrollToll */ = {
+			isa = PBXGroup;
+			children = (
+				2D4D69462F0417B1009C9A7B /* ContentView.swift */,
+				2D4D69472F0417B1009C9A7B /* TrollTollApp.swift */,
+				2D4D69452F0417B1009C9A7B /* Assets.xcassets */,
+				2D4D694C2F0417C1009C9A7B /* Localizable.xcstrings */,
+			);
+			path = TrollToll;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -60,9 +74,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				2D4D69302F0412D2009C9A7B /* TrollToll */,
 			);
 			name = TrollToll;
 			packageProductDependencies = (
@@ -113,6 +124,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D4D694D2F0417C1009C9A7B /* Localizable.xcstrings in Resources */,
+				2D4D69492F0417B1009C9A7B /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,6 +158,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D4D694A2F0417B1009C9A7B /* ContentView.swift in Sources */,
+				2D4D694B2F0417B1009C9A7B /* TrollTollApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -211,6 +226,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -268,6 +284,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
