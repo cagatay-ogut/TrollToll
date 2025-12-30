@@ -5,7 +5,6 @@
 //  Created by Cagatay on 30.12.2025.
 //
 
-import GameKit
 import SwiftUI
 
 struct GameLobbyView: View {
