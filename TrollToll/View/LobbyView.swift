@@ -24,11 +24,17 @@ struct LobbyView: View {
                 Text("Authenticating...")
             case .authenticated:
                 Text("Authenticated")
+                    .padding(.bottom)
+                if isHost {
+                    HostView()
+                } else {
+                    PlayerView(matches: server.matches)
+                }
             case .failed:
                 Text("FailedAuthMessage")
             }
-            Text(verbatim: "is host: \(isHost)")
         }
+        .frame(maxHeight: .infinity, alignment: .top)
         .onAppear {
             Task {
                 await server.authenticate()
@@ -53,6 +59,36 @@ struct LobbyView: View {
     }
 }
 
-#Preview {
-    LobbyView(isHost: true)
+private struct HostView: View {
+    var body: some View {
+        Text("waitingForPlayers")
+    }
 }
+
+private struct PlayerView: View {
+    let matches: [Match]
+
+    var body: some View {
+        Section {
+            List {
+                ForEach(matches) { match in
+                    Text(match.createdAt, format: .dateTime)
+                }
+            }
+        } footer: {
+            if matches.isEmpty {
+                Text("noMatchFound")
+            }
+        }
+    }
+}
+
+#Preview("Player") {
+    LobbyView(isHost: false)
+        .environment(Router())
+}
+
+// #Preview("Host) {
+//     LobbyView(isHost: true)
+//         .environment(Router())
+// }
