@@ -30,11 +30,19 @@ struct GameLobbyView: View {
             Text(verbatim: "is host: \(isHost)")
         }
         .onAppear {
-            server.authenticate()
+            Task {
+                await server.authenticate()
+            }
         }
         .onChange(of: server.authState) {
             if server.authState == .authenticated {
-                server.findMatch()
+                Task {
+                    if isHost {
+                        await server.hostMatch()
+                    } else {
+                        await server.findMatch()
+                    }
+                }
             }
         }
         .onChange(of: server.match) {

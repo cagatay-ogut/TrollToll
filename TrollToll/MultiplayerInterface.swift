@@ -10,12 +10,11 @@ protocol MultiplayerInterface {
     var authState: AuthenticationState { get set }
     var match: Match? { get }
 
-    func authenticate()
-    func findMatch()
+    func authenticate() async
+    func hostMatch() async
+    func findMatch() async
 }
 
 enum AuthenticationState {
     case unauthenticated, authenticated, failed
 }
-
-struct Match: Equatable {}
