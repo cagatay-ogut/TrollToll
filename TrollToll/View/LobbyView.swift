@@ -1,5 +1,5 @@
 //
-//  GameLobbyView.swift
+//  LobbyView.swift
 //  TrollToll
 //
 //  Created by Cagatay on 30.12.2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct GameLobbyView: View {
+struct LobbyView: View {
     @Environment(Router.self) private var router
     @State private var server: MultiplayerInterface
     let isHost: Bool
@@ -54,5 +54,5 @@ struct GameLobbyView: View {
 }
 
 #Preview {
-    GameLobbyView(isHost: true)
+    LobbyView(isHost: true)
 }

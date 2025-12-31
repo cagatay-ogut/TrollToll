@@ -12,7 +12,7 @@
 		2D4D694B2F0417B1009C9A7B /* TrollTollApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69472F0417B1009C9A7B /* TrollTollApp.swift */; };
 		2D4D694D2F0417C1009C9A7B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 2D4D694C2F0417C1009C9A7B /* Localizable.xcstrings */; };
 		2D4D69542F041986009C9A7B /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69532F041985009C9A7B /* Router.swift */; };
-		2D4D69562F041A61009C9A7B /* GameLobbyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69552F041A5E009C9A7B /* GameLobbyView.swift */; };
+		2D4D69562F041A61009C9A7B /* LobbyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69552F041A5E009C9A7B /* LobbyView.swift */; };
 		2DFFCE142F04285A00EFA68C /* MultiplayerInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE132F04285400EFA68C /* MultiplayerInterface.swift */; };
 		2DFFCE162F04287A00EFA68C /* MultiplayerServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE152F04287500EFA68C /* MultiplayerServer.swift */; };
 		2DFFCE182F0429FD00EFA68C /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE172F0429FC00EFA68C /* Logger.swift */; };
@@ -33,7 +33,7 @@
 		2D4D69472F0417B1009C9A7B /* TrollTollApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrollTollApp.swift; sourceTree = "<group>"; };
 		2D4D694C2F0417C1009C9A7B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		2D4D69532F041985009C9A7B /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
-		2D4D69552F041A5E009C9A7B /* GameLobbyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLobbyView.swift; sourceTree = "<group>"; };
+		2D4D69552F041A5E009C9A7B /* LobbyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LobbyView.swift; sourceTree = "<group>"; };
 		2DFFCE132F04285400EFA68C /* MultiplayerInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerInterface.swift; sourceTree = "<group>"; };
 		2DFFCE152F04287500EFA68C /* MultiplayerServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerServer.swift; sourceTree = "<group>"; };
 		2DFFCE172F0429FC00EFA68C /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
@@ -97,8 +97,8 @@
 		2D4D69522F04190D009C9A7B /* View */ = {
 			isa = PBXGroup;
 			children = (
-				2D4D69552F041A5E009C9A7B /* GameLobbyView.swift */,
 				2DFFCE1A2F043F1B00EFA68C /* GameView.swift */,
+				2D4D69552F041A5E009C9A7B /* LobbyView.swift */,
 				2D4D69462F0417B1009C9A7B /* MainView.swift */,
 			);
 			path = View;
@@ -224,7 +224,7 @@
 				2DFFCE2C2F051A8700EFA68C /* AppDelegate.swift in Sources */,
 				2D4D694B2F0417B1009C9A7B /* TrollTollApp.swift in Sources */,
 				2DFFCE182F0429FD00EFA68C /* Logger.swift in Sources */,
-				2D4D69562F041A61009C9A7B /* GameLobbyView.swift in Sources */,
+				2D4D69562F041A61009C9A7B /* LobbyView.swift in Sources */,
 				2DFFCE1B2F043F1D00EFA68C /* GameView.swift in Sources */,
 				2DFFCE162F04287A00EFA68C /* MultiplayerServer.swift in Sources */,
 			);

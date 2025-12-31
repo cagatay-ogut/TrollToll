@@ -10,7 +10,7 @@ import SwiftUI
 @Observable
 class Router {
     enum Destination: Hashable {
-        case gameLobby(isHost: Bool)
+        case lobby(isHost: Bool)
         case game
     }
 

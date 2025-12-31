@@ -14,13 +14,13 @@ struct MainView: View {
         NavigationStack(path: $router.navPath) {
             VStack(spacing: 32) {
                 Button {
-                    router.navigate(to: .gameLobby(isHost: true))
+                    router.navigate(to: .lobby(isHost: true))
                 } label: {
                     Text("hostGame")
                         .padding(4)
                 }
                 Button {
-                    router.navigate(to: .gameLobby(isHost: false))
+                    router.navigate(to: .lobby(isHost: false))
                 } label: {
                     Text("joinGame")
                         .padding(4)
@@ -29,8 +29,8 @@ struct MainView: View {
             .buttonStyle(.borderedProminent)
             .navigationDestination(for: Router.Destination.self) { destination in
                 switch destination {
-                case .gameLobby(let isHost):
-                    GameLobbyView(isHost: isHost)
+                case .lobby(let isHost):
+                    LobbyView(isHost: isHost)
                 case .game:
                     GameView()
                 }
