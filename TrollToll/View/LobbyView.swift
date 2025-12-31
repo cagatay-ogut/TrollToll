@@ -29,7 +29,7 @@ struct LobbyView: View {
                 if isHost {
                     HostView()
                 } else {
-                    PlayerView(matches: server.matches)
+                    PlayerView(server: $server, matches: server.matches)
                 }
             case .failed:
                 Text("FailedAuthMessage")
@@ -82,18 +82,28 @@ private struct HostView: View {
 }
 
 private struct PlayerView: View {
+    @Binding var server: MultiplayerInterface
     let matches: [Match]
 
     var body: some View {
-        Section {
-            List {
-                ForEach(matches) { match in
-                    Text(match.createdAt, format: .dateTime)
+        if let joinedMatchId = server.joinedMatchId {
+            Text("joined: \(joinedMatchId)")
+        } else {
+            Section {
+                List {
+                    ForEach(matches) { match in
+                        Text(match.createdAt, format: .dateTime)
+                            .onTapGesture {
+                                Task {
+                                    await server.joinMatch(with: match.id)
+                                }
+                            }
+                    }
                 }
-            }
-        } footer: {
-            if matches.isEmpty {
-                Text("noMatchFound")
+            } footer: {
+                if matches.isEmpty {
+                    Text("noMatchFound")
+                }
             }
         }
     }

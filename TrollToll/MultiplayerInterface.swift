@@ -10,11 +10,13 @@ protocol MultiplayerInterface {
     var authState: AuthenticationState { get set }
     var match: Match? { get }
     var matches: [Match] { get }
+    var joinedMatchId: String? { get }
 
     func authenticate() async
     func hostMatch() async
     func cancelHosting() async
     func findMatch() async
+    func joinMatch(with matchId: String) async
 }
 
 enum AuthenticationState {

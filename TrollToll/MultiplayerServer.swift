@@ -14,10 +14,12 @@ import SwiftUI
 class MultiplayerServer: NSObject, MultiplayerInterface {
     let isHost: Bool
     var userId: String?
-    var dbRef: DatabaseReference
+    let dbRef: DatabaseReference
+    let matchesRef: DatabaseReference
     var authState: AuthenticationState = .unauthenticated
     var match: Match?
     var hostedMatchId: String?
+    var joinedMatchId: String?
     var matches: [Match] = []
 
     init(isHost: Bool) {
@@ -26,6 +28,7 @@ class MultiplayerServer: NSObject, MultiplayerInterface {
         dbRef = Database
             .database(url: "https://trolltoll-ee309-default-rtdb.europe-west1.firebasedatabase.app")
             .reference()
+        matchesRef = dbRef.child("matches")
     }
 
     func authenticate() async {
@@ -42,7 +45,7 @@ class MultiplayerServer: NSObject, MultiplayerInterface {
 
     func hostMatch() async {
         guard let userId else { return }
-        let matchRef = dbRef.child("matches").childByAutoId()
+        let matchRef = matchesRef.childByAutoId()
         guard let matchId = matchRef.key else { return }
 
         let match = Match(id: matchId, status: .waitingForPlayers, hostId: userId)
@@ -60,7 +63,6 @@ class MultiplayerServer: NSObject, MultiplayerInterface {
 
     func cancelHosting() async {
         guard let matchId = hostedMatchId else { return }
-        let matchesRef = dbRef.child("matches")
         let matchRef = matchesRef.child(matchId)
         do {
             try await matchRef.removeValue()
@@ -71,7 +73,6 @@ class MultiplayerServer: NSObject, MultiplayerInterface {
 
     func findMatch() async {
         self.matches = await withCheckedContinuation { continuation in
-            let matchesRef = dbRef.child("matches")
             matchesRef.observeSingleEvent(of: .value) { snapshot in
                 guard let matchesDict = snapshot.value as? [String: [String: Any]] else {
                     continuation.resume(returning: [])
@@ -91,6 +92,42 @@ class MultiplayerServer: NSObject, MultiplayerInterface {
                 }
                 continuation.resume(returning: matches)
             }
+        }
+    }
+
+    func joinMatch(with matchId: String) async {
+        guard let userId else { return }
+        let matchRef = matchesRef.child(matchId)
+        let playerIdsRef = matchRef.child("playerIds")
+
+        let playerSnapshot = await withCheckedContinuation { continuation in
+            playerIdsRef.observeSingleEvent(of: .value) { snapshot in
+                continuation.resume(returning: snapshot)
+            }
+        }
+
+        var playerIds: [String] = []
+        if let playersArray = playerSnapshot.value as? [String] {
+            playerIds = playersArray
+        }
+
+        guard !playerIds.contains(userId) else {
+            Logger.multiplayer.debug("User \(userId) is already in the game: \(matchId)")
+            return
+        }
+
+        var updatedPlayerIds = playerIds
+        updatedPlayerIds.append(userId)
+
+        let updateData: [String: Any] = [
+            "playerIds": updatedPlayerIds
+        ]
+
+        do {
+            try await matchRef.updateChildValues(updateData)
+            joinedMatchId = matchId
+        } catch {
+            Logger.multiplayer.error("Could not update player ids for match: \(matchId)")
         }
     }
 }
