@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct LobbyView: View {
+    @Environment(\.dismiss) private var dismiss
     @Environment(Router.self) private var router
     @State private var server: MultiplayerInterface
     let isHost: Bool
@@ -35,6 +36,21 @@ struct LobbyView: View {
             }
         }
         .frame(maxHeight: .infinity, alignment: .top)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    if isHost {
+                        Task {
+                            await server.cancelHosting()
+                        }
+                    }
+                    dismiss()
+                } label: {
+                    Image(systemName: "chevron.left")
+                }
+            }
+        }
         .onAppear {
             Task {
                 await server.authenticate()

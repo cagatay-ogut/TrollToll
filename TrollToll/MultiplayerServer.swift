@@ -17,6 +17,7 @@ class MultiplayerServer: NSObject, MultiplayerInterface {
     var dbRef: DatabaseReference
     var authState: AuthenticationState = .unauthenticated
     var match: Match?
+    var hostedMatchId: String?
     var matches: [Match] = []
 
     init(isHost: Bool) {
@@ -48,22 +49,33 @@ class MultiplayerServer: NSObject, MultiplayerInterface {
         do {
             let data = try JSONEncoder().encode(match)
             if let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                let newMatchRef = try await matchRef.setValue(dict)
-                Logger.multiplayer.debug("Create match: \(newMatchRef.key ?? "unknown key")")
+                try await matchRef.setValue(dict)
+                hostedMatchId = matchId
+                Logger.multiplayer.debug("Create match: \(matchId)")
             }
         } catch {
             Logger.multiplayer.error("Could not host match: \(error)")
         }
     }
 
-    func findMatch() async {
+    func cancelHosting() async {
+        guard let matchId = hostedMatchId else { return }
         let matchesRef = dbRef.child("matches")
+        let matchRef = matchesRef.child(matchId)
+        do {
+            try await matchRef.removeValue()
+        } catch {
+            Logger.multiplayer.error("Could not delete match: \(matchId)")
+        }
+    }
 
+    func findMatch() async {
         self.matches = await withCheckedContinuation { continuation in
+            let matchesRef = dbRef.child("matches")
             matchesRef.observeSingleEvent(of: .value) { snapshot in
                 guard let matchesDict = snapshot.value as? [String: [String: Any]] else {
                     continuation.resume(returning: [])
-                    Logger.multiplayer.error("Error: Could not cast snapshot value to [String: [String: Any]]")
+                    Logger.multiplayer.error("Could not cast snapshot value to [String: [String: Any]]")
                     return
                 }
 

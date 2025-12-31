@@ -13,6 +13,7 @@ protocol MultiplayerInterface {
 
     func authenticate() async
     func hostMatch() async
+    func cancelHosting() async
     func findMatch() async
 }
 
