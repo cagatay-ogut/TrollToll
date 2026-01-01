@@ -20,7 +20,7 @@ struct MainView: View {
                 case .unauthenticated:
                     ProgressView()
                 case .authenticated(let userId):
-                    AuthenticatedView(router: router, userRepo: userRepo, userId: userId)
+                    AuthenticatedView(userRepo: $userRepo, router: router, userId: userId)
                 case .failed:
                     FailedAuthView(authenticator: authenticator)
                 }
@@ -28,8 +28,8 @@ struct MainView: View {
             .buttonStyle(.borderedProminent)
             .navigationDestination(for: Router.Destination.self) { destination in
                 switch destination {
-                case .lobby(let isHost):
-                    LobbyView(isHost: isHost)
+                case .lobby(let user):
+                    LobbyView(user: user)
                 case .game:
                     GameView()
                 }
@@ -64,8 +64,8 @@ private struct FailedAuthView: View {
 }
 
 private struct AuthenticatedView: View {
+    @Binding var userRepo: UserRepo
     let router: Router
-    let userRepo: UserRepo
     let userId: String
 
     var body: some View {
@@ -73,14 +73,15 @@ private struct AuthenticatedView: View {
             UserNameField(userRepo: userRepo, userId: userId)
         }
         Button {
-            router.navigate(to: .lobby(isHost: true))
+            userRepo.user?.isHost = true
+            router.navigate(to: .lobby(user: userRepo.user!))
         } label: {
             Text("hostGame")
                 .padding(4)
         }
         .disabled(userRepo.user == nil)
         Button {
-            router.navigate(to: .lobby(isHost: false))
+            router.navigate(to: .lobby(user: userRepo.user!))
         } label: {
             Text("joinGame")
                 .padding(4)

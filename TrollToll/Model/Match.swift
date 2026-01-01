@@ -10,15 +10,15 @@ import Foundation
 struct Match: Codable, Equatable, Identifiable {
     let id: String
     let status: MatchStatus
-    let hostId: String
-    let playerIds: [String]
+    let host: User
+    let players: [User]
     let createdAt: Date
 
-    init(id: String, status: MatchStatus, hostId: String, playerIds: [String] = [], createdAt: Date = Date()) {
+    init(id: String, status: MatchStatus, host: User, players: [User] = [], createdAt: Date = Date()) {
         self.id = id
         self.status = status
-        self.hostId = hostId
-        self.playerIds = playerIds
+        self.host = host
+        self.players = players
         self.createdAt = createdAt
     }
 
@@ -26,8 +26,8 @@ struct Match: Codable, Equatable, Identifiable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decode(String.self, forKey: .id)
         self.status = try container.decode(MatchStatus.self, forKey: .status)
-        self.hostId = try container.decode(String.self, forKey: .hostId)
-        self.playerIds = try container.decodeIfPresent([String].self, forKey: .playerIds) ?? []
+        self.host = try container.decode(User.self, forKey: .host)
+        self.players = try container.decodeIfPresent([User].self, forKey: .players) ?? []
         self.createdAt = try container.decode(Date.self, forKey: .createdAt)
     }
 }

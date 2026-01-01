@@ -10,30 +10,19 @@ import SwiftUI
 struct LobbyView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(Router.self) private var router
-    @State private var server: MultiplayerInterface
-    let isHost: Bool
+    @State private var server: MultiplayerServer
 
-    init(isHost: Bool) {
-        self.isHost = isHost
-        self._server = State(initialValue: MultiplayerServer(isHost: isHost))
+    init(user: User) {
+        _server = State(initialValue: FBMultiplayerServer(user: user))
     }
 
     var body: some View {
         VStack {
-            if isHost {
-                HostView()
-                Button {
-                    Task {
-                        await server.startMatch()
-                    }
-                } label: {
-                    Text("startGame")
-                }
-                .disabled(!server.readyToStart)
+            if server.user.isHost {
+                HostView(server: $server)
             } else {
-                PlayerView(server: $server, matches: server.matches)
+                JoiningPlayerView(server: $server, matches: server.matches)
             }
-            PlayerListView(match: server.match)
         }
         .frame(maxHeight: .infinity, alignment: .top)
         .navigationBarBackButtonHidden(true)
@@ -41,7 +30,7 @@ struct LobbyView: View {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
                     Task {
-                        if isHost {
+                        if server.user.isHost {
                             await server.cancelMatch()
                         } else {
                             await server.leaveMatch()
@@ -63,19 +52,38 @@ struct LobbyView: View {
 }
 
 private struct HostView: View {
+    @Binding var server: MultiplayerServer
+
     var body: some View {
-        Text("waitingForPlayers")
-            .padding(.bottom)
+        VStack {
+            Text("waitingForPlayers")
+                .padding(.bottom)
+            Button {
+                Task {
+                    await server.startMatch()
+                }
+            } label: {
+                Text("startGame")
+            }
+            .disabled(!server.readyToStart)
+            if let match = server.match {
+                PlayerListView(match: match)
+            }
+        }
+        .task {
+            await server.hostMatch()
+            await server.observeMatch()
+        }
     }
 }
 
-private struct PlayerView: View {
-    @Binding var server: MultiplayerInterface
+private struct JoiningPlayerView: View {
+    @Binding var server: MultiplayerServer
     let matches: [Match]
 
     var body: some View {
-        if let joinedMatchId = server.joinedMatchId {
-            Text("joined: \(joinedMatchId)")
+        if let match = server.match {
+            PlayerListView(match: match)
         } else {
             Section {
                 List {
@@ -83,44 +91,43 @@ private struct PlayerView: View {
                         Text(match.createdAt, format: .dateTime)
                             .onTapGesture {
                                 Task {
-                                    await server.joinMatch(with: match.id)
+                                    await server.joinMatch(match)
                                     await server.observeMatch()
                                 }
                             }
                     }
                 }
-            } footer: {
+            } header: {
                 if matches.isEmpty {
                     Text("noMatchFound")
                 }
+            }
+            .task {
+                await server.findMatch()
             }
         }
     }
 }
 
 private struct PlayerListView: View {
-    let match: Match?
+    let match: Match
 
     var body: some View {
-        if let match {
-            Section {
-                List {
-                    Text(match.hostId + " (host)")
-                    ForEach(match.playerIds, id: \.self) { playerId in
-                        Text(playerId)
-                    }
+        Section {
+            List {
+                Text(match.host.name + " (" + String(localized: "host") + ")")
+                ForEach(match.players, id: \.self) { player in
+                    Text(player.name)
                 }
-            } header: {
-                Text("players")
             }
-        } else {
-            ProgressView()
+        } header: {
+            Text("players")
         }
     }
 }
 
 #Preview("Player") {
-    LobbyView(isHost: false)
+    LobbyView(user: User(id: "id", name: "name", isHost: false))
         .environment(Router())
 }
 

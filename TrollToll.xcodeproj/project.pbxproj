@@ -13,8 +13,8 @@
 		2D4D694D2F0417C1009C9A7B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 2D4D694C2F0417C1009C9A7B /* Localizable.xcstrings */; };
 		2D4D69542F041986009C9A7B /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69532F041985009C9A7B /* Router.swift */; };
 		2D4D69562F041A61009C9A7B /* LobbyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69552F041A5E009C9A7B /* LobbyView.swift */; };
-		2DFFCE142F04285A00EFA68C /* MultiplayerInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE132F04285400EFA68C /* MultiplayerInterface.swift */; };
-		2DFFCE162F04287A00EFA68C /* MultiplayerServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE152F04287500EFA68C /* MultiplayerServer.swift */; };
+		2DFFCE142F04285A00EFA68C /* MultiplayerServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE132F04285400EFA68C /* MultiplayerServer.swift */; };
+		2DFFCE162F04287A00EFA68C /* FBMultiplayerServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE152F04287500EFA68C /* FBMultiplayerServer.swift */; };
 		2DFFCE182F0429FD00EFA68C /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE172F0429FC00EFA68C /* Logger.swift */; };
 		2DFFCE1B2F043F1D00EFA68C /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE1A2F043F1B00EFA68C /* GameView.swift */; };
 		2DFFCE222F051A3000EFA68C /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 2DFFCE212F051A3000EFA68C /* FirebaseAnalytics */; };
@@ -39,8 +39,8 @@
 		2D4D694C2F0417C1009C9A7B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		2D4D69532F041985009C9A7B /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		2D4D69552F041A5E009C9A7B /* LobbyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LobbyView.swift; sourceTree = "<group>"; };
-		2DFFCE132F04285400EFA68C /* MultiplayerInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerInterface.swift; sourceTree = "<group>"; };
-		2DFFCE152F04287500EFA68C /* MultiplayerServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerServer.swift; sourceTree = "<group>"; };
+		2DFFCE132F04285400EFA68C /* MultiplayerServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerServer.swift; sourceTree = "<group>"; };
+		2DFFCE152F04287500EFA68C /* FBMultiplayerServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FBMultiplayerServer.swift; sourceTree = "<group>"; };
 		2DFFCE172F0429FC00EFA68C /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		2DFFCE192F042DB900EFA68C /* TrollToll.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TrollToll.entitlements; sourceTree = "<group>"; };
 		2DFFCE1A2F043F1B00EFA68C /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
@@ -94,8 +94,8 @@
 				2DFFCE3B2F068B7F00EFA68C /* UserRepo */,
 				2DFFCE2B2F051A8500EFA68C /* AppDelegate.swift */,
 				2DFFCE172F0429FC00EFA68C /* Logger.swift */,
-				2DFFCE132F04285400EFA68C /* MultiplayerInterface.swift */,
-				2DFFCE152F04287500EFA68C /* MultiplayerServer.swift */,
+				2DFFCE132F04285400EFA68C /* MultiplayerServer.swift */,
+				2DFFCE152F04287500EFA68C /* FBMultiplayerServer.swift */,
 				2D4D69532F041985009C9A7B /* Router.swift */,
 				2D4D69472F0417B1009C9A7B /* TrollTollApp.swift */,
 				2DFFCE192F042DB900EFA68C /* TrollToll.entitlements */,
@@ -248,7 +248,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2DFFCE142F04285A00EFA68C /* MultiplayerInterface.swift in Sources */,
+				2DFFCE142F04285A00EFA68C /* MultiplayerServer.swift in Sources */,
 				2D4D694A2F0417B1009C9A7B /* MainView.swift in Sources */,
 				2D4D69542F041986009C9A7B /* Router.swift in Sources */,
 				2DFFCE332F0524F800EFA68C /* Match.swift in Sources */,
@@ -261,7 +261,7 @@
 				2DFFCE3A2F06881400EFA68C /* FBAuthenticator.swift in Sources */,
 				2D4D69562F041A61009C9A7B /* LobbyView.swift in Sources */,
 				2DFFCE1B2F043F1D00EFA68C /* GameView.swift in Sources */,
-				2DFFCE162F04287A00EFA68C /* MultiplayerServer.swift in Sources */,
+				2DFFCE162F04287A00EFA68C /* FBMultiplayerServer.swift in Sources */,
 				2DFFCE352F06868E00EFA68C /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
