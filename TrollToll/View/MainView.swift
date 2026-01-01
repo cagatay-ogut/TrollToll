@@ -81,6 +81,7 @@ private struct AuthenticatedView: View {
         }
         .disabled(userRepo.user == nil)
         Button {
+            userRepo.user?.isHost = false
             router.navigate(to: .lobby(user: userRepo.user!))
         } label: {
             Text("joinGame")
