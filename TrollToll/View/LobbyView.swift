@@ -11,6 +11,7 @@ struct LobbyView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(Router.self) private var router
     @State private var server: MultiplayerServer
+    @State private var errorMessage: String?
 
     init(user: User) {
         _server = State(initialValue: FBMultiplayerServer(user: user))
@@ -19,9 +20,9 @@ struct LobbyView: View {
     var body: some View {
         VStack {
             if server.user.isHost {
-                HostView(server: $server)
+                HostView(server: $server, errorMessage: $errorMessage)
             } else {
-                JoiningPlayerView(server: $server, matches: server.matches)
+                JoiningPlayerView(server: $server, errorMessage: $errorMessage, matches: server.matches)
             }
         }
         .frame(maxHeight: .infinity, alignment: .top)
@@ -30,10 +31,14 @@ struct LobbyView: View {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
                     Task {
-                        if server.user.isHost {
-                            await server.cancelMatch()
-                        } else {
-                            await server.leaveMatch()
+                        do {
+                            if server.user.isHost {
+                                try await server.cancelMatch()
+                            } else {
+                                try await server.leaveMatch()
+                            }
+                        } catch {
+                            errorMessage = error.localizedDescription
                         }
                     }
                     dismiss()
@@ -42,6 +47,10 @@ struct LobbyView: View {
                 }
             }
         }
+        .alert(errorMessage ?? "", isPresented: Binding(
+            get: { errorMessage != nil },
+            set: { if !$0 { errorMessage = nil } }
+        )) {}
         .onChange(of: server.match) {
             if server.match?.status == .playing {
                 router.navigateToRoot()
@@ -53,6 +62,7 @@ struct LobbyView: View {
 
 private struct HostView: View {
     @Binding var server: MultiplayerServer
+    @Binding var errorMessage: String?
 
     var body: some View {
         VStack {
@@ -60,7 +70,11 @@ private struct HostView: View {
                 .padding(.bottom)
             Button {
                 Task {
-                    await server.startMatch()
+                    do {
+                        try await server.startMatch()
+                    } catch {
+                        errorMessage = error.localizedDescription
+                    }
                 }
             } label: {
                 Text("startGame")
@@ -71,14 +85,19 @@ private struct HostView: View {
             }
         }
         .task {
-            await server.hostMatch()
-            await server.observeMatch()
+            do {
+                try await server.hostMatch()
+                try await server.observeMatch()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
         }
     }
 }
 
 private struct JoiningPlayerView: View {
     @Binding var server: MultiplayerServer
+    @Binding var errorMessage: String?
     let matches: [Match]
 
     var body: some View {
@@ -91,8 +110,12 @@ private struct JoiningPlayerView: View {
                         Text(match.createdAt, format: .dateTime)
                             .onTapGesture {
                                 Task {
-                                    await server.joinMatch(match)
-                                    await server.observeMatch()
+                                    do {
+                                        try await server.joinMatch(match)
+                                        try await server.observeMatch()
+                                    } catch {
+                                        errorMessage = error.localizedDescription
+                                    }
                                 }
                             }
                     }
@@ -103,7 +126,11 @@ private struct JoiningPlayerView: View {
                 }
             }
             .task {
-                await server.findMatch()
+                do {
+                    try await server.findMatches()
+                } catch {
+                    errorMessage = error.localizedDescription
+                }
             }
         }
     }

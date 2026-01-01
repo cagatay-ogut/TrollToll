@@ -33,8 +33,10 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
         matchesRef = dbRef.child("matches")
     }
 
-    func observeMatch() async {
-        guard let matchId = match?.id else { return }
+    func observeMatch() async throws {
+        guard let matchId = match?.id else {
+            throw MultiplayerServerError.matchNotSet
+        }
 
         for try await matchData in matchStream(matchId: matchId) {
             match = matchData
@@ -42,28 +44,24 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
         }
     }
 
-    private func matchStream(matchId: String) -> AsyncStream<Match> {
-        AsyncStream { continuation in
+    private func matchStream(matchId: String) -> AsyncThrowingStream<Match, Error> {
+        AsyncThrowingStream { continuation in
             let matchRef = matchesRef.child(matchId)
 
             let handle = matchRef.observe(.value) { snapshot in
-                if snapshot.exists() {
-                    if let matchDict = snapshot.value as? [String: Any] {
-                        do {
-                            let data = try JSONSerialization.data(withJSONObject: matchDict)
-                            let match = try JSONDecoder().decode(Match.self, from: data)
-                            continuation.yield(match)
-                        } catch {
-                            continuation.finish()
-                        }
-                    } else {
-                        continuation.finish()
+                do {
+                    guard snapshot.exists(), let value = snapshot.value else {
+                        continuation.finish(throwing: MultiplayerServerError.noMatchFound)
+                        return
                     }
-                } else {
-                    continuation.finish()
+                    let data = try JSONSerialization.data(withJSONObject: value)
+                    let match = try JSONDecoder().decode(Match.self, from: data)
+                    continuation.yield(match)
+                } catch {
+                    continuation.finish(throwing: MultiplayerServerError.failedToDecode(underlyingError: error))
                 }
-            } withCancel: { _ in
-                continuation.finish()
+            } withCancel: { error in
+                continuation.finish(throwing: MultiplayerServerError.serverCancel(underlyingError: error))
             }
 
             continuation.onTermination = { _ in
@@ -72,150 +70,190 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
         }
     }
 
-    func hostMatch() async {
+    func hostMatch() async throws {
         let matchRef = matchesRef.childByAutoId()
-        guard let matchId = matchRef.key else { return }
-
+        guard let matchId = matchRef.key else {
+            throw MultiplayerServerError.serverFail
+        }
         let match = Match(id: matchId, status: .waitingForPlayers, host: user)
+
+        let dictionary: [String: Any]
         do {
             let data = try JSONEncoder().encode(match)
-            if let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                try await matchRef.setValue(dict)
-                self.match = match
-                Logger.multiplayer.debug("Create match: \(matchId)")
+            guard let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                throw MultiplayerServerError.unexpectedDataFormat
             }
+            dictionary = dict
         } catch {
-            Logger.multiplayer.error("Could not host match: \(error)")
+            throw MultiplayerServerError.failedToEncode(underlyingError: error)
+        }
+
+        do {
+            try await matchRef.setValue(dictionary)
+            self.match = match
+            Logger.multiplayer.debug("Created match: \(matchId)")
+        } catch {
+            Logger.multiplayer.error("Could not host match: \(matchId), error: \(error)")
+            throw MultiplayerServerError.serverError(underlyingError: error)
         }
     }
 
-    func cancelMatch() async {
-        guard let matchId = match?.id else { return }
+    func cancelMatch() async throws {
+        guard let matchId = match?.id else {
+            throw MultiplayerServerError.matchNotSet
+        }
+
         let matchRef = matchesRef.child(matchId)
         do {
             try await matchRef.removeValue()
+            Logger.multiplayer.debug("Deleted match: \(matchId)")
         } catch {
-            Logger.multiplayer.error("Could not delete match: \(matchId)")
+            Logger.multiplayer.error("Could not delete match: \(matchId), error: \(error)")
+            throw MultiplayerServerError.serverError(underlyingError: error)
         }
     }
 
-    func startMatch() async {
-        guard let matchId = match?.id else { return }
-        let matchRef = matchesRef.child(matchId)
+    func startMatch() async throws {
+        guard let matchId = match?.id else {
+            throw MultiplayerServerError.matchNotSet
+        }
 
+        let matchRef = matchesRef.child(matchId)
         let updateData: [String: Any] = [
             "status": MatchStatus.playing.rawValue
         ]
         do {
             try await matchRef.updateChildValues(updateData)
-            Logger.multiplayer.debug("Host started game: \(matchId)")
+            Logger.multiplayer.debug("Host started match: \(matchId)")
         } catch {
             Logger.multiplayer.error("Could not update status when starting match: \(matchId)")
+            throw MultiplayerServerError.serverError(underlyingError: error)
         }
     }
 
-    func findMatch() async {
-        self.matches = await withCheckedContinuation { continuation in
+    func findMatches() async throws {
+        self.matches = try await withCheckedThrowingContinuation { continuation in
             matchesRef.observeSingleEvent(of: .value) { snapshot in
-                guard let matchesDict = snapshot.value as? [String: [String: Any]] else {
+                guard snapshot.exists(), let value = snapshot.value else {
                     continuation.resume(returning: [])
-                    Logger.multiplayer.error("Could not cast snapshot value to [String: [String: Any]]")
                     return
                 }
 
-                var matches: [Match] = []
-                for (_, matchDict) in matchesDict {
-                    do {
+                do {
+                    guard let matchesDict = value as? [String: Any] else {
+                        throw MultiplayerServerError.unexpectedDataFormat
+                    }
+
+                    var matches: [Match] = []
+                    for (_, matchDict) in matchesDict {
                         let data = try JSONSerialization.data(withJSONObject: matchDict)
                         let match = try JSONDecoder().decode(Match.self, from: data)
                         matches.append(match)
-                    } catch {
-                        Logger.multiplayer.error("Could not decode Match: \(error)")
                     }
+                    continuation.resume(returning: matches)
+                } catch {
+                    continuation.resume(throwing: MultiplayerServerError.failedToDecode(underlyingError: error))
                 }
-                continuation.resume(returning: matches)
             }
         }
     }
 
-    func joinMatch(_ match: Match) async {
-        let matchRef = matchesRef.child(match.id)
-        let playersRef = matchRef.child("players")
+    func joinMatch(_ match: Match) async throws {
+        let playersRef = matchesRef.child(match.id).child("players")
 
-        let playerSnapshot = await withCheckedContinuation { continuation in
+        let playerSnapshot = try await withCheckedThrowingContinuation { continuation in
             playersRef.observeSingleEvent(of: .value) { snapshot in
                 continuation.resume(returning: snapshot)
+            } withCancel: { error in
+                continuation.resume(throwing: MultiplayerServerError.serverCancel(underlyingError: error))
             }
         }
 
-        var players: [User] = []
-        if let playersArray = playerSnapshot.value as? [User] {
-            players = playersArray
+        var currentPlayers: [User] = []
+        if let value = playerSnapshot.value as? [Any] {
+            do {
+                let data = try JSONSerialization.data(withJSONObject: value)
+                currentPlayers = try JSONDecoder().decode([User].self, from: data)
+            } catch {
+                throw MultiplayerServerError.failedToDecode(underlyingError: error)
+            }
         }
 
-        guard !players.contains(user) else {
-            Logger.multiplayer.debug("User \(self.user.id) is already in the game: \(match.id)")
-            return
+        guard !currentPlayers.contains(user) else {
+            Logger.multiplayer.error("User \(self.user.id) is already in the match: \(match.id)")
+            throw MultiplayerServerError.playerAlreadyInMatch
         }
 
-        var updatedPlayers = players
+        var updatedPlayers = currentPlayers
         updatedPlayers.append(user)
 
-        let encoder = JSONEncoder()
+        let playersArray: Any
         do {
-            let jsonData = try encoder.encode(updatedPlayers)
-            guard let encodedData = try JSONSerialization.jsonObject(with: jsonData) as? [Any] else {
-                throw NSError(
-                        domain: "Conversion",
-                        code: 0,
-                        userInfo: [NSLocalizedDescriptionKey: "Failed to convert encoded JSON data to dictionary."]
-                    )
-            }
+            let data = try JSONEncoder().encode(updatedPlayers)
+            playersArray = try JSONSerialization.jsonObject(with: data)
+        } catch {
+            throw MultiplayerServerError.failedToEncode(underlyingError: error)
+        }
 
-            try await playersRef.setValue(encodedData)
+        do {
+            try await playersRef.setValue(playersArray)
             self.match = match
-            Logger.multiplayer.debug("User joined game: \(match.id)")
+            Logger.multiplayer.debug("User \(self.user.id) joined match: \(match.id)")
         } catch {
             Logger.multiplayer.error("Could not update player ids for joining match: \(match.id), error: \(error)")
+            throw MultiplayerServerError.serverError(underlyingError: error)
         }
     }
 
-    func leaveMatch() async {
-        guard let matchId = match?.id else { return }
-        let matchRef = matchesRef.child(matchId)
-        let playersRef = matchRef.child("players")
+    func leaveMatch() async throws {
+        guard let matchId = match?.id else {
+            throw MultiplayerServerError.matchNotSet
+        }
+        let playersRef = matchesRef.child(matchId).child("players")
 
-        let playerSnapshot = await withCheckedContinuation { continuation in
+        let playerSnapshot = try await withCheckedThrowingContinuation { continuation in
             playersRef.observeSingleEvent(of: .value) { snapshot in
                 continuation.resume(returning: snapshot)
+            } withCancel: { error in
+                continuation.resume(throwing: MultiplayerServerError.serverCancel(underlyingError: error))
             }
         }
 
-        guard let snapshotValue = playerSnapshot.value else { return }
+        guard let snapshotValue = playerSnapshot.value else {
+            throw MultiplayerServerError.unexpectedDataFormat
+        }
+
+        var currentPlayers: [User] = []
+        do {
+            let data = try JSONSerialization.data(withJSONObject: snapshotValue)
+            currentPlayers = try JSONDecoder().decode([User].self, from: data)
+        } catch {
+            throw MultiplayerServerError.failedToDecode(underlyingError: error)
+        }
+
+        guard currentPlayers.contains(user) else {
+            Logger.multiplayer.error("User \(self.user.id) is not in the match: \(matchId)")
+            throw MultiplayerServerError.playerNotInMatch
+        }
+
+        var updatedPlayers = currentPlayers
+        updatedPlayers.removeAll { $0 == user }
+
+        let playersArray: Any
+        do {
+            let data = try JSONEncoder().encode(updatedPlayers)
+            playersArray = try JSONSerialization.jsonObject(with: data)
+        } catch {
+            throw MultiplayerServerError.failedToEncode(underlyingError: error)
+        }
 
         do {
-            let decoder = JSONDecoder()
-            let data = try JSONSerialization.data(withJSONObject: snapshotValue, options: [])
-            var players = try decoder.decode([User].self, from: data)
-
-            guard players.contains(user) else { return }
-            players.removeAll { $0 == user }
-
-            let encoder = JSONEncoder()
-            let jsonData = try encoder.encode(players)
-            guard let encodedData = try JSONSerialization.jsonObject(with: jsonData) as? [Any] else {
-                throw NSError(
-                        domain: "Conversion",
-                        code: 0,
-                        userInfo: [NSLocalizedDescriptionKey: "Failed to convert encoded JSON data to dictionary."]
-                    )
-            }
-
-            try await playersRef.setValue(encodedData)
+            try await playersRef.setValue(playersArray)
             self.match = match
-            Logger.multiplayer.debug("User left game: \(matchId)")
+            Logger.multiplayer.debug("User \(self.user.id) left match: \(matchId)")
         } catch {
-            Logger.multiplayer.error("Could not update player ids for leaving match: \(matchId)")
+            Logger.multiplayer.error("Could not update player ids for leaving match: \(matchId), error: \(error)")
+            throw MultiplayerServerError.serverError(underlyingError: error)
         }
     }
 }
