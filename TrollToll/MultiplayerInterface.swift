@@ -12,9 +12,13 @@ protocol MultiplayerInterface {
     var matches: [Match] { get }
     var joinedMatchId: String? { get }
 
+    // common
     func authenticate() async
+    func observeMatch() async
+    // host
     func hostMatch() async
     func cancelMatch() async
+    // player
     func findMatch() async
     func joinMatch(with matchId: String) async
     func leaveMatch() async

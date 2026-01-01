@@ -43,6 +43,46 @@ class MultiplayerServer: NSObject, MultiplayerInterface {
         }
     }
 
+    func observeMatch() async {
+        let matchId = hostedMatchId ?? joinedMatchId
+        guard let matchId else { return }
+
+        for try await matchData in matchStream(matchId: matchId) {
+            match = matchData
+            Logger.multiplayer.debug("Match updated: \(String(describing: matchData))")
+        }
+    }
+
+    private func matchStream(matchId: String) -> AsyncStream<Match> {
+        AsyncStream { continuation in
+            let matchRef = matchesRef.child(matchId)
+
+            let handle = matchRef.observe(.value) { snapshot in
+                if snapshot.exists() {
+                    if let matchDict = snapshot.value as? [String: Any] {
+                        do {
+                            let data = try JSONSerialization.data(withJSONObject: matchDict)
+                            let match = try JSONDecoder().decode(Match.self, from: data)
+                            continuation.yield(match)
+                        } catch {
+                            continuation.finish()
+                        }
+                    } else {
+                        continuation.finish()
+                    }
+                } else {
+                    continuation.finish()
+                }
+            } withCancel: { _ in
+                continuation.finish()
+            }
+
+            continuation.onTermination = { _ in
+                matchRef.removeObserver(withHandle: handle)
+            }
+        }
+    }
+
     func hostMatch() async {
         guard let userId else { return }
         let matchRef = matchesRef.childByAutoId()

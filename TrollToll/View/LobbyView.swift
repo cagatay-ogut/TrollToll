@@ -31,6 +31,7 @@ struct LobbyView: View {
                 } else {
                     PlayerView(server: $server, matches: server.matches)
                 }
+                PlayerListView(match: server.match)
             case .failed:
                 Text("FailedAuthMessage")
             }
@@ -63,14 +64,15 @@ struct LobbyView: View {
                 Task {
                     if isHost {
                         await server.hostMatch()
+                        await server.observeMatch()
                     } else {
                         await server.findMatch()
                     }
                 }
             }
         }
-        .onChange(of: server.match) {
-            guard server.match != nil else { return }
+        .onChange(of: server.match?.status) {
+            guard let match = server.match, match.status == .readyToStart else { return }
             router.navigateToRoot()
             router.navigate(to: .game)
         }
@@ -80,6 +82,7 @@ struct LobbyView: View {
 private struct HostView: View {
     var body: some View {
         Text("waitingForPlayers")
+            .padding(.bottom)
     }
 }
 
@@ -98,6 +101,7 @@ private struct PlayerView: View {
                             .onTapGesture {
                                 Task {
                                     await server.joinMatch(with: match.id)
+                                    await server.observeMatch()
                                 }
                             }
                     }
@@ -107,6 +111,27 @@ private struct PlayerView: View {
                     Text("noMatchFound")
                 }
             }
+        }
+    }
+}
+
+private struct PlayerListView: View {
+    let match: Match?
+
+    var body: some View {
+        if let match {
+            Section {
+                List {
+                    Text(match.hostId + " (host)")
+                    ForEach(match.playerIds, id: \.self) { playerId in
+                        Text(playerId)
+                    }
+                }
+            } header: {
+                Text("players")
+            }
+        } else {
+            ProgressView()
         }
     }
 }

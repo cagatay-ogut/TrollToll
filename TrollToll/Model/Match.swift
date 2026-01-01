@@ -33,5 +33,5 @@ struct Match: Codable, Equatable, Identifiable {
 }
 
 enum MatchStatus: Int, Codable {
-    case waitingForPlayers, playing, ended
+    case waitingForPlayers, readyToStart, playing, ended
 }
