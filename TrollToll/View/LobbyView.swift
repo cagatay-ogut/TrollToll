@@ -29,8 +29,9 @@ struct LobbyView: View {
                 if isHost {
                     HostView()
                     Button {
-                        router.navigateToRoot()
-                        router.navigate(to: .game)
+                        Task {
+                            await server.startMatch()
+                        }
                     } label: {
                         Text("startGame")
                     }
@@ -76,6 +77,12 @@ struct LobbyView: View {
                         await server.findMatch()
                     }
                 }
+            }
+        }
+        .onChange(of: server.match) {
+            if server.match?.status == .playing {
+                router.navigateToRoot()
+                router.navigate(to: .game)
             }
         }
     }

@@ -118,6 +118,21 @@ class MultiplayerServer: NSObject, MultiplayerInterface {
         }
     }
 
+    func startMatch() async {
+        guard let matchId = hostedMatchId else { return }
+        let matchRef = matchesRef.child(matchId)
+
+        let updateData: [String: Any] = [
+            "status": MatchStatus.playing.rawValue
+        ]
+        do {
+            try await matchRef.updateChildValues(updateData)
+            Logger.multiplayer.debug("Host started game: \(matchId)")
+        } catch {
+            Logger.multiplayer.error("Could not update status when starting match: \(matchId)")
+        }
+    }
+
     func findMatch() async {
         self.matches = await withCheckedContinuation { continuation in
             matchesRef.observeSingleEvent(of: .value) { snapshot in

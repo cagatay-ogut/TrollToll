@@ -19,6 +19,7 @@ protocol MultiplayerInterface {
     // host
     func hostMatch() async
     func cancelMatch() async
+    func startMatch() async
     // player
     func findMatch() async
     func joinMatch(with matchId: String) async
