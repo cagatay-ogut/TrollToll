@@ -20,29 +20,20 @@ struct LobbyView: View {
 
     var body: some View {
         VStack {
-            switch server.authState {
-            case .unauthenticated:
-                Text("Authenticating...")
-            case .authenticated:
-                Text("Authenticated")
-                    .padding(.bottom)
-                if isHost {
-                    HostView()
-                    Button {
-                        Task {
-                            await server.startMatch()
-                        }
-                    } label: {
-                        Text("startGame")
+            if isHost {
+                HostView()
+                Button {
+                    Task {
+                        await server.startMatch()
                     }
-                    .disabled(!server.readyToStart)
-                } else {
-                    PlayerView(server: $server, matches: server.matches)
+                } label: {
+                    Text("startGame")
                 }
-                PlayerListView(match: server.match)
-            case .failed:
-                Text("FailedAuthMessage")
+                .disabled(!server.readyToStart)
+            } else {
+                PlayerView(server: $server, matches: server.matches)
             }
+            PlayerListView(match: server.match)
         }
         .frame(maxHeight: .infinity, alignment: .top)
         .navigationBarBackButtonHidden(true)
@@ -59,23 +50,6 @@ struct LobbyView: View {
                     dismiss()
                 } label: {
                     Image(systemName: "chevron.left")
-                }
-            }
-        }
-        .onAppear {
-            Task {
-                await server.authenticate()
-            }
-        }
-        .onChange(of: server.authState) {
-            if server.authState == .authenticated {
-                Task {
-                    if isHost {
-                        await server.hostMatch()
-                        await server.observeMatch()
-                    } else {
-                        await server.findMatch()
-                    }
                 }
             }
         }

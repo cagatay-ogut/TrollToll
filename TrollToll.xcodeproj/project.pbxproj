@@ -24,6 +24,11 @@
 		2DFFCE2A2F051A6F00EFA68C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2DFFCE292F051A6F00EFA68C /* GoogleService-Info.plist */; };
 		2DFFCE2C2F051A8700EFA68C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE2B2F051A8500EFA68C /* AppDelegate.swift */; };
 		2DFFCE332F0524F800EFA68C /* Match.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE322F0524F600EFA68C /* Match.swift */; };
+		2DFFCE352F06868E00EFA68C /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE342F06868C00EFA68C /* User.swift */; };
+		2DFFCE372F0687BA00EFA68C /* Authenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE362F0687B500EFA68C /* Authenticator.swift */; };
+		2DFFCE3A2F06881400EFA68C /* FBAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE392F06880F00EFA68C /* FBAuthenticator.swift */; };
+		2DFFCE3D2F068B8A00EFA68C /* UserRepo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE3C2F068B8700EFA68C /* UserRepo.swift */; };
+		2DFFCE3F2F068BBA00EFA68C /* FBUserRepo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE3E2F068BB500EFA68C /* FBUserRepo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +47,11 @@
 		2DFFCE292F051A6F00EFA68C /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2DFFCE2B2F051A8500EFA68C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2DFFCE322F0524F600EFA68C /* Match.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Match.swift; sourceTree = "<group>"; };
+		2DFFCE342F06868C00EFA68C /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		2DFFCE362F0687B500EFA68C /* Authenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Authenticator.swift; sourceTree = "<group>"; };
+		2DFFCE392F06880F00EFA68C /* FBAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FBAuthenticator.swift; sourceTree = "<group>"; };
+		2DFFCE3C2F068B8700EFA68C /* UserRepo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRepo.swift; sourceTree = "<group>"; };
+		2DFFCE3E2F068BB500EFA68C /* FBUserRepo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FBUserRepo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +90,8 @@
 			children = (
 				2DFFCE312F0524EF00EFA68C /* Model */,
 				2D4D69522F04190D009C9A7B /* View */,
+				2DFFCE382F06880400EFA68C /* Authenticator */,
+				2DFFCE3B2F068B7F00EFA68C /* UserRepo */,
 				2DFFCE2B2F051A8500EFA68C /* AppDelegate.swift */,
 				2DFFCE172F0429FC00EFA68C /* Logger.swift */,
 				2DFFCE132F04285400EFA68C /* MultiplayerInterface.swift */,
@@ -108,8 +120,27 @@
 			isa = PBXGroup;
 			children = (
 				2DFFCE322F0524F600EFA68C /* Match.swift */,
+				2DFFCE342F06868C00EFA68C /* User.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		2DFFCE382F06880400EFA68C /* Authenticator */ = {
+			isa = PBXGroup;
+			children = (
+				2DFFCE362F0687B500EFA68C /* Authenticator.swift */,
+				2DFFCE392F06880F00EFA68C /* FBAuthenticator.swift */,
+			);
+			path = Authenticator;
+			sourceTree = "<group>";
+		};
+		2DFFCE3B2F068B7F00EFA68C /* UserRepo */ = {
+			isa = PBXGroup;
+			children = (
+				2DFFCE3C2F068B8700EFA68C /* UserRepo.swift */,
+				2DFFCE3E2F068BB500EFA68C /* FBUserRepo.swift */,
+			);
+			path = UserRepo;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -221,12 +252,17 @@
 				2D4D694A2F0417B1009C9A7B /* MainView.swift in Sources */,
 				2D4D69542F041986009C9A7B /* Router.swift in Sources */,
 				2DFFCE332F0524F800EFA68C /* Match.swift in Sources */,
+				2DFFCE3F2F068BBA00EFA68C /* FBUserRepo.swift in Sources */,
+				2DFFCE3D2F068B8A00EFA68C /* UserRepo.swift in Sources */,
 				2DFFCE2C2F051A8700EFA68C /* AppDelegate.swift in Sources */,
+				2DFFCE372F0687BA00EFA68C /* Authenticator.swift in Sources */,
 				2D4D694B2F0417B1009C9A7B /* TrollTollApp.swift in Sources */,
 				2DFFCE182F0429FD00EFA68C /* Logger.swift in Sources */,
+				2DFFCE3A2F06881400EFA68C /* FBAuthenticator.swift in Sources */,
 				2D4D69562F041A61009C9A7B /* LobbyView.swift in Sources */,
 				2DFFCE1B2F043F1D00EFA68C /* GameView.swift in Sources */,
 				2DFFCE162F04287A00EFA68C /* MultiplayerServer.swift in Sources */,
+				2DFFCE352F06868E00EFA68C /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -16,7 +16,6 @@ class MultiplayerServer: NSObject, MultiplayerInterface {
     var userId: String?
     let dbRef: DatabaseReference
     let matchesRef: DatabaseReference
-    var authState: AuthenticationState = .unauthenticated
     var match: Match?
     var hostedMatchId: String?
     var joinedMatchId: String?
@@ -36,18 +35,6 @@ class MultiplayerServer: NSObject, MultiplayerInterface {
             .database(url: "https://trolltoll-ee309-default-rtdb.europe-west1.firebasedatabase.app")
             .reference()
         matchesRef = dbRef.child("matches")
-    }
-
-    func authenticate() async {
-        do {
-            let result = try await Auth.auth().signInAnonymously()
-            userId = result.user.uid
-            authState = .authenticated
-            Logger.multiplayer.debug("Auth with id: \(result.user.uid)")
-        } catch {
-            authState = .failed
-            Logger.multiplayer.error("Could not auth: \(error)")
-        }
     }
 
     func observeMatch() async {
