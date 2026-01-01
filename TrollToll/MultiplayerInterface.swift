@@ -14,9 +14,10 @@ protocol MultiplayerInterface {
 
     func authenticate() async
     func hostMatch() async
-    func cancelHosting() async
+    func cancelMatch() async
     func findMatch() async
     func joinMatch(with matchId: String) async
+    func leaveMatch() async
 }
 
 enum AuthenticationState {

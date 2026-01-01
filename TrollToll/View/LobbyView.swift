@@ -40,9 +40,11 @@ struct LobbyView: View {
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
-                    if isHost {
-                        Task {
-                            await server.cancelHosting()
+                    Task {
+                        if isHost {
+                            await server.cancelMatch()
+                        } else {
+                            await server.leaveMatch()
                         }
                     }
                     dismiss()

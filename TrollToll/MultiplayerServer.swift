@@ -61,7 +61,7 @@ class MultiplayerServer: NSObject, MultiplayerInterface {
         }
     }
 
-    func cancelHosting() async {
+    func cancelMatch() async {
         guard let matchId = hostedMatchId else { return }
         let matchRef = matchesRef.child(matchId)
         do {
@@ -126,8 +126,36 @@ class MultiplayerServer: NSObject, MultiplayerInterface {
         do {
             try await matchRef.updateChildValues(updateData)
             joinedMatchId = matchId
+            Logger.multiplayer.debug("User joined game: \(matchId)")
         } catch {
-            Logger.multiplayer.error("Could not update player ids for match: \(matchId)")
+            Logger.multiplayer.error("Could not update player ids for joining match: \(matchId)")
+        }
+    }
+
+    func leaveMatch() async {
+        guard let matchId = joinedMatchId, let userId else { return }
+        let matchRef = matchesRef.child(matchId)
+        let playerIdsRef = matchRef.child("playerIds")
+
+        let playerSnapshot = await withCheckedContinuation { continuation in
+            playerIdsRef.observeSingleEvent(of: .value) { snapshot in
+                continuation.resume(returning: snapshot)
+            }
+        }
+        var playerIds: [String] = playerSnapshot.value as? [String] ?? []
+        guard playerIds.contains(userId) else { return }
+        playerIds.removeAll { $0 == userId }
+
+        let updateData: [String: Any] = [
+            "playerIds": playerIds
+        ]
+
+        do {
+            try await matchRef.updateChildValues(updateData)
+            joinedMatchId = matchId
+            Logger.multiplayer.debug("User left game: \(matchId)")
+        } catch {
+            Logger.multiplayer.error("Could not update player ids for leaving match: \(matchId)")
         }
     }
 }
