@@ -22,6 +22,13 @@ class MultiplayerServer: NSObject, MultiplayerInterface {
     var joinedMatchId: String?
     var matches: [Match] = []
 
+    var readyToStart: Bool {
+        if let match {
+            return match.playerIds.count > 1
+        }
+        return false
+    }
+
     init(isHost: Bool) {
         self.isHost = isHost
 

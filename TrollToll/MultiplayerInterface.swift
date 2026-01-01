@@ -11,6 +11,7 @@ protocol MultiplayerInterface {
     var match: Match? { get }
     var matches: [Match] { get }
     var joinedMatchId: String? { get }
+    var readyToStart: Bool { get }
 
     // common
     func authenticate() async

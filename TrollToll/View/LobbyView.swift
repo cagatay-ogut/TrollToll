@@ -28,6 +28,13 @@ struct LobbyView: View {
                     .padding(.bottom)
                 if isHost {
                     HostView()
+                    Button {
+                        router.navigateToRoot()
+                        router.navigate(to: .game)
+                    } label: {
+                        Text("startGame")
+                    }
+                    .disabled(!server.readyToStart)
                 } else {
                     PlayerView(server: $server, matches: server.matches)
                 }
@@ -70,11 +77,6 @@ struct LobbyView: View {
                     }
                 }
             }
-        }
-        .onChange(of: server.match?.status) {
-            guard let match = server.match, match.status == .readyToStart else { return }
-            router.navigateToRoot()
-            router.navigate(to: .game)
         }
     }
 }
