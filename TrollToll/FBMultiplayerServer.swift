@@ -17,6 +17,7 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
     let matchesRef: DatabaseReference
     var match: Match?
     var matches: [Match] = []
+    var observeTask: Task<Void, Error>?
 
     var readyToStart: Bool {
         if let match {
@@ -38,9 +39,11 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
             throw MultiplayerServerError.matchNotSet
         }
 
-        for try await matchData in matchStream(matchId: matchId) {
-            match = matchData
-            Logger.multiplayer.debug("Match updated: \(String(describing: matchData))")
+        observeTask = Task {
+            for try await matchData in matchStream(matchId: matchId) {
+                match = matchData
+                Logger.multiplayer.debug("Match updated: \(String(describing: matchData))")
+            }
         }
     }
 
@@ -68,6 +71,11 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
                 matchRef.removeObserver(withHandle: handle)
             }
         }
+    }
+
+    func stopObservingMatch() {
+        observeTask?.cancel()
+        observeTask = nil
     }
 
     func hostMatch() async throws {

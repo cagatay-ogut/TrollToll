@@ -15,6 +15,7 @@ protocol MultiplayerServer {
 
     // common
     func observeMatch() async throws
+    func stopObservingMatch()
     // host
     func hostMatch() async throws
     func cancelMatch() async throws

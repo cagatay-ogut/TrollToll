@@ -33,6 +33,7 @@ struct LobbyView: View {
                     Task {
                         do {
                             if server.user.isHost {
+                                server.stopObservingMatch()
                                 try await server.cancelMatch()
                             } else {
                                 try await server.leaveMatch()
