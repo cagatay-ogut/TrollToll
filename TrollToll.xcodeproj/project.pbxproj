@@ -97,10 +97,9 @@
 				2DFFCE312F0524EF00EFA68C /* Model */,
 				2D4D69522F04190D009C9A7B /* View */,
 				2DFFCE382F06880400EFA68C /* Authenticator */,
+				2DFFCE502F07B4D400EFA68C /* MultiplayerServer */,
 				2DFFCE3B2F068B7F00EFA68C /* UserRepo */,
 				2DFFCE4D2F07ADCA00EFA68C /* Util */,
-				2DFFCE132F04285400EFA68C /* MultiplayerServer.swift */,
-				2DFFCE152F04287500EFA68C /* FBMultiplayerServer.swift */,
 				2D4D69532F041985009C9A7B /* Router.swift */,
 				2D4D69472F0417B1009C9A7B /* TrollTollApp.swift */,
 				2DFFCE192F042DB900EFA68C /* TrollToll.entitlements */,
@@ -166,6 +165,15 @@
 				2DFFCE172F0429FC00EFA68C /* Logger.swift */,
 			);
 			path = Util;
+			sourceTree = "<group>";
+		};
+		2DFFCE502F07B4D400EFA68C /* MultiplayerServer */ = {
+			isa = PBXGroup;
+			children = (
+				2DFFCE132F04285400EFA68C /* MultiplayerServer.swift */,
+				2DFFCE152F04287500EFA68C /* FBMultiplayerServer.swift */,
+			);
+			path = MultiplayerServer;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
