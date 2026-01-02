@@ -18,7 +18,7 @@ struct GameView: View {
     }
 
     var body: some View {
-        Text("user: \(server.user.name), turn: \(server.match?.state.turn)")
+        Text("user: \(server.user.name), turn: \(server.match?.state.turn ?? 0)")
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .overlay(alignment: .bottomTrailing) {
                 Button {

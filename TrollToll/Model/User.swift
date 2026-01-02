@@ -14,7 +14,7 @@ struct User: Codable, Hashable {
         case id, name
     }
 
-    static func == (lhs: User, rhs: User) -> Bool {
-        return lhs.id == rhs.id
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
     }
 }
