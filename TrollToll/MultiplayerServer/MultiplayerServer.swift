@@ -24,6 +24,9 @@ protocol MultiplayerServer {
     func findMatches() async throws
     func joinMatch(_ match: Match) async throws
     func leaveMatch() async throws
+
+    // game
+    func endPlayerTurn() async throws
 }
 
 enum MultiplayerServerError: LocalizedError {
@@ -37,6 +40,7 @@ enum MultiplayerServerError: LocalizedError {
     case serverFail
     case serverError(underlyingError: Error)
     case unexpectedDataFormat
+    case notCurrentPlayer
 
     var errorDescription: String? {
         switch self {
@@ -60,6 +64,8 @@ enum MultiplayerServerError: LocalizedError {
             "Server error: \(underlyingError)"
         case .unexpectedDataFormat:
             "Unexpected data format"
+        case .notCurrentPlayer:
+            "Not current player"
         }
     }
 }

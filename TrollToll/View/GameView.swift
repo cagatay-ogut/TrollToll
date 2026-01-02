@@ -12,17 +12,28 @@ struct GameView: View {
     @State private var server: MultiplayerServer
     @State private var showLeaveAlert = false
     @State private var toast: Toast?
-    let user: User
-    let match: Match
 
     init(user: User, match: Match) {
-        self.user = user
-        self.match = match
         _server = State(initialValue: FBMultiplayerServer(user: user, match: match))
     }
 
     var body: some View {
-        Text("user: \(user.name), match: \(match.id)")
+        Text("user: \(server.user.name), turn: \(server.match?.state.turn)")
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .overlay(alignment: .bottomTrailing) {
+                Button {
+                    Task {
+                        do {
+                            try await server.endPlayerTurn()
+                        } catch {
+                            toast = Toast(message: error.localizedDescription)
+                        }
+                    }
+                } label: {
+                    Text("endTurn")
+                }
+                .disabled(server.match?.state.currentPlayerId != server.user.id)
+            }
             .navigationBarBackButtonHidden(true)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -53,6 +64,13 @@ struct GameView: View {
             .toast(toast: $toast)
             .sensoryFeedback(.error, trigger: toast) { _, newValue in
                 newValue != nil
+            }
+            .task {
+                do {
+                    try await server.observeMatch()
+                } catch {
+                    toast = Toast(message: error.localizedDescription)
+                }
             }
     }
 }

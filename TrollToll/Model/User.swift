@@ -13,4 +13,8 @@ struct User: Codable, Hashable {
     enum CodingKeys: CodingKey {
         case id, name
     }
+
+    static func == (lhs: User, rhs: User) -> Bool {
+        return lhs.id == rhs.id
+    }
 }
