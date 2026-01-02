@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Match: Codable, Equatable, Identifiable {
+struct Match: Codable, Hashable, Identifiable {
     let id: String
     let status: MatchStatus
     let host: User

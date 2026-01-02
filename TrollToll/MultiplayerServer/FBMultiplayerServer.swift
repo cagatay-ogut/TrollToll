@@ -26,8 +26,9 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
         return false
     }
 
-    init(user: User) {
+    init(user: User, match: Match? = nil) {
         self.user = user
+        self.match = match
         dbRef = Database
             .database(url: "https://trolltoll-ee309-default-rtdb.europe-west1.firebasedatabase.app")
             .reference()

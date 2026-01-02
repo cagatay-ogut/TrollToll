@@ -55,7 +55,7 @@ struct LobbyView: View {
         .onChange(of: server.match) {
             if server.match?.status == .playing {
                 router.navigateToRoot()
-                router.navigate(to: .game)
+                router.navigate(to: .game(user: server.user, match: server.match!))
             }
         }
     }

@@ -28,10 +28,10 @@ struct MainView: View {
             .buttonStyle(.borderedProminent)
             .navigationDestination(for: Router.Destination.self) { destination in
                 switch destination {
-                case .lobby(let user):
+                case let .lobby(user):
                     LobbyView(user: user)
-                case .game:
-                    GameView()
+                case let .game(user, match):
+                    GameView(user: user, match: match)
                 }
             }
         }
