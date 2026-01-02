@@ -32,6 +32,8 @@
 		2DFFCE4A2F07AD8100EFA68C /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE492F07AD7E00EFA68C /* ToastView.swift */; };
 		2DFFCE4C2F07AD9B00EFA68C /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE4B2F07AD9800EFA68C /* Toast.swift */; };
 		2DFFCE4F2F07ADD300EFA68C /* AppColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE4E2F07ADD200EFA68C /* AppColors.swift */; };
+		2DFFCE532F07F04F00EFA68C /* GameService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE522F07F01300EFA68C /* GameService.swift */; };
+		2DFFCE552F07F0E200EFA68C /* FBGameService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE542F07F0DE00EFA68C /* FBGameService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +60,8 @@
 		2DFFCE492F07AD7E00EFA68C /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		2DFFCE4B2F07AD9800EFA68C /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
 		2DFFCE4E2F07ADD200EFA68C /* AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColors.swift; sourceTree = "<group>"; };
+		2DFFCE522F07F01300EFA68C /* GameService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameService.swift; sourceTree = "<group>"; };
+		2DFFCE542F07F0DE00EFA68C /* FBGameService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FBGameService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +101,7 @@
 				2DFFCE312F0524EF00EFA68C /* Model */,
 				2D4D69522F04190D009C9A7B /* View */,
 				2DFFCE382F06880400EFA68C /* Authenticator */,
+				2DFFCE512F07F00700EFA68C /* GameService */,
 				2DFFCE502F07B4D400EFA68C /* MultiplayerServer */,
 				2DFFCE3B2F068B7F00EFA68C /* UserRepo */,
 				2DFFCE4D2F07ADCA00EFA68C /* Util */,
@@ -174,6 +179,15 @@
 				2DFFCE152F04287500EFA68C /* FBMultiplayerServer.swift */,
 			);
 			path = MultiplayerServer;
+			sourceTree = "<group>";
+		};
+		2DFFCE512F07F00700EFA68C /* GameService */ = {
+			isa = PBXGroup;
+			children = (
+				2DFFCE522F07F01300EFA68C /* GameService.swift */,
+				2DFFCE542F07F0DE00EFA68C /* FBGameService.swift */,
+			);
+			path = GameService;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -286,6 +300,7 @@
 				2DFFCE4C2F07AD9B00EFA68C /* Toast.swift in Sources */,
 				2D4D694A2F0417B1009C9A7B /* MainView.swift in Sources */,
 				2D4D69542F041986009C9A7B /* Router.swift in Sources */,
+				2DFFCE552F07F0E200EFA68C /* FBGameService.swift in Sources */,
 				2DFFCE332F0524F800EFA68C /* Match.swift in Sources */,
 				2DFFCE3F2F068BBA00EFA68C /* FBUserRepo.swift in Sources */,
 				2DFFCE3D2F068B8A00EFA68C /* UserRepo.swift in Sources */,
@@ -295,6 +310,7 @@
 				2D4D694B2F0417B1009C9A7B /* TrollTollApp.swift in Sources */,
 				2DFFCE182F0429FD00EFA68C /* Logger.swift in Sources */,
 				2DFFCE3A2F06881400EFA68C /* FBAuthenticator.swift in Sources */,
+				2DFFCE532F07F04F00EFA68C /* GameService.swift in Sources */,
 				2D4D69562F041A61009C9A7B /* LobbyView.swift in Sources */,
 				2DFFCE1B2F043F1D00EFA68C /* GameView.swift in Sources */,
 				2DFFCE162F04287A00EFA68C /* FBMultiplayerServer.swift in Sources */,

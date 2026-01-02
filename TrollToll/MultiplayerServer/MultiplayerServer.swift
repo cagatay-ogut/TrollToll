@@ -23,9 +23,6 @@ protocol MultiplayerServer {
     func findMatches() async throws
     func joinMatch(_ match: Match) async throws
     func leaveMatch() async throws
-
-    // game
-    func endPlayerTurn() async throws
 }
 
 enum MultiplayerServerError: LocalizedError {

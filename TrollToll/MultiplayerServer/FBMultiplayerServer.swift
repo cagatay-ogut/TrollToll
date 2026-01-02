@@ -5,7 +5,6 @@
 //  Created by Cagatay on 30.12.2025.
 //
 
-import FirebaseAuth
 import FirebaseDatabase
 import OSLog
 import SwiftUI
@@ -28,10 +27,10 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
     init(user: User, match: Match? = nil) {
         self.user = user
         self.match = match
-        dbRef = Database
+        self.dbRef = Database
             .database(url: "https://trolltoll-ee309-default-rtdb.europe-west1.firebasedatabase.app")
             .reference()
-        matchesRef = dbRef.child("matches")
+        self.matchesRef = dbRef.child("matches")
     }
 
     func observeMatch() async throws {
@@ -265,65 +264,6 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
         } catch {
             Logger.multiplayer.error("Could not update player ids for leaving match: \(matchId), error: \(error)")
             throw MultiplayerServerError.serverError(underlyingError: error)
-        }
-    }
-
-    func endPlayerTurn() async throws {
-        guard let matchId = match?.id else {
-            throw MultiplayerServerError.matchNotSet
-        }
-
-        let matchRef = matchesRef.child(matchId)
-
-        let (success, snapshot) = try await matchRef.runTransactionBlock { currentData in
-            guard let value = currentData.value else {
-                return TransactionResult.abort()
-            }
-
-            do {
-                let data = try JSONSerialization.data(withJSONObject: value)
-                var match = try JSONDecoder().decode(Match.self, from: data)
-
-                guard match.state.currentPlayerId == self.user.id else {
-                    return TransactionResult.abort()
-                }
-
-                let currentPlayers = [match.host] + match.players
-                guard let currentPlayerIndex = currentPlayers.firstIndex(of: self.user) else {
-                    return TransactionResult.abort()
-                }
-                if currentPlayerIndex + 1 == currentPlayers.count {
-                    match.state.currentPlayerId = currentPlayers[0].id
-                    match.state.turn += 1
-                } else {
-                    match.state.currentPlayerId = currentPlayers[currentPlayerIndex + 1].id
-                }
-
-                let updatedData = try JSONEncoder().encode(match)
-                let dict = try JSONSerialization.jsonObject(with: updatedData)
-                currentData.value = dict
-
-                return TransactionResult.success(withValue: currentData)
-            } catch {
-                Logger.multiplayer.error("Could not end player turn: \(error)")
-                return TransactionResult.abort()
-            }
-        }
-
-        guard success else {
-            throw MultiplayerServerError.notCurrentPlayer
-        }
-
-        guard snapshot.exists(), let snapshotValue = snapshot.value else {
-            throw MultiplayerServerError.unexpectedDataFormat
-        }
-
-        do {
-            let data = try JSONSerialization.data(withJSONObject: snapshotValue)
-            let updatedMatch = try JSONDecoder().decode(Match.self, from: data)
-            self.match = updatedMatch
-        } catch {
-            throw MultiplayerServerError.failedToDecode(underlyingError: error)
         }
     }
 }

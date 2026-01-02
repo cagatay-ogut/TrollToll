@@ -10,11 +10,13 @@ import SwiftUI
 struct GameView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var server: MultiplayerServer
+    @State private var game: GameService
     @State private var showLeaveAlert = false
     @State private var toast: Toast?
 
     init(user: User, match: Match) {
         _server = State(initialValue: FBMultiplayerServer(user: user, match: match))
+        _game = State(initialValue: FBGameService(user: user, match: match))
     }
 
     var body: some View {
@@ -24,7 +26,7 @@ struct GameView: View {
                 Button {
                     Task {
                         do {
-                            try await server.endPlayerTurn()
+                            try await game.endPlayerTurn()
                         } catch {
                             toast = Toast(message: error.localizedDescription)
                         }
@@ -32,7 +34,8 @@ struct GameView: View {
                 } label: {
                     Text("endTurn")
                 }
-                .disabled(server.match?.state.currentPlayerId != server.user.id)
+                .padding()
+                .disabled(server.match?.state.currentPlayerId != game.user.id)
             }
             .navigationBarBackButtonHidden(true)
             .toolbar {
@@ -48,7 +51,7 @@ struct GameView: View {
                 Button("yes", role: .destructive) {
                     Task {
                         do {
-                            if server.user.isHost {
+                            if game.user.isHost {
                                 try await server.cancelMatch()
                             } else {
                                 try await server.leaveMatch()
@@ -73,4 +76,13 @@ struct GameView: View {
                 }
             }
     }
+}
+
+#Preview {
+    let host = User(id: "host_id", name: "host", isHost: true)
+    let player = User(id: "player_id", name: "player", isHost: false)
+    GameView(
+        user: host,
+        match: Match(id: "match_id", status: .playing, host: host, players: [player], createdAt: Date())
+    )
 }
