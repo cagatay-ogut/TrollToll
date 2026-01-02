@@ -20,7 +20,7 @@ protocol MultiplayerServer {
     func cancelMatch() async throws
     func startMatch() async throws
     // player
-    func findMatches() async throws
+    func observeLobbyMatches() async
     func joinMatch(_ match: Match) async throws
     func leaveMatch() async throws
 }

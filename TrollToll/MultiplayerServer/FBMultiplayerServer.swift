@@ -9,6 +9,7 @@ import FirebaseDatabase
 import OSLog
 import SwiftUI
 
+// swiftlint:disable type_body_length
 @Observable
 class FBMultiplayerServer: NSObject, MultiplayerServer {
     let user: User
@@ -139,32 +140,102 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
         }
     }
 
-    func findMatches() async throws {
-        self.matches = try await withCheckedThrowingContinuation { continuation in
+    func observeLobbyMatches() async {
+        matches = []
+        for await matchesData in lobbyMatchesStream() {
+            matches = matchesData
+            Logger.multiplayer.debug("Lobby matches updated: \(matchesData.count)")
+        }
+        Logger.multiplayer.debug("Lobby matches observation ended")
+    }
+
+    // swiftlint:disable:next function_body_length
+    private func lobbyMatchesStream() -> AsyncStream<[Match]> {
+        // swiftlint:disable:next closure_body_length
+        AsyncStream { continuation in
             let query = matchesRef
                 .queryOrdered(byChild: "status")
                 .queryEqual(toValue: MatchStatus.waitingForPlayers.rawValue)
-            query.observeSingleEvent(of: .value) { snapshot in
-                guard snapshot.exists(), let value = snapshot.value else {
-                    continuation.resume(returning: [])
-                    return
-                }
 
+            var currentMatches: [Match] = []
+            var observationHandles: [UInt] = []
+
+            // --- CHILD ADDED ---
+            let childAddedHandle = query.observe(.childAdded) { snapshot in
                 do {
-                    guard let matchesDict = value as? [String: Any] else {
-                        throw MultiplayerServerError.unexpectedDataFormat
+                    guard snapshot.exists(), let value = snapshot.value else {
+                        Logger.multiplayer.error("LobbyMatchesObserve - ChildAdded: Snapshot does not have value")
+                        return
                     }
 
-                    var matches: [Match] = []
-                    for (_, matchDict) in matchesDict {
-                        let data = try JSONSerialization.data(withJSONObject: matchDict)
-                        let match = try JSONDecoder().decode(Match.self, from: data)
-                        matches.append(match)
-                    }
-                    continuation.resume(returning: matches)
+                    let data = try JSONSerialization.data(withJSONObject: value)
+                    let newMatch = try JSONDecoder().decode(Match.self, from: data)
+                    currentMatches.append(newMatch)
+                    continuation.yield(currentMatches)
                 } catch {
-                    continuation.resume(throwing: MultiplayerServerError.failedToDecode(underlyingError: error))
+                    Logger.multiplayer.error("LobbyMatchesObserve - ChildAdded: Decoding error: \(error)")
                 }
+            } withCancel: { error in
+                Logger.multiplayer.error("LobbyMatchesObserve - ChildAdded: Firebase observer cancelled: \(error)")
+                continuation.finish()
+            }
+            observationHandles.append(childAddedHandle)
+            Logger.multiplayer.debug("LobbyMatchesObserve observing .childAdded events for lobby matches")
+
+            // --- CHILD CHANGED ---
+            let childChangedHandle = query.observe(.childChanged) { snapshot in
+                do {
+                    guard snapshot.exists(), let value = snapshot.value else {
+                        Logger.multiplayer.error("LobbyMatchesObserve - ChildChanged: Snapshot does not have value")
+                        return
+                    }
+                    let data = try JSONSerialization.data(withJSONObject: value)
+                    let updatedMatch = try JSONDecoder().decode(Match.self, from: data)
+
+                    if let index = currentMatches.firstIndex(where: { $0.id == updatedMatch.id }) {
+                        currentMatches[index] = updatedMatch
+                        continuation.yield(currentMatches)
+                    } else {
+                        Logger.multiplayer
+                            .warning("LobbyMatchesObserve - ChildChanged: Received match not in local list")
+                        // It's possible for a match to change status TO 'waitingForPlayers'
+                        // and trigger childChanged if it was previously observed by another query.
+                        // Or if Firebase sends a childChanged for an item not yet in our initial .childAdded list.
+                        // We should add it to ensure consistency.
+                        currentMatches.append(updatedMatch)
+                        continuation.yield(currentMatches)
+                    }
+                } catch {
+                    Logger.multiplayer.error("LobbyMatchesObserve - ChildChanged: Decoding error: \(error)")
+                }
+            } withCancel: { error in
+                Logger.multiplayer.error("LobbyMatchesObserve - ChildChanged: Firebase observer cancelled: \(error)")
+                continuation.finish()
+            }
+            observationHandles.append(childChangedHandle)
+            Logger.multiplayer.debug("LobbyMatchesObserve observing .childChanged events for lobby matches.")
+
+            // --- CHILD REMOVED ---
+            let childRemovedHandle = query.observe(.childRemoved) { snapshot in
+                let removedMatchId = snapshot.key
+                if let index = currentMatches.firstIndex(where: { $0.id == removedMatchId }) {
+                    currentMatches.remove(at: index)
+                    continuation.yield(currentMatches)
+                } else {
+                    Logger.multiplayer
+                        .warning("LobbyMatchesObserve - ChildRemoved: Received match not found in local list")
+                }
+            } withCancel: { error in
+                Logger.multiplayer.error("LobbyMatchesObserve - ChildRemoved: Firebase observer cancelled: \(error)")
+                continuation.finish()
+            }
+            observationHandles.append(childRemovedHandle)
+            Logger.multiplayer.debug("LobbyMatchesObserve observing .childRemoved events for waiting matches.")
+
+            continuation.onTermination = { _ in
+                query.removeObserver(withHandle: childAddedHandle)
+                query.removeObserver(withHandle: childChangedHandle)
+                query.removeObserver(withHandle: childRemovedHandle)
             }
         }
     }
@@ -268,3 +339,4 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
         }
     }
 }
+// swiftlint:enable type_body_length

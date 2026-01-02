@@ -132,11 +132,7 @@ private struct JoiningPlayerView: View {
                 }
             }
             .task {
-                do {
-                    try await server.findMatches()
-                } catch {
-                    toast = Toast(message: error.localizedDescription)
-                }
+                await server.observeLobbyMatches()
             }
         }
     }
