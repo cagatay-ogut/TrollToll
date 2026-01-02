@@ -14,7 +14,12 @@ struct ToastView: View {
     var body: some View {
         HStack {
             Image(systemName: toast.type.icon)
-            Text(toast.message)
+            switch toast.message {
+            case .localized(let message):
+                Text(message)
+            case .plain(let message):
+                Text(verbatim: message)
+            }
             if let action = toast.action {
                 Button {
                     action.action()

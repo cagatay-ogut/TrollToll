@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct Toast: Equatable {
-    let message: LocalizedStringKey
+    let message: ToastMessage
     let type: ToastType
     let alignment: ToastAlignment
     let duration: ToastDuration
@@ -21,7 +21,21 @@ struct Toast: Equatable {
         duration: ToastDuration = .medium,
         action: ToastAction? = nil
     ) {
-        self.message = message
+        self.message = .localized(message)
+        self.type = type
+        self.alignment = alignment
+        self.duration = duration
+        self.action = action
+    }
+
+    init(
+        message: String,
+        type: ToastType = .error,
+        alignment: ToastAlignment = .bottom,
+        duration: ToastDuration = .medium,
+        action: ToastAction? = nil
+    ) {
+        self.message = .plain(message)
         self.type = type
         self.alignment = alignment
         self.duration = duration
@@ -40,6 +54,11 @@ struct Toast: Equatable {
 @Observable
 class GlobalToast {
     var toast: Toast?
+}
+
+enum ToastMessage: Equatable {
+    case localized(LocalizedStringKey)
+    case plain(String)
 }
 
 enum ToastType {

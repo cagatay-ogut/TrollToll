@@ -11,7 +11,7 @@ struct LobbyView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(Router.self) private var router
     @State private var server: MultiplayerServer
-    @State private var errorMessage: String?
+    @State private var toast: Toast?
 
     init(user: User) {
         _server = State(initialValue: FBMultiplayerServer(user: user))
@@ -20,9 +20,9 @@ struct LobbyView: View {
     var body: some View {
         VStack {
             if server.user.isHost {
-                HostView(server: $server, errorMessage: $errorMessage)
+                HostView(server: $server, toast: $toast)
             } else {
-                JoiningPlayerView(server: $server, errorMessage: $errorMessage, matches: server.matches)
+                JoiningPlayerView(server: $server, toast: $toast, matches: server.matches)
             }
         }
         .frame(maxHeight: .infinity, alignment: .top)
@@ -39,7 +39,7 @@ struct LobbyView: View {
                                 try await server.leaveMatch()
                             }
                         } catch {
-                            errorMessage = error.localizedDescription
+                            toast = Toast(message: error.localizedDescription)
                         }
                     }
                     dismiss()
@@ -48,10 +48,10 @@ struct LobbyView: View {
                 }
             }
         }
-        .alert(errorMessage ?? "", isPresented: Binding(
-            get: { errorMessage != nil },
-            set: { if !$0 { errorMessage = nil } }
-        )) {}
+        .toast(toast: $toast)
+        .sensoryFeedback(.error, trigger: toast) { _, newValue in
+            newValue != nil
+        }
         .onChange(of: server.match) {
             if server.match?.status == .playing {
                 router.navigateToRoot()
@@ -63,7 +63,7 @@ struct LobbyView: View {
 
 private struct HostView: View {
     @Binding var server: MultiplayerServer
-    @Binding var errorMessage: String?
+    @Binding var toast: Toast?
 
     var body: some View {
         VStack {
@@ -74,7 +74,7 @@ private struct HostView: View {
                     do {
                         try await server.startMatch()
                     } catch {
-                        errorMessage = error.localizedDescription
+                        toast = Toast(message: error.localizedDescription)
                     }
                 }
             } label: {
@@ -90,7 +90,7 @@ private struct HostView: View {
                 try await server.hostMatch()
                 try await server.observeMatch()
             } catch {
-                errorMessage = error.localizedDescription
+                toast = Toast(message: error.localizedDescription)
             }
         }
     }
@@ -98,7 +98,7 @@ private struct HostView: View {
 
 private struct JoiningPlayerView: View {
     @Binding var server: MultiplayerServer
-    @Binding var errorMessage: String?
+    @Binding var toast: Toast?
     let matches: [Match]
 
     var body: some View {
@@ -115,7 +115,7 @@ private struct JoiningPlayerView: View {
                                         try await server.joinMatch(match)
                                         try await server.observeMatch()
                                     } catch {
-                                        errorMessage = error.localizedDescription
+                                        toast = Toast(message: error.localizedDescription)
                                     }
                                 }
                             }
@@ -130,7 +130,7 @@ private struct JoiningPlayerView: View {
                 do {
                     try await server.findMatches()
                 } catch {
-                    errorMessage = error.localizedDescription
+                    toast = Toast(message: error.localizedDescription)
                 }
             }
         }
