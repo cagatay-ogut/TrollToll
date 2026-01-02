@@ -10,19 +10,19 @@ import SwiftUI
 struct LobbyView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(Router.self) private var router
-    @State private var server: MultiplayerServer
+    @State private var lobby: LobbyService
     @State private var toast: Toast?
 
     init(user: User) {
-        _server = State(initialValue: FBMultiplayerServer(user: user))
+        _lobby = State(initialValue: FBLobbyService(user: user))
     }
 
     var body: some View {
         VStack {
-            if server.user.isHost {
-                HostView(server: $server, toast: $toast)
+            if lobby.user.isHost {
+                HostView(lobby: $lobby, toast: $toast)
             } else {
-                JoiningPlayerView(server: $server, toast: $toast, matches: server.matches)
+                JoiningPlayerView(lobby: $lobby, toast: $toast, matches: lobby.matches)
             }
         }
         .frame(maxHeight: .infinity, alignment: .top)
@@ -32,10 +32,10 @@ struct LobbyView: View {
                 Button {
                     Task {
                         do {
-                            if server.user.isHost {
-                                try await server.cancelMatch()
+                            if lobby.user.isHost {
+                                try await lobby.cancelMatch()
                             } else {
-                                try await server.leaveMatch()
+                                try await lobby.leaveMatch()
                             }
                         } catch {
                             toast = Toast(message: error.localizedDescription)
@@ -51,17 +51,17 @@ struct LobbyView: View {
         .sensoryFeedback(.error, trigger: toast) { _, newValue in
             newValue != nil
         }
-        .onChange(of: server.match) {
-            if server.match?.status == .playing {
+        .onChange(of: lobby.match) {
+            if lobby.match?.status == .playing {
                 router.navigateToRoot()
-                router.navigate(to: .game(user: server.user, match: server.match!))
+                router.navigate(to: .game(user: lobby.user, match: lobby.match!))
             }
         }
     }
 }
 
 private struct HostView: View {
-    @Binding var server: MultiplayerServer
+    @Binding var lobby: LobbyService
     @Binding var toast: Toast?
 
     var body: some View {
@@ -71,7 +71,7 @@ private struct HostView: View {
             Button {
                 Task {
                     do {
-                        try await server.startMatch()
+                        try await lobby.startMatch()
                     } catch {
                         toast = Toast(message: error.localizedDescription)
                     }
@@ -79,15 +79,15 @@ private struct HostView: View {
             } label: {
                 Text("startGame")
             }
-            .disabled(!server.readyToStart)
-            if let match = server.match {
+            .disabled(!lobby.readyToStart)
+            if let match = lobby.match {
                 PlayerListView(match: match)
             }
         }
         .task {
             do {
-                try await server.hostMatch()
-                try await server.observeMatch()
+                try await lobby.hostMatch()
+                try await lobby.observeMatch()
             } catch {
                 toast = Toast(message: error.localizedDescription)
             }
@@ -96,16 +96,16 @@ private struct HostView: View {
 }
 
 private struct JoiningPlayerView: View {
-    @Binding var server: MultiplayerServer
+    @Binding var lobby: LobbyService
     @Binding var toast: Toast?
     let matches: [Match]
 
     var body: some View {
-        if let match = server.match {
+        if let match = lobby.match {
             PlayerListView(match: match)
                 .task {
                     do {
-                        try await server.observeMatch()
+                        try await lobby.observeMatch()
                     } catch {
                         toast = Toast(message: error.localizedDescription)
                     }
@@ -118,7 +118,7 @@ private struct JoiningPlayerView: View {
                             .onTapGesture {
                                 Task {
                                     do {
-                                        try await server.joinMatch(match)
+                                        try await lobby.joinMatch(match)
                                     } catch {
                                         toast = Toast(message: error.localizedDescription)
                                     }
@@ -132,7 +132,7 @@ private struct JoiningPlayerView: View {
                 }
             }
             .task {
-                await server.observeLobbyMatches()
+                await lobby.observeLobbyMatches()
             }
         }
     }

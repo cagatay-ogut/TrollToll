@@ -64,11 +64,11 @@ class FBGameService: GameService {
         }
 
         guard success else {
-            throw MultiplayerServerError.notCurrentPlayer
+            throw ServerError.notCurrentPlayer
         }
 
         guard snapshot.exists(), let snapshotValue = snapshot.value else {
-            throw MultiplayerServerError.unexpectedDataFormat
+            throw ServerError.unexpectedDataFormat
         }
 
         do {
@@ -76,7 +76,7 @@ class FBGameService: GameService {
             let updatedMatch = try JSONDecoder().decode(Match.self, from: data)
             self.match = updatedMatch
         } catch {
-            throw MultiplayerServerError.failedToDecode(underlyingError: error)
+            throw ServerError.failedToDecode(underlyingError: error)
         }
     }
 }

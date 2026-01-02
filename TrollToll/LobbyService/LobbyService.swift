@@ -1,5 +1,5 @@
 //
-//  MultiplayerServer.swift
+//  LobbyService.swift
 //  TrollToll
 //
 //  Created by Cagatay on 30.12.2025.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol MultiplayerServer {
+protocol LobbyService {
     var user: User { get }
     var match: Match? { get }
     var matches: [Match] { get }
@@ -25,7 +25,7 @@ protocol MultiplayerServer {
     func leaveMatch() async throws
 }
 
-enum MultiplayerServerError: LocalizedError {
+enum ServerError: LocalizedError {
     case matchNotSet
     case noMatchFound
     case playerAlreadyInMatch

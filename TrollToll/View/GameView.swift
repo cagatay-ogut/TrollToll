@@ -9,18 +9,18 @@ import SwiftUI
 
 struct GameView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var server: MultiplayerServer
+    @State private var lobby: LobbyService
     @State private var game: GameService
     @State private var showLeaveAlert = false
     @State private var toast: Toast?
 
     init(user: User, match: Match) {
-        _server = State(initialValue: FBMultiplayerServer(user: user, match: match))
+        _lobby = State(initialValue: FBLobbyService(user: user, match: match))
         _game = State(initialValue: FBGameService(user: user, match: match))
     }
 
     var body: some View {
-        Text("user: \(server.user.name), turn: \(server.match?.state.turn ?? 0)")
+        Text("user: \(lobby.user.name), turn: \(lobby.match?.state.turn ?? 0)")
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .overlay(alignment: .bottomTrailing) {
                 Button {
@@ -35,7 +35,7 @@ struct GameView: View {
                     Text("endTurn")
                 }
                 .padding()
-                .disabled(server.match?.state.currentPlayerId != game.user.id)
+                .disabled(lobby.match?.state.currentPlayerId != game.user.id)
             }
             .navigationBarBackButtonHidden(true)
             .toolbar {
@@ -52,9 +52,9 @@ struct GameView: View {
                     Task {
                         do {
                             if game.user.isHost {
-                                try await server.cancelMatch()
+                                try await lobby.cancelMatch()
                             } else {
-                                try await server.leaveMatch()
+                                try await lobby.leaveMatch()
                             }
                         } catch {
                             toast = Toast(message: error.localizedDescription)
@@ -70,7 +70,7 @@ struct GameView: View {
             }
             .task {
                 do {
-                    try await server.observeMatch()
+                    try await lobby.observeMatch()
                 } catch {
                     toast = Toast(message: error.localizedDescription)
                 }

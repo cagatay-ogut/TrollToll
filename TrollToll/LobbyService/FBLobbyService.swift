@@ -1,5 +1,5 @@
 //
-//  FBMultiplayerServer.swift
+//  FBLobbyService.swift
 //  TrollToll
 //
 //  Created by Cagatay on 30.12.2025.
@@ -11,7 +11,7 @@ import SwiftUI
 
 // swiftlint:disable type_body_length
 @Observable
-class FBMultiplayerServer: NSObject, MultiplayerServer {
+class FBLobbyService: NSObject, LobbyService {
     let user: User
     let dbRef: DatabaseReference
     let matchesRef: DatabaseReference
@@ -36,7 +36,7 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
 
     func observeMatch() async throws {
         guard let matchId = match?.id else {
-            throw MultiplayerServerError.matchNotSet
+            throw ServerError.matchNotSet
         }
 
         do {
@@ -67,10 +67,10 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
                     let match = try JSONDecoder().decode(Match.self, from: data)
                     continuation.yield(match)
                 } catch {
-                    continuation.finish(throwing: MultiplayerServerError.failedToDecode(underlyingError: error))
+                    continuation.finish(throwing: ServerError.failedToDecode(underlyingError: error))
                 }
             } withCancel: { error in
-                continuation.finish(throwing: MultiplayerServerError.serverCancel(underlyingError: error))
+                continuation.finish(throwing: ServerError.serverCancel(underlyingError: error))
             }
 
             continuation.onTermination = { _ in
@@ -82,7 +82,7 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
     func hostMatch() async throws {
         let matchRef = matchesRef.childByAutoId()
         guard let matchId = matchRef.key else {
-            throw MultiplayerServerError.serverFail
+            throw ServerError.serverFail
         }
         let match = Match(id: matchId, status: .waitingForPlayers, host: user)
 
@@ -90,11 +90,11 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
         do {
             let data = try JSONEncoder().encode(match)
             guard let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-                throw MultiplayerServerError.unexpectedDataFormat
+                throw ServerError.unexpectedDataFormat
             }
             dictionary = dict
         } catch {
-            throw MultiplayerServerError.failedToEncode(underlyingError: error)
+            throw ServerError.failedToEncode(underlyingError: error)
         }
 
         do {
@@ -103,13 +103,13 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
             Logger.multiplayer.debug("Created match: \(matchId)")
         } catch {
             Logger.multiplayer.error("Could not host match: \(matchId), error: \(error)")
-            throw MultiplayerServerError.serverError(underlyingError: error)
+            throw ServerError.serverError(underlyingError: error)
         }
     }
 
     func cancelMatch() async throws {
         guard let matchId = match?.id else {
-            throw MultiplayerServerError.matchNotSet
+            throw ServerError.matchNotSet
         }
 
         let matchRef = matchesRef.child(matchId)
@@ -118,13 +118,13 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
             Logger.multiplayer.debug("Deleted match: \(matchId)")
         } catch {
             Logger.multiplayer.error("Could not delete match: \(matchId), error: \(error)")
-            throw MultiplayerServerError.serverError(underlyingError: error)
+            throw ServerError.serverError(underlyingError: error)
         }
     }
 
     func startMatch() async throws {
         guard let matchId = match?.id else {
-            throw MultiplayerServerError.matchNotSet
+            throw ServerError.matchNotSet
         }
 
         let matchRef = matchesRef.child(matchId)
@@ -136,7 +136,7 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
             Logger.multiplayer.debug("Host started match: \(matchId)")
         } catch {
             Logger.multiplayer.error("Could not update status when starting match: \(matchId)")
-            throw MultiplayerServerError.serverError(underlyingError: error)
+            throw ServerError.serverError(underlyingError: error)
         }
     }
 
@@ -247,7 +247,7 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
             playersRef.observeSingleEvent(of: .value) { snapshot in
                 continuation.resume(returning: snapshot)
             } withCancel: { error in
-                continuation.resume(throwing: MultiplayerServerError.serverCancel(underlyingError: error))
+                continuation.resume(throwing: ServerError.serverCancel(underlyingError: error))
             }
         }
 
@@ -257,13 +257,13 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
                 let data = try JSONSerialization.data(withJSONObject: value)
                 currentPlayers = try JSONDecoder().decode([User].self, from: data)
             } catch {
-                throw MultiplayerServerError.failedToDecode(underlyingError: error)
+                throw ServerError.failedToDecode(underlyingError: error)
             }
         }
 
         guard !currentPlayers.contains(user) else {
             Logger.multiplayer.error("User \(self.user.id) is already in the match: \(match.id)")
-            throw MultiplayerServerError.playerAlreadyInMatch
+            throw ServerError.playerAlreadyInMatch
         }
 
         var updatedPlayers = currentPlayers
@@ -274,7 +274,7 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
             let data = try JSONEncoder().encode(updatedPlayers)
             playersArray = try JSONSerialization.jsonObject(with: data)
         } catch {
-            throw MultiplayerServerError.failedToEncode(underlyingError: error)
+            throw ServerError.failedToEncode(underlyingError: error)
         }
 
         do {
@@ -283,13 +283,13 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
             Logger.multiplayer.debug("User \(self.user.id) joined match: \(match.id)")
         } catch {
             Logger.multiplayer.error("Could not update player ids for joining match: \(match.id), error: \(error)")
-            throw MultiplayerServerError.serverError(underlyingError: error)
+            throw ServerError.serverError(underlyingError: error)
         }
     }
 
     func leaveMatch() async throws {
         guard let matchId = match?.id else {
-            throw MultiplayerServerError.matchNotSet
+            throw ServerError.matchNotSet
         }
         let playersRef = matchesRef.child(matchId).child("players")
 
@@ -297,12 +297,12 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
             playersRef.observeSingleEvent(of: .value) { snapshot in
                 continuation.resume(returning: snapshot)
             } withCancel: { error in
-                continuation.resume(throwing: MultiplayerServerError.serverCancel(underlyingError: error))
+                continuation.resume(throwing: ServerError.serverCancel(underlyingError: error))
             }
         }
 
         guard playerSnapshot.exists(), let snapshotValue = playerSnapshot.value else {
-            throw MultiplayerServerError.unexpectedDataFormat
+            throw ServerError.unexpectedDataFormat
         }
 
         var currentPlayers: [User] = []
@@ -310,12 +310,12 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
             let data = try JSONSerialization.data(withJSONObject: snapshotValue)
             currentPlayers = try JSONDecoder().decode([User].self, from: data)
         } catch {
-            throw MultiplayerServerError.failedToDecode(underlyingError: error)
+            throw ServerError.failedToDecode(underlyingError: error)
         }
 
         guard currentPlayers.contains(user) else {
             Logger.multiplayer.error("User \(self.user.id) is not in the match: \(matchId)")
-            throw MultiplayerServerError.playerNotInMatch
+            throw ServerError.playerNotInMatch
         }
 
         var updatedPlayers = currentPlayers
@@ -326,7 +326,7 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
             let data = try JSONEncoder().encode(updatedPlayers)
             playersArray = try JSONSerialization.jsonObject(with: data)
         } catch {
-            throw MultiplayerServerError.failedToEncode(underlyingError: error)
+            throw ServerError.failedToEncode(underlyingError: error)
         }
 
         do {
@@ -335,7 +335,7 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
             Logger.multiplayer.debug("User \(self.user.id) left match: \(matchId)")
         } catch {
             Logger.multiplayer.error("Could not update player ids for leaving match: \(matchId), error: \(error)")
-            throw MultiplayerServerError.serverError(underlyingError: error)
+            throw ServerError.serverError(underlyingError: error)
         }
     }
 }
