@@ -40,11 +40,18 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
         }
 
         observeTask = Task {
-            for try await matchData in matchStream(matchId: matchId) {
-                match = matchData
-                Logger.multiplayer.debug("Match updated: \(String(describing: matchData))")
+            do {
+                for try await matchData in matchStream(matchId: matchId) {
+                    match = matchData
+                    Logger.multiplayer.debug("Match updated: \(String(describing: matchData))")
+                }
+            } catch {
+                match = nil
+                throw error
             }
         }
+
+        _ = try await observeTask?.value
     }
 
     private func matchStream(matchId: String) -> AsyncThrowingStream<Match, Error> {
