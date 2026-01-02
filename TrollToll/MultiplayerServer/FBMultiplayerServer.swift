@@ -48,6 +48,7 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
             throw error
         }
 
+        match = nil
         Logger.multiplayer.debug("Observation ended")
     }
 
