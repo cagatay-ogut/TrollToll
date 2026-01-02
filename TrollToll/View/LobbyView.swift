@@ -66,8 +66,6 @@ private struct HostView: View {
 
     var body: some View {
         VStack {
-            Text("waitingForPlayers")
-                .padding(.bottom)
             Button {
                 Task {
                     do {
@@ -111,24 +109,27 @@ private struct JoiningPlayerView: View {
                     }
                 }
         } else {
-            Section {
-                List {
+            List {
+                Section {
                     ForEach(matches) { match in
-                        Text(match.createdAt, format: .dateTime)
-                            .onTapGesture {
-                                Task {
-                                    do {
-                                        try await lobby.joinMatch(match)
-                                    } catch {
-                                        toast = Toast(message: error.localizedDescription)
-                                    }
+                        Button {
+                            Task {
+                                do {
+                                    try await lobby.joinMatch(match)
+                                } catch {
+                                    toast = Toast(message: error.localizedDescription)
                                 }
                             }
+                        } label: {
+                            Text(match.createdAt, format: .dateTime)
+                        }
                     }
-                }
-            } header: {
-                if matches.isEmpty {
-                    Text("noMatchFound")
+                } header: {
+                    Text("openMatches")
+                } footer: {
+                    if matches.isEmpty {
+                        Text("noMatchFound")
+                    }
                 }
             }
             .task {
@@ -142,25 +143,26 @@ private struct PlayerListView: View {
     let match: Match
 
     var body: some View {
-        Section {
-            List {
+        List {
+            Section {
                 Text(match.host.name + " (" + String(localized: "host") + ")")
                 ForEach(match.players, id: \.self) { player in
                     Text(player.name)
                 }
             }
-        } header: {
-            Text("players")
+            header: {
+                Text("players")
+            }
         }
     }
 }
 
 #Preview("Player") {
-    LobbyView(user: User(id: "id", name: "name", isHost: false))
+    LobbyView(user: User(id: "id", name: "player", isHost: false))
         .environment(Router())
 }
 
-// #Preview("Host) {
-//     LobbyView(isHost: true)
-//         .environment(Router())
+// #Preview("Host") {
+//      LobbyView(user: User(id: "id", name: "host", isHost: true))
+//          .environment(Router())
 // }
