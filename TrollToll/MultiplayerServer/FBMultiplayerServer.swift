@@ -17,7 +17,6 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
     let matchesRef: DatabaseReference
     var match: Match?
     var matches: [Match] = []
-    var observeTask: Task<Void, Error>?
 
     var readyToStart: Bool {
         if let match {
@@ -40,19 +39,17 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
             throw MultiplayerServerError.matchNotSet
         }
 
-        observeTask = Task {
-            do {
-                for try await matchData in matchStream(matchId: matchId) {
-                    match = matchData
-                    Logger.multiplayer.debug("Match updated: \(String(describing: matchData))")
-                }
-            } catch {
-                match = nil
-                throw error
+        do {
+            for try await matchData in matchStream(matchId: matchId) {
+                match = matchData
+                Logger.multiplayer.debug("Match updated: \(String(describing: matchData))")
             }
+        } catch {
+            match = nil
+            throw error
         }
 
-        _ = try await observeTask?.value
+        Logger.multiplayer.debug("Observation ended")
     }
 
     private func matchStream(matchId: String) -> AsyncThrowingStream<Match, Error> {
@@ -62,7 +59,7 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
             let handle = matchRef.observe(.value) { snapshot in
                 do {
                     guard snapshot.exists(), let value = snapshot.value else {
-                        continuation.finish(throwing: MultiplayerServerError.noMatchFound)
+                        continuation.finish() // match ended
                         return
                     }
                     let data = try JSONSerialization.data(withJSONObject: value)
@@ -79,11 +76,6 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
                 matchRef.removeObserver(withHandle: handle)
             }
         }
-    }
-
-    func stopObservingMatch() {
-        observeTask?.cancel()
-        observeTask = nil
     }
 
     func hostMatch() async throws {
