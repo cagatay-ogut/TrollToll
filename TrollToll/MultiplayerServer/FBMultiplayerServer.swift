@@ -238,7 +238,7 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
             }
         }
 
-        guard let snapshotValue = playerSnapshot.value else {
+        guard playerSnapshot.exists(), let snapshotValue = playerSnapshot.value else {
             throw MultiplayerServerError.unexpectedDataFormat
         }
 
