@@ -148,7 +148,10 @@ class FBMultiplayerServer: NSObject, MultiplayerServer {
 
     func findMatches() async throws {
         self.matches = try await withCheckedThrowingContinuation { continuation in
-            matchesRef.observeSingleEvent(of: .value) { snapshot in
+            let query = matchesRef
+                .queryOrdered(byChild: "status")
+                .queryEqual(toValue: MatchStatus.waitingForPlayers.rawValue)
+            query.observeSingleEvent(of: .value) { snapshot in
                 guard snapshot.exists(), let value = snapshot.value else {
                     continuation.resume(returning: [])
                     return
