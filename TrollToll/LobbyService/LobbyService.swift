@@ -8,21 +8,17 @@
 import Foundation
 
 protocol LobbyService {
-    var user: User { get }
-    var match: Match? { get }
-    var matches: [Match] { get }
-    var readyToStart: Bool { get }
-
     // common
-    func observeMatch() async throws
+    func fetchMatch(of id: String) async throws -> Match
+    func streamMatch(of id: String) async throws -> AsyncThrowingStream<Match, Error>
     // host
-    func hostMatch() async throws
-    func cancelMatch() async throws
-    func startMatch() async throws
+    func hostMatch(with user: User) async throws -> Match
+    func cancelMatch(of id: String) async throws
+    func startMatch(of id: String) async throws
     // player
-    func observeLobbyMatches() async
-    func joinMatch(_ match: Match) async throws
-    func leaveMatch() async throws
+    func streamLobbyMatches() async -> AsyncStream<[Match]>
+    func joinMatch(_ match: Match, with user: User) async throws
+    func leaveMatch(of id: String, with user: User) async throws
 }
 
 enum ServerError: LocalizedError {

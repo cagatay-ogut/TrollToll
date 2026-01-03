@@ -34,6 +34,8 @@
 		2DFFCE4F2F07ADD300EFA68C /* AppColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE4E2F07ADD200EFA68C /* AppColors.swift */; };
 		2DFFCE532F07F04F00EFA68C /* GameService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE522F07F01300EFA68C /* GameService.swift */; };
 		2DFFCE552F07F0E200EFA68C /* FBGameService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE542F07F0DE00EFA68C /* FBGameService.swift */; };
+		2DFFCE572F082EC000EFA68C /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE562F082EBD00EFA68C /* GameViewModel.swift */; };
+		2DFFCE592F084A7000EFA68C /* LobbyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE582F084A6C00EFA68C /* LobbyViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -62,6 +64,8 @@
 		2DFFCE4E2F07ADD200EFA68C /* AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColors.swift; sourceTree = "<group>"; };
 		2DFFCE522F07F01300EFA68C /* GameService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameService.swift; sourceTree = "<group>"; };
 		2DFFCE542F07F0DE00EFA68C /* FBGameService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FBGameService.swift; sourceTree = "<group>"; };
+		2DFFCE562F082EBD00EFA68C /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
+		2DFFCE582F084A6C00EFA68C /* LobbyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LobbyViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,7 +123,9 @@
 			isa = PBXGroup;
 			children = (
 				2DFFCE1A2F043F1B00EFA68C /* GameView.swift */,
+				2DFFCE562F082EBD00EFA68C /* GameViewModel.swift */,
 				2D4D69552F041A5E009C9A7B /* LobbyView.swift */,
+				2DFFCE582F084A6C00EFA68C /* LobbyViewModel.swift */,
 				2D4D69462F0417B1009C9A7B /* MainView.swift */,
 				2DFFCE482F07AD7100EFA68C /* Auxiliary */,
 			);
@@ -301,12 +307,14 @@
 				2D4D694A2F0417B1009C9A7B /* MainView.swift in Sources */,
 				2D4D69542F041986009C9A7B /* Router.swift in Sources */,
 				2DFFCE552F07F0E200EFA68C /* FBGameService.swift in Sources */,
+				2DFFCE572F082EC000EFA68C /* GameViewModel.swift in Sources */,
 				2DFFCE332F0524F800EFA68C /* Match.swift in Sources */,
 				2DFFCE3F2F068BBA00EFA68C /* FBUserRepo.swift in Sources */,
 				2DFFCE3D2F068B8A00EFA68C /* UserRepo.swift in Sources */,
 				2DFFCE2C2F051A8700EFA68C /* AppDelegate.swift in Sources */,
 				2DFFCE4F2F07ADD300EFA68C /* AppColors.swift in Sources */,
 				2DFFCE372F0687BA00EFA68C /* Authenticator.swift in Sources */,
+				2DFFCE592F084A7000EFA68C /* LobbyViewModel.swift in Sources */,
 				2D4D694B2F0417B1009C9A7B /* TrollTollApp.swift in Sources */,
 				2DFFCE182F0429FD00EFA68C /* Logger.swift in Sources */,
 				2DFFCE3A2F06881400EFA68C /* FBAuthenticator.swift in Sources */,

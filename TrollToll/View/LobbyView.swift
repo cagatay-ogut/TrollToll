@@ -10,19 +10,19 @@ import SwiftUI
 struct LobbyView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(Router.self) private var router
-    @State private var lobby: LobbyService
+    @State private var viewModel: LobbyViewModel
     @State private var toast: Toast?
 
     init(user: User) {
-        _lobby = State(initialValue: FBLobbyService(user: user))
+        _viewModel = State(initialValue: LobbyViewModel(user: user))
     }
 
     var body: some View {
         VStack {
-            if lobby.user.isHost {
-                HostView(lobby: $lobby, toast: $toast)
+            if viewModel.user.isHost {
+                HostView(viewModel: $viewModel, toast: $toast)
             } else {
-                JoiningPlayerView(lobby: $lobby, toast: $toast, matches: lobby.matches)
+                JoiningPlayerView(viewModel: $viewModel, toast: $toast, matches: viewModel.matches)
             }
         }
         .frame(maxHeight: .infinity, alignment: .top)
@@ -31,15 +31,7 @@ struct LobbyView: View {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
                     Task {
-                        do {
-                            if lobby.user.isHost {
-                                try await lobby.cancelMatch()
-                            } else {
-                                try await lobby.leaveMatch()
-                            }
-                        } catch {
-                            toast = Toast(message: error.localizedDescription)
-                        }
+                        await viewModel.leaveLobby()
                     }
                     dismiss()
                 } label: {
@@ -51,62 +43,55 @@ struct LobbyView: View {
         .sensoryFeedback(.error, trigger: toast) { _, newValue in
             newValue != nil
         }
-        .onChange(of: lobby.match) {
-            if lobby.match?.status == .playing {
+        .onChange(of: viewModel.match) {
+            if viewModel.match?.status == .playing {
                 router.navigateToRoot()
-                router.navigate(to: .game(user: lobby.user, match: lobby.match!))
+                router.navigate(to: .game(user: viewModel.user, match: viewModel.match!))
+            }
+        }
+        .onChange(of: viewModel.errorMessage) {
+            if let message = viewModel.errorMessage {
+                toast = Toast(message: message)
             }
         }
     }
 }
 
 private struct HostView: View {
-    @Binding var lobby: LobbyService
+    @Binding var viewModel: LobbyViewModel
     @Binding var toast: Toast?
 
     var body: some View {
         VStack {
             Button {
                 Task {
-                    do {
-                        try await lobby.startMatch()
-                    } catch {
-                        toast = Toast(message: error.localizedDescription)
-                    }
+                    await viewModel.startMatch()
                 }
             } label: {
                 Text("startGame")
             }
-            .disabled(!lobby.readyToStart)
-            if let match = lobby.match {
+            .disabled(!viewModel.readyToStart)
+            if let match = viewModel.match {
                 PlayerListView(match: match)
             }
         }
         .task {
-            do {
-                try await lobby.hostMatch()
-                try await lobby.observeMatch()
-            } catch {
-                toast = Toast(message: error.localizedDescription)
-            }
+            await viewModel.hostMatch()
+            await viewModel.observeMatch()
         }
     }
 }
 
 private struct JoiningPlayerView: View {
-    @Binding var lobby: LobbyService
+    @Binding var viewModel: LobbyViewModel
     @Binding var toast: Toast?
     let matches: [Match]
 
     var body: some View {
-        if let match = lobby.match {
+        if let match = viewModel.match {
             PlayerListView(match: match)
                 .task {
-                    do {
-                        try await lobby.observeMatch()
-                    } catch {
-                        toast = Toast(message: error.localizedDescription)
-                    }
+                    await viewModel.observeMatch()
                 }
         } else {
             List {
@@ -114,11 +99,7 @@ private struct JoiningPlayerView: View {
                     ForEach(matches) { match in
                         Button {
                             Task {
-                                do {
-                                    try await lobby.joinMatch(match)
-                                } catch {
-                                    toast = Toast(message: error.localizedDescription)
-                                }
+                                await viewModel.joinMatch(match)
                             }
                         } label: {
                             Text(match.createdAt, format: .dateTime)
@@ -133,7 +114,7 @@ private struct JoiningPlayerView: View {
                 }
             }
             .task {
-                await lobby.observeLobbyMatches()
+                await viewModel.observeLobbyMatches()
             }
         }
     }

@@ -6,8 +6,5 @@
 //
 
 protocol GameService {
-    var user: User { get }
-    var match: Match { get }
-
-    func endPlayerTurn() async throws
+    func endPlayerTurn(of user: User, in matchId: String) async throws -> Match
 }

@@ -11,51 +11,43 @@ import SwiftUI
 
 // swiftlint:disable type_body_length
 @Observable
-class FBLobbyService: NSObject, LobbyService {
-    let user: User
+class FBLobbyService: LobbyService {
     let dbRef: DatabaseReference
     let matchesRef: DatabaseReference
-    var match: Match?
-    var matches: [Match] = []
 
-    var readyToStart: Bool {
-        if let match {
-            return !match.players.isEmpty
-        }
-        return false
-    }
-
-    init(user: User, match: Match? = nil) {
-        self.user = user
-        self.match = match
+    init() {
         self.dbRef = Database
             .database(url: "https://trolltoll-ee309-default-rtdb.europe-west1.firebasedatabase.app")
             .reference()
         self.matchesRef = dbRef.child("matches")
     }
 
-    func observeMatch() async throws {
-        guard let matchId = match?.id else {
-            throw ServerError.matchNotSet
+    func fetchMatch(of id: String) async throws -> Match {
+        let matchRef = matchesRef.child(id)
+
+        let snapshot = try await withCheckedThrowingContinuation { continuation in
+            matchRef.observeSingleEvent(of: .value) { snapshot in
+                continuation.resume(returning: snapshot)
+            } withCancel: { error in
+                continuation.resume(throwing: ServerError.serverCancel(underlyingError: error))
+            }
+        }
+
+        guard snapshot.exists(), let snapshotValue = snapshot.value else {
+            throw ServerError.unexpectedDataFormat
         }
 
         do {
-            for try await matchData in matchStream(matchId: matchId) {
-                match = matchData
-                Logger.multiplayer.debug("Match updated: \(String(describing: matchData))")
-            }
+            let data = try JSONSerialization.data(withJSONObject: snapshotValue, options: [])
+            return try JSONDecoder().decode(Match.self, from: data)
         } catch {
-            match = nil
-            throw error
+            throw ServerError.failedToDecode(underlyingError: error)
         }
-
-        match = nil
-        Logger.multiplayer.debug("Observation ended")
     }
 
-    private func matchStream(matchId: String) -> AsyncThrowingStream<Match, Error> {
+    func streamMatch(of id: String) -> AsyncThrowingStream<Match, Error> {
         AsyncThrowingStream { continuation in
-            let matchRef = matchesRef.child(matchId)
+            let matchRef = matchesRef.child(id)
 
             let handle = matchRef.observe(.value) { snapshot in
                 do {
@@ -79,7 +71,7 @@ class FBLobbyService: NSObject, LobbyService {
         }
     }
 
-    func hostMatch() async throws {
+    func hostMatch(with user: User) async throws -> Match {
         let matchRef = matchesRef.childByAutoId()
         guard let matchId = matchRef.key else {
             throw ServerError.serverFail
@@ -99,58 +91,41 @@ class FBLobbyService: NSObject, LobbyService {
 
         do {
             try await matchRef.setValue(dictionary)
-            self.match = match
             Logger.multiplayer.debug("Created match: \(matchId)")
+            return match
         } catch {
             Logger.multiplayer.error("Could not host match: \(matchId), error: \(error)")
             throw ServerError.serverError(underlyingError: error)
         }
     }
 
-    func cancelMatch() async throws {
-        guard let matchId = match?.id else {
-            throw ServerError.matchNotSet
-        }
-
-        let matchRef = matchesRef.child(matchId)
+    func cancelMatch(of id: String) async throws {
+        let matchRef = matchesRef.child(id)
         do {
             try await matchRef.removeValue()
-            Logger.multiplayer.debug("Deleted match: \(matchId)")
+            Logger.multiplayer.debug("Deleted match: \(id)")
         } catch {
-            Logger.multiplayer.error("Could not delete match: \(matchId), error: \(error)")
+            Logger.multiplayer.error("Could not delete match: \(id), error: \(error)")
             throw ServerError.serverError(underlyingError: error)
         }
     }
 
-    func startMatch() async throws {
-        guard let matchId = match?.id else {
-            throw ServerError.matchNotSet
-        }
-
-        let matchRef = matchesRef.child(matchId)
+    func startMatch(of id: String) async throws {
+        let matchRef = matchesRef.child(id)
         let updateData: [String: Any] = [
             "status": MatchStatus.playing.rawValue
         ]
         do {
             try await matchRef.updateChildValues(updateData)
-            Logger.multiplayer.debug("Host started match: \(matchId)")
+            Logger.multiplayer.debug("Host started match: \(id)")
         } catch {
-            Logger.multiplayer.error("Could not update status when starting match: \(matchId)")
+            Logger.multiplayer.error("Could not update status when starting match: \(id)")
             throw ServerError.serverError(underlyingError: error)
         }
     }
 
-    func observeLobbyMatches() async {
-        matches = []
-        for await matchesData in lobbyMatchesStream() {
-            matches = matchesData
-            Logger.multiplayer.debug("Lobby matches updated: \(matchesData.count)")
-        }
-        Logger.multiplayer.debug("Lobby matches observation ended")
-    }
-
     // swiftlint:disable:next function_body_length
-    private func lobbyMatchesStream() -> AsyncStream<[Match]> {
+    func streamLobbyMatches() -> AsyncStream<[Match]> {
         // swiftlint:disable:next closure_body_length
         AsyncStream { continuation in
             let query = matchesRef
@@ -240,7 +215,7 @@ class FBLobbyService: NSObject, LobbyService {
         }
     }
 
-    func joinMatch(_ match: Match) async throws {
+    func joinMatch(_ match: Match, with user: User) async throws {
         let playersRef = matchesRef.child(match.id).child("players")
 
         let playerSnapshot = try await withCheckedThrowingContinuation { continuation in
@@ -262,7 +237,7 @@ class FBLobbyService: NSObject, LobbyService {
         }
 
         guard !currentPlayers.contains(user) else {
-            Logger.multiplayer.error("User \(self.user.id) is already in the match: \(match.id)")
+            Logger.multiplayer.error("User \(user.id) is already in the match: \(match.id)")
             throw ServerError.playerAlreadyInMatch
         }
 
@@ -279,19 +254,15 @@ class FBLobbyService: NSObject, LobbyService {
 
         do {
             try await playersRef.setValue(playersArray)
-            self.match = match
-            Logger.multiplayer.debug("User \(self.user.id) joined match: \(match.id)")
+            Logger.multiplayer.debug("User \(user.id) joined match: \(match.id)")
         } catch {
             Logger.multiplayer.error("Could not update player ids for joining match: \(match.id), error: \(error)")
             throw ServerError.serverError(underlyingError: error)
         }
     }
 
-    func leaveMatch() async throws {
-        guard let matchId = match?.id else {
-            throw ServerError.matchNotSet
-        }
-        let playersRef = matchesRef.child(matchId).child("players")
+    func leaveMatch(of id: String, with user: User) async throws {
+        let playersRef = matchesRef.child(id).child("players")
 
         let playerSnapshot = try await withCheckedThrowingContinuation { continuation in
             playersRef.observeSingleEvent(of: .value) { snapshot in
@@ -301,7 +272,7 @@ class FBLobbyService: NSObject, LobbyService {
             }
         }
 
-        guard playerSnapshot.exists(), let snapshotValue = playerSnapshot.value else {
+        guard playerSnapshot.exists(), let snapshotValue = playerSnapshot.value as? [[String: Any]] else {
             throw ServerError.unexpectedDataFormat
         }
 
@@ -314,7 +285,7 @@ class FBLobbyService: NSObject, LobbyService {
         }
 
         guard currentPlayers.contains(user) else {
-            Logger.multiplayer.error("User \(self.user.id) is not in the match: \(matchId)")
+            Logger.multiplayer.error("User \(user.id) is not in the match: \(id)")
             throw ServerError.playerNotInMatch
         }
 
@@ -331,10 +302,9 @@ class FBLobbyService: NSObject, LobbyService {
 
         do {
             try await playersRef.setValue(playersArray)
-            self.match = match
-            Logger.multiplayer.debug("User \(self.user.id) left match: \(matchId)")
+            Logger.multiplayer.debug("User \(user.id) left match: \(id)")
         } catch {
-            Logger.multiplayer.error("Could not update player ids for leaving match: \(matchId), error: \(error)")
+            Logger.multiplayer.error("Could not update player ids for leaving match: \(id), error: \(error)")
             throw ServerError.serverError(underlyingError: error)
         }
     }

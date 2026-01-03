@@ -11,22 +11,18 @@ import SwiftUI
 
 @Observable
 class FBGameService: GameService {
-    let user: User
-    var match: Match
     let dbRef: DatabaseReference
     let matchesRef: DatabaseReference
 
-    init(user: User, match: Match) {
-        self.user = user
-        self.match = match
+    init() {
         self.dbRef = Database
             .database(url: "https://trolltoll-ee309-default-rtdb.europe-west1.firebasedatabase.app")
             .reference()
         self.matchesRef = dbRef.child("matches")
     }
 
-    func endPlayerTurn() async throws {
-        let matchRef = matchesRef.child(match.id)
+    func endPlayerTurn(of user: User, in matchId: String) async throws -> Match {
+        let matchRef = matchesRef.child(matchId)
 
         let (success, snapshot) = try await matchRef.runTransactionBlock { currentData in
             guard let value = currentData.value else {
@@ -37,12 +33,12 @@ class FBGameService: GameService {
                 let data = try JSONSerialization.data(withJSONObject: value)
                 var match = try JSONDecoder().decode(Match.self, from: data)
 
-                guard match.state.currentPlayerId == self.user.id else {
+                guard match.state.currentPlayerId == user.id else {
                     return TransactionResult.abort()
                 }
 
                 let currentPlayers = [match.host] + match.players
-                guard let currentPlayerIndex = currentPlayers.firstIndex(of: self.user) else {
+                guard let currentPlayerIndex = currentPlayers.firstIndex(of: user) else {
                     return TransactionResult.abort()
                 }
                 if currentPlayerIndex + 1 == currentPlayers.count {
@@ -73,8 +69,7 @@ class FBGameService: GameService {
 
         do {
             let data = try JSONSerialization.data(withJSONObject: snapshotValue)
-            let updatedMatch = try JSONDecoder().decode(Match.self, from: data)
-            self.match = updatedMatch
+            return try JSONDecoder().decode(Match.self, from: data)
         } catch {
             throw ServerError.failedToDecode(underlyingError: error)
         }
