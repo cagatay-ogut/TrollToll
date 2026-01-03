@@ -19,21 +19,41 @@ struct GameView: View {
 
     var body: some View {
         VStack {
-            Text("user: \(viewModel.user.name)")
             Text("turn: \(viewModel.gameState.turn)")
-            Text("current player: \(viewModel.gameState.currentPlayerId)")
+            Text("current player: \(viewModel.currentPlayerName)")
+            Text("middle card: \(viewModel.gameState.middleCards[0])")
+            Text("token in middle: \(viewModel.gameState.tokenInMiddle)")
+            Text("=========")
+            HStack {
+                ForEach(viewModel.gameState.players, id: \.id) { player in
+                    VStack {
+                        Text("\(player.name)")
+                        Text("\(viewModel.gameState.playerTokens[player.id]!)")
+                        Text(String(describing: viewModel.gameState.playerCards[player.id] ?? []))
+                    }
+                }
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .overlay(alignment: .bottomTrailing) {
-            Button {
-                Task {
-                    await viewModel.endPlayerTurn()
+        .overlay(alignment: .bottom) {
+            HStack {
+                Button {
+                    Task {
+                        await viewModel.takeCard()
+                    }
+                } label: {
+                    Text("takeCard")
                 }
-            } label: {
-                Text("endTurn")
+                .disabled(!viewModel.isPlayerTurn)
+                Button {
+                    Task {
+                        await viewModel.putToken()
+                    }
+                } label: {
+                    Text("putToken")
+                }
+                .disabled(!viewModel.isPlayerTurn || !viewModel.canPutToken)
             }
-            .padding()
-            .disabled(!viewModel.isPlayerTurn)
         }
         .navigationBarBackButtonHidden(true)
         .toolbar {

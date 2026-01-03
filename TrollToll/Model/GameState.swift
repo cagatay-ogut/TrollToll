@@ -7,11 +7,13 @@
 
 struct GameState: Codable, Hashable {
     let matchId: String
+    let players: [User]
     var turn: Int
     var currentPlayerId: String
-    let players: [User]
-    let playerTokens: [String: Int]
-    let playerCards: [String: [Int]]
+    var playerTokens: [String: Int]
+    var playerCards: [String: [Int]]
+    var middleCards: [Int]
+    var tokenInMiddle: Int
 
     init(from match: Match) {
         self.matchId = match.id
@@ -21,11 +23,13 @@ struct GameState: Codable, Hashable {
         var tokens: [String: Int] = [:]
         var cards: [String: [Int]] = [:]
         players.forEach {
-            tokens[$0.id] = 1
+            tokens[$0.id] = 11
             cards[$0.id] = []
         }
         self.playerTokens = tokens
         self.playerCards = cards
+        self.middleCards = Array(3...35).shuffled()
+        self.tokenInMiddle = 0
     }
 
     init(from decoder: any Decoder) throws {
@@ -35,6 +39,9 @@ struct GameState: Codable, Hashable {
         self.currentPlayerId = try container.decode(String.self, forKey: .currentPlayerId)
         self.players = try container.decode([User].self, forKey: .players)
         self.playerTokens = try container.decode([String: Int].self, forKey: .playerTokens)
-        self.playerCards = try container.decodeIfPresent([String: [Int]].self, forKey: .playerCards) ?? [:]
+        self.playerCards = try container.decodeIfPresent([String: [Int]].self, forKey: .playerCards)
+            ?? Dictionary(uniqueKeysWithValues: players.map { ($0.id, []) })
+        self.middleCards = try container.decode([Int].self, forKey: .middleCards)
+        self.tokenInMiddle = try container.decode(Int.self, forKey: .tokenInMiddle)
     }
 }

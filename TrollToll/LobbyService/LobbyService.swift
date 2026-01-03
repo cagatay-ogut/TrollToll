@@ -32,7 +32,7 @@ enum ServerError: LocalizedError {
     case serverFail
     case serverError(underlyingError: Error)
     case unexpectedDataFormat
-    case notCurrentPlayer
+    case failedToUpdateGameState
 
     var errorDescription: String? {
         switch self {
@@ -56,8 +56,8 @@ enum ServerError: LocalizedError {
             "Server error: \(underlyingError)"
         case .unexpectedDataFormat:
             "Unexpected data format"
-        case .notCurrentPlayer:
-            "Not current player"
+        case .failedToUpdateGameState:
+            "Failed to update game state"
         }
     }
 }

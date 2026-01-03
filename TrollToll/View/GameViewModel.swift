@@ -21,17 +21,61 @@ class GameViewModel {
         gameState.currentPlayerId == user.id
     }
 
+    var canPutToken: Bool {
+        gameState.playerTokens[user.id] ?? 0 > 0
+    }
+
+    var currentPlayerName: String {
+        gameState.players.first { $0.id == gameState.currentPlayerId }!.name
+    }
+
     init(user: User, match: Match, gameState: GameState) {
         self.user = user
         self.match = match
         self.gameState = gameState
     }
 
-    func endPlayerTurn() async {
+    func takeCard() async {
+        let card = gameState.middleCards.removeFirst()
+        if gameState.playerCards[gameState.currentPlayerId] != nil {
+            gameState.playerCards[gameState.currentPlayerId]?.append(card)
+        } else {
+            gameState.playerCards[gameState.currentPlayerId] = [card]
+        }
+        let prevTokenCount = gameState.playerTokens[user.id] ?? 0
+        gameState.playerTokens[user.id] = prevTokenCount + gameState.tokenInMiddle
+        gameState.tokenInMiddle = 0
+
+        endPlayerTurn()
+
         do {
-            gameState = try await gameService.endPlayerTurn(of: user, in: gameState.matchId)
+            gameState = try await gameService.updateGame(for: gameState.matchId, with: gameState)
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+
+    func putToken() async {
+        let currentTokenCount = gameState.playerTokens[user.id]!
+        gameState.playerTokens[user.id] = currentTokenCount - 1
+        gameState.tokenInMiddle += 1
+
+        endPlayerTurn()
+
+        do {
+            gameState = try await gameService.updateGame(for: gameState.matchId, with: gameState)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    private func endPlayerTurn() {
+        let currentPlayerIndex = gameState.players.firstIndex(of: user)!
+        if currentPlayerIndex + 1 == gameState.players.count {
+            gameState.currentPlayerId = gameState.players[0].id
+            gameState.turn += 1
+        } else {
+            gameState.currentPlayerId = gameState.players[currentPlayerIndex + 1].id
         }
     }
 
