@@ -12,7 +12,9 @@ import SwiftUI
 class LobbyViewModel {
     let user: User
     let lobbyService: LobbyService = FBLobbyService()
+    let gameService: GameService = FBGameService()
     var match: Match?
+    var gameState: GameState?
     var matches: [Match] = []
     var errorMessage: String?
 
@@ -61,14 +63,17 @@ class LobbyViewModel {
         }
     }
 
-    func startMatch() async {
-        guard let matchId = match?.id else {
+    func startGame() async {
+        guard let match else {
             errorMessage = ServerError.matchNotSet.localizedDescription
             return
         }
 
         do {
-            try await lobbyService.startMatch(of: matchId)
+            let game = GameState(from: match)
+            try await gameService.createGame(with: GameState(from: match))
+            self.gameState = game
+            try await lobbyService.startMatch(of: match.id)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -88,6 +93,9 @@ class LobbyViewModel {
         do {
             for try await matchData in try await lobbyService.streamMatch(of: matchId) {
                 match = matchData
+                if match?.status == .playing, gameState == nil {
+                    await fetchGame(with: matchId)
+                }
                 Logger.multiplayer.debug("Match updated: \(String(describing: matchData))")
             }
         } catch {
@@ -115,5 +123,13 @@ class LobbyViewModel {
             Logger.multiplayer.debug("Lobby matches updated: \(matchesData.count)")
         }
         Logger.multiplayer.debug("Lobby matches observation ended")
+    }
+
+    func fetchGame(with id: String) async {
+        do {
+            gameState = try await gameService.fetchGame(with: id)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
 }

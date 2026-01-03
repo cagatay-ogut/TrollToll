@@ -36,6 +36,7 @@
 		2DFFCE552F07F0E200EFA68C /* FBGameService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE542F07F0DE00EFA68C /* FBGameService.swift */; };
 		2DFFCE572F082EC000EFA68C /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE562F082EBD00EFA68C /* GameViewModel.swift */; };
 		2DFFCE592F084A7000EFA68C /* LobbyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE582F084A6C00EFA68C /* LobbyViewModel.swift */; };
+		2DFFCE5B2F09293D00EFA68C /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE5A2F09293B00EFA68C /* GameState.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -66,6 +67,7 @@
 		2DFFCE542F07F0DE00EFA68C /* FBGameService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FBGameService.swift; sourceTree = "<group>"; };
 		2DFFCE562F082EBD00EFA68C /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
 		2DFFCE582F084A6C00EFA68C /* LobbyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LobbyViewModel.swift; sourceTree = "<group>"; };
+		2DFFCE5A2F09293B00EFA68C /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,6 +137,7 @@
 		2DFFCE312F0524EF00EFA68C /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				2DFFCE5A2F09293B00EFA68C /* GameState.swift */,
 				2DFFCE322F0524F600EFA68C /* Match.swift */,
 				2DFFCE4B2F07AD9800EFA68C /* Toast.swift */,
 				2DFFCE342F06868C00EFA68C /* User.swift */,
@@ -313,6 +316,7 @@
 				2DFFCE3D2F068B8A00EFA68C /* UserRepo.swift in Sources */,
 				2DFFCE2C2F051A8700EFA68C /* AppDelegate.swift in Sources */,
 				2DFFCE4F2F07ADD300EFA68C /* AppColors.swift in Sources */,
+				2DFFCE5B2F09293D00EFA68C /* GameState.swift in Sources */,
 				2DFFCE372F0687BA00EFA68C /* Authenticator.swift in Sources */,
 				2DFFCE592F084A7000EFA68C /* LobbyViewModel.swift in Sources */,
 				2D4D694B2F0417B1009C9A7B /* TrollTollApp.swift in Sources */,

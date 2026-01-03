@@ -43,10 +43,12 @@ struct LobbyView: View {
         .sensoryFeedback(.error, trigger: toast) { _, newValue in
             newValue != nil
         }
-        .onChange(of: viewModel.match) {
-            if viewModel.match?.status == .playing {
+        .onChange(of: viewModel.gameState) {
+            if viewModel.gameState != nil {
                 router.navigateToRoot()
-                router.navigate(to: .game(user: viewModel.user, match: viewModel.match!))
+                router.navigate(
+                    to: .game(user: viewModel.user, match: viewModel.match!, gameState: viewModel.gameState!)
+                )
             }
         }
         .onChange(of: viewModel.errorMessage) {
@@ -65,7 +67,7 @@ private struct HostView: View {
         VStack {
             Button {
                 Task {
-                    await viewModel.startMatch()
+                    await viewModel.startGame()
                 }
             } label: {
                 Text("startGame")

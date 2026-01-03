@@ -6,5 +6,8 @@
 //
 
 protocol GameService {
-    func endPlayerTurn(of user: User, in matchId: String) async throws -> Match
+    func createGame(with gameState: GameState) async throws
+    func fetchGame(with id: String) async throws -> GameState
+    func streamGame(of id: String) async throws -> AsyncThrowingStream<GameState, Error>
+    func endPlayerTurn(of user: User, in gameId: String) async throws -> GameState
 }

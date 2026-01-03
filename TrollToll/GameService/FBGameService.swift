@@ -12,43 +12,114 @@ import SwiftUI
 @Observable
 class FBGameService: GameService {
     let dbRef: DatabaseReference
-    let matchesRef: DatabaseReference
+    let gamesRef: DatabaseReference
 
     init() {
         self.dbRef = Database
             .database(url: "https://trolltoll-ee309-default-rtdb.europe-west1.firebasedatabase.app")
             .reference()
-        self.matchesRef = dbRef.child("matches")
+        self.gamesRef = dbRef.child("games")
     }
 
-    func endPlayerTurn(of user: User, in matchId: String) async throws -> Match {
-        let matchRef = matchesRef.child(matchId)
+    func createGame(with gameState: GameState) async throws {
+        let gameRef = gamesRef.child(gameState.matchId)
 
-        let (success, snapshot) = try await matchRef.runTransactionBlock { currentData in
-            guard let value = currentData.value else {
-                return TransactionResult.abort()
+        let dictionary: [String: Any]
+        do {
+            let data = try JSONEncoder().encode(gameState)
+            guard let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                throw ServerError.unexpectedDataFormat
+            }
+            dictionary = dict
+        } catch {
+            throw ServerError.failedToEncode(underlyingError: error)
+        }
+
+        do {
+            try await gameRef.setValue(dictionary)
+            Logger.multiplayer.debug("Created game: \(gameState.matchId)")
+        } catch {
+            Logger.multiplayer.error("Could not create game: \(gameState.matchId), error: \(error)")
+            throw ServerError.serverError(underlyingError: error)
+        }
+    }
+
+    func fetchGame(with id: String) async throws -> GameState {
+        let gameRef = gamesRef.child(id)
+
+        let snapshot = try await withCheckedThrowingContinuation { continuation in
+            gameRef.observeSingleEvent(of: .value) { snapshot in
+                continuation.resume(returning: snapshot)
+            } withCancel: { error in
+                continuation.resume(throwing: ServerError.serverCancel(underlyingError: error))
+            }
+        }
+
+        guard snapshot.exists(), let snapshotValue = snapshot.value else {
+            throw ServerError.unexpectedDataFormat
+        }
+
+        do {
+            let data = try JSONSerialization.data(withJSONObject: snapshotValue, options: [])
+            return try JSONDecoder().decode(GameState.self, from: data)
+        } catch {
+            throw ServerError.failedToDecode(underlyingError: error)
+        }
+    }
+
+    func streamGame(of id: String) -> AsyncThrowingStream<GameState, Error> {
+        AsyncThrowingStream { continuation in
+            let gameRef = gamesRef.child(id)
+
+            let handle = gameRef.observe(.value) { snapshot in
+                do {
+                    guard snapshot.exists(), let value = snapshot.value else {
+                        continuation.finish() // game ended
+                        return
+                    }
+                    let data = try JSONSerialization.data(withJSONObject: value)
+                    let gameState = try JSONDecoder().decode(GameState.self, from: data)
+                    continuation.yield(gameState)
+                } catch {
+                    continuation.finish(throwing: ServerError.failedToDecode(underlyingError: error))
+                }
+            } withCancel: { error in
+                continuation.finish(throwing: ServerError.serverCancel(underlyingError: error))
+            }
+
+            continuation.onTermination = { _ in
+                gameRef.removeObserver(withHandle: handle)
+            }
+        }
+    }
+
+    func endPlayerTurn(of user: User, in gameId: String) async throws -> GameState {
+        let gameRef = gamesRef.child(gameId)
+
+        let (success, snapshot) = try await gameRef.runTransactionBlock { currentData in
+            guard let value = currentData.value as? [String: Any] else {
+                return TransactionResult.success(withValue: currentData)
             }
 
             do {
                 let data = try JSONSerialization.data(withJSONObject: value)
-                var match = try JSONDecoder().decode(Match.self, from: data)
+                var gameState = try JSONDecoder().decode(GameState.self, from: data)
 
-                guard match.state.currentPlayerId == user.id else {
+                guard gameState.currentPlayerId == user.id else {
                     return TransactionResult.abort()
                 }
 
-                let currentPlayers = [match.host] + match.players
-                guard let currentPlayerIndex = currentPlayers.firstIndex(of: user) else {
+                guard let currentPlayerIndex = gameState.players.firstIndex(of: user) else {
                     return TransactionResult.abort()
                 }
-                if currentPlayerIndex + 1 == currentPlayers.count {
-                    match.state.currentPlayerId = currentPlayers[0].id
-                    match.state.turn += 1
+                if currentPlayerIndex + 1 == gameState.players.count {
+                    gameState.currentPlayerId = gameState.players[0].id
+                    gameState.turn += 1
                 } else {
-                    match.state.currentPlayerId = currentPlayers[currentPlayerIndex + 1].id
+                    gameState.currentPlayerId = gameState.players[currentPlayerIndex + 1].id
                 }
 
-                let updatedData = try JSONEncoder().encode(match)
+                let updatedData = try JSONEncoder().encode(gameState)
                 let dict = try JSONSerialization.jsonObject(with: updatedData)
                 currentData.value = dict
 
@@ -69,7 +140,7 @@ class FBGameService: GameService {
 
         do {
             let data = try JSONSerialization.data(withJSONObject: snapshotValue)
-            return try JSONDecoder().decode(Match.self, from: data)
+            return try JSONDecoder().decode(GameState.self, from: data)
         } catch {
             throw ServerError.failedToDecode(underlyingError: error)
         }

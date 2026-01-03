@@ -11,7 +11,7 @@ import SwiftUI
 class Router {
     enum Destination: Hashable {
         case lobby(user: User)
-        case game(user: User, match: Match)
+        case game(user: User, match: Match, gameState: GameState)
     }
 
     var navPath = NavigationPath()

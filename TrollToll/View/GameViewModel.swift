@@ -12,22 +12,24 @@ import SwiftUI
 class GameViewModel {
     let user: User
     var match: Match
+    var gameState: GameState
     let gameService: GameService = FBGameService()
     let lobbyService: LobbyService = FBLobbyService()
     var errorMessage: String?
 
     var isPlayerTurn: Bool {
-        match.state.currentPlayerId == user.id
+        gameState.currentPlayerId == user.id
     }
 
-    init(user: User, match: Match) {
+    init(user: User, match: Match, gameState: GameState) {
         self.user = user
         self.match = match
+        self.gameState = gameState
     }
 
     func endPlayerTurn() async {
         do {
-            match = try await gameService.endPlayerTurn(of: user, in: match.id)
+            gameState = try await gameService.endPlayerTurn(of: user, in: gameState.matchId)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -60,6 +62,19 @@ class GameViewModel {
             Logger.multiplayer.error("Error observing match: \(error)")
         }
 
-        Logger.multiplayer.debug("Observation ended")
+        Logger.multiplayer.debug("Match observation ended")
+    }
+
+    func observeGame() async {
+        do {
+            for try await gameData in try await gameService.streamGame(of: match.id) {
+                self.gameState = gameData
+                Logger.multiplayer.debug("Game updated: \(String(describing: gameData))")
+            }
+        } catch {
+            Logger.multiplayer.error("Error observing game: \(error)")
+        }
+
+        Logger.multiplayer.debug("Game observation ended")
     }
 }

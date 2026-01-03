@@ -30,8 +30,8 @@ struct MainView: View {
                 switch destination {
                 case let .lobby(user):
                     LobbyView(user: user)
-                case let .game(user, match):
-                    GameView(user: user, match: match)
+                case let .game(user, match, gameState):
+                    GameView(user: user, match: match, gameState: gameState)
                 }
             }
         }
