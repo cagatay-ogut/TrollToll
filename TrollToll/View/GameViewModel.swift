@@ -35,6 +35,18 @@ class GameViewModel {
         self.gameState = gameState
     }
 
+    func point(for playerId: String) -> Int {
+        let cards = gameState.playerCards[playerId] ?? []
+        var lowestCards: [Int] = []
+        for (index, value) in cards.enumerated() {
+            if index == 0 || value != cards[index - 1] + 1 {
+                lowestCards.append(cards[index])
+            }
+        }
+
+        return gameState.playerTokens[playerId]! - lowestCards.reduce(0, +)
+    }
+
     func takeCard() async {
         let card = gameState.middleCards.removeFirst()
         if gameState.playerCards[gameState.currentPlayerId] != nil {

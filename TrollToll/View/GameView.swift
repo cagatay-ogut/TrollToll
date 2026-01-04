@@ -30,6 +30,7 @@ struct GameView: View {
                         Text("\(player.name)")
                         Text("\(viewModel.gameState.playerTokens[player.id]!)")
                         Text(String(describing: viewModel.gameState.playerCards[player.id] ?? []))
+                        Text("points: \(viewModel.point(for: player.id))")
                     }
                 }
             }
