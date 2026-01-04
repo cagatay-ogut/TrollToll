@@ -9,7 +9,6 @@ import FirebaseDatabase
 import OSLog
 import SwiftUI
 
-// swiftlint:disable type_body_length
 @Observable
 class FBLobbyService: LobbyService {
     let dbRef: DatabaseReference
@@ -33,16 +32,7 @@ class FBLobbyService: LobbyService {
             }
         }
 
-        guard snapshot.exists(), let snapshotValue = snapshot.value else {
-            throw ServerError.unexpectedDataFormat
-        }
-
-        do {
-            let data = try JSONSerialization.data(withJSONObject: snapshotValue, options: [])
-            return try JSONDecoder().decode(Match.self, from: data)
-        } catch {
-            throw ServerError.failedToDecode(underlyingError: error)
-        }
+        return try FBDecoder.decode(Match.self, from: snapshot)
     }
 
     func streamMatch(of id: String) -> AsyncThrowingStream<Match, Error> {
@@ -51,13 +41,11 @@ class FBLobbyService: LobbyService {
 
             let handle = matchRef.observe(.value) { snapshot in
                 do {
-                    guard snapshot.exists(), let value = snapshot.value else {
-                        continuation.finish() // match ended
-                        return
-                    }
-                    let data = try JSONSerialization.data(withJSONObject: value)
-                    let match = try JSONDecoder().decode(Match.self, from: data)
+                    let match = try FBDecoder.decode(Match.self, from: snapshot)
                     continuation.yield(match)
+                } catch ServerError.unexpectedDataFormat {
+                    continuation.finish() // match ended
+                    return
                 } catch {
                     continuation.finish(throwing: ServerError.failedToDecode(underlyingError: error))
                 }
@@ -76,18 +64,9 @@ class FBLobbyService: LobbyService {
         guard let matchId = matchRef.key else {
             throw ServerError.serverFail
         }
-        let match = Match(id: matchId, status: .waitingForPlayers, host: user)
 
-        let dictionary: [String: Any]
-        do {
-            let data = try JSONEncoder().encode(match)
-            guard let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-                throw ServerError.unexpectedDataFormat
-            }
-            dictionary = dict
-        } catch {
-            throw ServerError.failedToEncode(underlyingError: error)
-        }
+        let match = Match(id: matchId, status: .waitingForPlayers, host: user)
+        let dictionary = try FBEncoder.encode(match)
 
         do {
             try await matchRef.setValue(dictionary)
@@ -138,15 +117,12 @@ class FBLobbyService: LobbyService {
             // --- CHILD ADDED ---
             let childAddedHandle = query.observe(.childAdded) { snapshot in
                 do {
-                    guard snapshot.exists(), let value = snapshot.value else {
-                        Logger.multiplayer.error("LobbyMatchesObserve - ChildAdded: Snapshot does not have value")
-                        return
-                    }
-
-                    let data = try JSONSerialization.data(withJSONObject: value)
-                    let newMatch = try JSONDecoder().decode(Match.self, from: data)
+                    let newMatch = try FBDecoder.decode(Match.self, from: snapshot)
                     currentMatches.append(newMatch)
                     continuation.yield(currentMatches)
+                } catch ServerError.unexpectedDataFormat {
+                    Logger.multiplayer.error("LobbyMatchesObserve - ChildAdded: Snapshot does not have value")
+                    return
                 } catch {
                     Logger.multiplayer.error("LobbyMatchesObserve - ChildAdded: Decoding error: \(error)")
                 }
@@ -160,13 +136,7 @@ class FBLobbyService: LobbyService {
             // --- CHILD CHANGED ---
             let childChangedHandle = query.observe(.childChanged) { snapshot in
                 do {
-                    guard snapshot.exists(), let value = snapshot.value else {
-                        Logger.multiplayer.error("LobbyMatchesObserve - ChildChanged: Snapshot does not have value")
-                        return
-                    }
-                    let data = try JSONSerialization.data(withJSONObject: value)
-                    let updatedMatch = try JSONDecoder().decode(Match.self, from: data)
-
+                    let updatedMatch = try FBDecoder.decode(Match.self, from: snapshot)
                     if let index = currentMatches.firstIndex(where: { $0.id == updatedMatch.id }) {
                         currentMatches[index] = updatedMatch
                         continuation.yield(currentMatches)
@@ -180,6 +150,9 @@ class FBLobbyService: LobbyService {
                         currentMatches.append(updatedMatch)
                         continuation.yield(currentMatches)
                     }
+                } catch ServerError.unexpectedDataFormat {
+                    Logger.multiplayer.error("LobbyMatchesObserve - ChildAdded: Snapshot does not have value")
+                    return
                 } catch {
                     Logger.multiplayer.error("LobbyMatchesObserve - ChildChanged: Decoding error: \(error)")
                 }
@@ -226,16 +199,7 @@ class FBLobbyService: LobbyService {
             }
         }
 
-        var currentPlayers: [User] = []
-        if let value = playerSnapshot.value as? [Any] {
-            do {
-                let data = try JSONSerialization.data(withJSONObject: value)
-                currentPlayers = try JSONDecoder().decode([User].self, from: data)
-            } catch {
-                throw ServerError.failedToDecode(underlyingError: error)
-            }
-        }
-
+        let currentPlayers: [User] = try FBDecoder.decodeArray([User].self, from: playerSnapshot)
         guard !currentPlayers.contains(user) else {
             Logger.multiplayer.error("User \(user.id) is already in the match: \(match.id)")
             throw ServerError.playerAlreadyInMatch
@@ -244,14 +208,7 @@ class FBLobbyService: LobbyService {
         var updatedPlayers = currentPlayers
         updatedPlayers.append(user)
 
-        let playersArray: Any
-        do {
-            let data = try JSONEncoder().encode(updatedPlayers)
-            playersArray = try JSONSerialization.jsonObject(with: data)
-        } catch {
-            throw ServerError.failedToEncode(underlyingError: error)
-        }
-
+        let playersArray = try FBEncoder.encodeArray(updatedPlayers)
         do {
             try await playersRef.setValue(playersArray)
             Logger.multiplayer.debug("User \(user.id) joined match: \(match.id)")
@@ -272,18 +229,7 @@ class FBLobbyService: LobbyService {
             }
         }
 
-        guard playerSnapshot.exists(), let snapshotValue = playerSnapshot.value as? [[String: Any]] else {
-            throw ServerError.unexpectedDataFormat
-        }
-
-        var currentPlayers: [User] = []
-        do {
-            let data = try JSONSerialization.data(withJSONObject: snapshotValue)
-            currentPlayers = try JSONDecoder().decode([User].self, from: data)
-        } catch {
-            throw ServerError.failedToDecode(underlyingError: error)
-        }
-
+        let currentPlayers = try FBDecoder.decodeArray([User].self, from: playerSnapshot)
         guard currentPlayers.contains(user) else {
             Logger.multiplayer.error("User \(user.id) is not in the match: \(id)")
             throw ServerError.playerNotInMatch
@@ -292,14 +238,7 @@ class FBLobbyService: LobbyService {
         var updatedPlayers = currentPlayers
         updatedPlayers.removeAll { $0 == user }
 
-        let playersArray: Any
-        do {
-            let data = try JSONEncoder().encode(updatedPlayers)
-            playersArray = try JSONSerialization.jsonObject(with: data)
-        } catch {
-            throw ServerError.failedToEncode(underlyingError: error)
-        }
-
+        let playersArray = try FBEncoder.encodeArray(updatedPlayers)
         do {
             try await playersRef.setValue(playersArray)
             Logger.multiplayer.debug("User \(user.id) left match: \(id)")
@@ -309,4 +248,3 @@ class FBLobbyService: LobbyService {
         }
     }
 }
-// swiftlint:enable type_body_length

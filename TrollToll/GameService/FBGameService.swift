@@ -24,17 +24,7 @@ class FBGameService: GameService {
     func createGame(with gameState: GameState) async throws {
         let gameRef = gamesRef.child(gameState.matchId)
 
-        let dictionary: [String: Any]
-        do {
-            let data = try JSONEncoder().encode(gameState)
-            guard let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-                throw ServerError.unexpectedDataFormat
-            }
-            dictionary = dict
-        } catch {
-            throw ServerError.failedToEncode(underlyingError: error)
-        }
-
+        let dictionary = try FBEncoder.encode(gameState)
         do {
             try await gameRef.setValue(dictionary)
             Logger.multiplayer.debug("Created game: \(gameState.matchId)")
@@ -55,16 +45,7 @@ class FBGameService: GameService {
             }
         }
 
-        guard snapshot.exists(), let snapshotValue = snapshot.value else {
-            throw ServerError.unexpectedDataFormat
-        }
-
-        do {
-            let data = try JSONSerialization.data(withJSONObject: snapshotValue, options: [])
-            return try JSONDecoder().decode(GameState.self, from: data)
-        } catch {
-            throw ServerError.failedToDecode(underlyingError: error)
-        }
+        return try FBDecoder.decode(GameState.self, from: snapshot)
     }
 
     func streamGame(of id: String) -> AsyncThrowingStream<GameState, Error> {
@@ -73,13 +54,11 @@ class FBGameService: GameService {
 
             let handle = gameRef.observe(.value) { snapshot in
                 do {
-                    guard snapshot.exists(), let value = snapshot.value else {
-                        continuation.finish() // game ended
-                        return
-                    }
-                    let data = try JSONSerialization.data(withJSONObject: value)
-                    let gameState = try JSONDecoder().decode(GameState.self, from: data)
+                    let gameState = try FBDecoder.decode(GameState.self, from: snapshot)
                     continuation.yield(gameState)
+                } catch ServerError.unexpectedDataFormat {
+                    continuation.finish() // game ended
+                    return
                 } catch {
                     continuation.finish(throwing: ServerError.failedToDecode(underlyingError: error))
                 }
@@ -102,10 +81,7 @@ class FBGameService: GameService {
             }
 
             do {
-                let data = try JSONEncoder().encode(newGameState)
-                let dict = try JSONSerialization.jsonObject(with: data)
-                currentData.value = dict
-
+                currentData.value = try FBEncoder.encode(newGameState)
                 return TransactionResult.success(withValue: currentData)
             } catch {
                 Logger.multiplayer.error("Could not end player turn: \(error)")
@@ -117,160 +93,6 @@ class FBGameService: GameService {
             throw ServerError.failedToUpdateGameState
         }
 
-        guard snapshot.exists(), let snapshotValue = snapshot.value else {
-            throw ServerError.unexpectedDataFormat
-        }
-
-        do {
-            let data = try JSONSerialization.data(withJSONObject: snapshotValue)
-            return try JSONDecoder().decode(GameState.self, from: data)
-        } catch {
-            throw ServerError.failedToDecode(underlyingError: error)
-        }
+        return try FBDecoder.decode(GameState.self, from: snapshot)
     }
-//
-//    func takeCard(for userId: String, in gameId: String) async throws -> GameState {
-//        let gameRef = gamesRef.child(gameId)
-//
-//        let (success, snapshot) = try await gameRef.runTransactionBlock { currentData in
-//            guard let value = currentData.value as? [String: Any] else {
-//                return TransactionResult.success(withValue: currentData)
-//            }
-//
-//            do {
-//                let data = try JSONSerialization.data(withJSONObject: value)
-//                var gameState = try JSONDecoder().decode(GameState.self, from: data)
-//
-//                let card = gameState.middleCards.removeFirst()
-//                if gameState.playerCards[gameState.currentPlayerId] != nil {
-//                    gameState.playerCards[gameState.currentPlayerId]?.append(card)
-//                } else {
-//                    gameState.playerCards[gameState.currentPlayerId] = [card]
-//                }
-//                let prevTokenCount = gameState.playerTokens[userId] ?? 0
-//                gameState.playerTokens[userId] = prevTokenCount + gameState.tokenInMiddle
-//                gameState.tokenInMiddle = 0
-//
-//                let updatedData = try JSONEncoder().encode(gameState)
-//                let dict = try JSONSerialization.jsonObject(with: updatedData)
-//                currentData.value = dict
-//
-//                return TransactionResult.success(withValue: currentData)
-//            } catch {
-//                Logger.multiplayer.error("Could not end player turn: \(error)")
-//                return TransactionResult.abort()
-//            }
-//        }
-//
-//        guard success else {
-//            throw ServerError.failedToTakeCard
-//        }
-//
-//        guard snapshot.exists(), let snapshotValue = snapshot.value else {
-//            throw ServerError.unexpectedDataFormat
-//        }
-//
-//        do {
-//            let data = try JSONSerialization.data(withJSONObject: snapshotValue)
-//            return try JSONDecoder().decode(GameState.self, from: data)
-//        } catch {
-//            throw ServerError.failedToDecode(underlyingError: error)
-//        }
-//    }
-//
-//    func putToken(for userId: String, in gameId: String) async throws -> GameState {
-//        let gameRef = gamesRef.child(gameId)
-//
-//        let (success, snapshot) = try await gameRef.runTransactionBlock { currentData in
-//            guard let value = currentData.value as? [String: Any] else {
-//                return TransactionResult.success(withValue: currentData)
-//            }
-//
-//            do {
-//                let data = try JSONSerialization.data(withJSONObject: value)
-//                var gameState = try JSONDecoder().decode(GameState.self, from: data)
-//
-//                let currentTokenCount = gameState.playerTokens[userId] ?? 0
-//                gameState.playerTokens[userId] = currentTokenCount - 1
-//                gameState.tokenInMiddle += 1
-//
-//                let updatedData = try JSONEncoder().encode(gameState)
-//                let dict = try JSONSerialization.jsonObject(with: updatedData)
-//                currentData.value = dict
-//
-//                return TransactionResult.success(withValue: currentData)
-//            } catch {
-//                Logger.multiplayer.error("Could not end player turn: \(error)")
-//                return TransactionResult.abort()
-//            }
-//        }
-//
-//        guard success else {
-//            throw ServerError.failedToPutToken
-//        }
-//
-//        guard snapshot.exists(), let snapshotValue = snapshot.value else {
-//            throw ServerError.unexpectedDataFormat
-//        }
-//
-//        do {
-//            let data = try JSONSerialization.data(withJSONObject: snapshotValue)
-//            return try JSONDecoder().decode(GameState.self, from: data)
-//        } catch {
-//            throw ServerError.failedToDecode(underlyingError: error)
-//        }
-//    }
-//
-//    func endPlayerTurn(of user: User, in gameId: String) async throws -> GameState {
-//        let gameRef = gamesRef.child(gameId)
-//
-//        let (success, snapshot) = try await gameRef.runTransactionBlock { currentData in
-//            guard let value = currentData.value as? [String: Any] else {
-//                return TransactionResult.success(withValue: currentData)
-//            }
-//
-//            do {
-//                let data = try JSONSerialization.data(withJSONObject: value)
-//                var gameState = try JSONDecoder().decode(GameState.self, from: data)
-//
-//                guard gameState.currentPlayerId == user.id else {
-//                    return TransactionResult.abort()
-//                }
-//
-//                guard let currentPlayerIndex = gameState.players.firstIndex(of: user) else {
-//                    return TransactionResult.abort()
-//                }
-//                if currentPlayerIndex + 1 == gameState.players.count {
-//                    gameState.currentPlayerId = gameState.players[0].id
-//                    gameState.turn += 1
-//                } else {
-//                    gameState.currentPlayerId = gameState.players[currentPlayerIndex + 1].id
-//                }
-//
-//                let updatedData = try JSONEncoder().encode(gameState)
-//                let dict = try JSONSerialization.jsonObject(with: updatedData)
-//                currentData.value = dict
-//
-//                return TransactionResult.success(withValue: currentData)
-//            } catch {
-//                Logger.multiplayer.error("Could not end player turn: \(error)")
-//                return TransactionResult.abort()
-//            }
-//        }
-//
-//        guard success else {
-//            throw ServerError.notCurrentPlayer
-//        }
-//
-//        guard snapshot.exists(), let snapshotValue = snapshot.value else {
-//            throw ServerError.unexpectedDataFormat
-//        }
-//
-//        do {
-//            let data = try JSONSerialization.data(withJSONObject: snapshotValue)
-//            return try JSONDecoder().decode(GameState.self, from: data)
-//        } catch {
-//            throw ServerError.failedToDecode(underlyingError: error)
-//        }
-//    }
 }
