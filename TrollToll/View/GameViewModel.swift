@@ -42,6 +42,8 @@ class GameViewModel {
         } else {
             gameState.playerCards[gameState.currentPlayerId] = [card]
         }
+        gameState.playerCards[gameState.currentPlayerId]?.sort()
+
         let prevTokenCount = gameState.playerTokens[user.id] ?? 0
         gameState.playerTokens[user.id] = prevTokenCount + gameState.tokenInMiddle
         gameState.tokenInMiddle = 0
