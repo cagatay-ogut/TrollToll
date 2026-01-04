@@ -20,9 +20,9 @@ struct LobbyView: View {
     var body: some View {
         VStack {
             if viewModel.user.isHost {
-                HostView(viewModel: $viewModel, toast: $toast)
+                HostView(toast: $toast, viewModel: viewModel)
             } else {
-                JoiningPlayerView(viewModel: $viewModel, toast: $toast, matches: viewModel.matches)
+                JoiningPlayerView(toast: $toast, viewModel: viewModel, matches: viewModel.matches)
             }
         }
         .frame(maxHeight: .infinity, alignment: .top)
@@ -60,8 +60,8 @@ struct LobbyView: View {
 }
 
 private struct HostView: View {
-    @Binding var viewModel: LobbyViewModel
     @Binding var toast: Toast?
+    let viewModel: LobbyViewModel
 
     var body: some View {
         VStack {
@@ -85,8 +85,8 @@ private struct HostView: View {
 }
 
 private struct JoiningPlayerView: View {
-    @Binding var viewModel: LobbyViewModel
     @Binding var toast: Toast?
+    let viewModel: LobbyViewModel
     let matches: [Match]
 
     var body: some View {

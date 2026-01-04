@@ -1,5 +1,5 @@
 //
-//  LobbyService.swift
+//  LobbyRepo.swift
 //  TrollToll
 //
 //  Created by Cagatay on 30.12.2025.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol LobbyService {
+protocol LobbyRepo {
     // common
     func fetchMatch(of id: String) async throws -> Match
     func streamMatch(of id: String) async throws -> AsyncThrowingStream<Match, Error>

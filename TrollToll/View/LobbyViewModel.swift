@@ -11,8 +11,8 @@ import SwiftUI
 @Observable
 class LobbyViewModel {
     let user: User
-    let lobbyService: LobbyService = FBLobbyService()
-    let gameService: GameService = FBGameService()
+    let lobbyService: LobbyRepo = FBLobbyRepo()
+    let gameService: GameRepo = FBGameRepo()
     var match: Match?
     var gameState: GameState?
     var matches: [Match] = []

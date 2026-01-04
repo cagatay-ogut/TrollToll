@@ -13,8 +13,8 @@ class GameViewModel {
     let user: User
     var match: Match
     var gameState: GameState
-    let gameService: GameService = FBGameService()
-    let lobbyService: LobbyService = FBLobbyService()
+    let gameService: GameRepo = FBGameRepo()
+    let lobbyService: LobbyRepo = FBLobbyRepo()
     var errorMessage: String?
 
     var isPlayerTurn: Bool {

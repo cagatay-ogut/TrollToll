@@ -1,5 +1,5 @@
 //
-//  FBLobbyService.swift
+//  FBLobbyRepo.swift
 //  TrollToll
 //
 //  Created by Cagatay on 30.12.2025.
@@ -10,7 +10,7 @@ import OSLog
 import SwiftUI
 
 @Observable
-class FBLobbyService: LobbyService {
+class FBLobbyRepo: LobbyRepo {
     let dbRef: DatabaseReference
     let matchesRef: DatabaseReference
 

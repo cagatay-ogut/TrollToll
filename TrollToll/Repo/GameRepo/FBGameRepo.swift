@@ -1,5 +1,5 @@
 //
-//  FBGameService.swift
+//  FBGameRepo.swift
 //  TrollToll
 //
 //  Created by Cagatay on 2.01.2026.
@@ -10,7 +10,7 @@ import OSLog
 import SwiftUI
 
 @Observable
-class FBGameService: GameService {
+class FBGameRepo: GameRepo {
     let dbRef: DatabaseReference
     let gamesRef: DatabaseReference
 
