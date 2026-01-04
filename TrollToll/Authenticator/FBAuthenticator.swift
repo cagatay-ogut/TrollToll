@@ -10,16 +10,14 @@ import OSLog
 
 @Observable
 class FBAuthenticator: Authenticator {
-    var authState: AuthenticationState = .unauthenticated
-
-    func authenticate() async {
+    func authenticate() async -> AuthenticationState {
         do {
             let result = try await Auth.auth().signInAnonymously()
-            authState = .authenticated(userId: result.user.uid)
             Logger.multiplayer.debug("Auth with id: \(result.user.uid)")
+            return .authenticated(userId: result.user.uid)
         } catch {
-            authState = .failed
             Logger.multiplayer.error("Could not auth: \(error)")
+            return .failed
         }
     }
 }

@@ -6,9 +6,7 @@
 //
 
 protocol Authenticator {
-    var authState: AuthenticationState { get }
-
-    func authenticate() async
+    func authenticate() async -> AuthenticationState
 }
 
 enum AuthenticationState {

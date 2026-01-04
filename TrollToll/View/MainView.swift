@@ -9,20 +9,18 @@ import SwiftUI
 
 struct MainView: View {
     @State private var router = Router()
-    @State private var authenticator: Authenticator = FBAuthenticator()
-    @State private var userRepo: UserRepo = FBUserRepo()
-    @State private var showUserNameField = false
+    @State private var viewModel = MainViewModel()
 
     var body: some View {
         NavigationStack(path: $router.navPath) {
             VStack(spacing: 32) {
-                switch authenticator.authState {
+                switch viewModel.authState {
                 case .unauthenticated:
                     ProgressView()
                 case .authenticated(let userId):
-                    AuthenticatedView(userRepo: $userRepo, router: router, userId: userId)
+                    AuthenticatedView(viewModel: viewModel, router: router, userId: userId)
                 case .failed:
-                    FailedAuthView(authenticator: authenticator)
+                    FailedAuthView(viewModel: viewModel)
                 }
             }
             .buttonStyle(.borderedProminent)
@@ -36,26 +34,19 @@ struct MainView: View {
             }
         }
         .task {
-            await authenticator.authenticate()
-            if case .authenticated(let userId) = authenticator.authState {
-                do {
-                    try await userRepo.getUser(with: userId)
-                } catch {
-                    print("error: \(error)")
-                }
-            }
+            await viewModel.authenticate()
         }
         .environment(router)
     }
 }
 
 private struct FailedAuthView: View {
-    let authenticator: Authenticator
+    let viewModel: MainViewModel
 
     var body: some View {
         Button {
             Task {
-                await authenticator.authenticate()
+                await viewModel.authenticate()
             }
         } label: {
             Text("retryAuth")
@@ -64,36 +55,36 @@ private struct FailedAuthView: View {
 }
 
 private struct AuthenticatedView: View {
-    @Binding var userRepo: UserRepo
+    let viewModel: MainViewModel
     let router: Router
     let userId: String
 
     var body: some View {
-        if userRepo.user == nil {
-            UserNameField(userRepo: userRepo, userId: userId)
+        if viewModel.user == nil {
+            UserNameField(viewModel: viewModel, userId: userId)
         }
         Button {
-            userRepo.user?.isHost = true
-            router.navigate(to: .lobby(user: userRepo.user!))
+            viewModel.user?.isHost = true
+            router.navigate(to: .lobby(user: viewModel.user!))
         } label: {
             Text("hostGame")
                 .padding(4)
         }
-        .disabled(userRepo.user == nil)
+        .disabled(viewModel.user == nil)
         Button {
-            userRepo.user?.isHost = false
-            router.navigate(to: .lobby(user: userRepo.user!))
+            viewModel.user?.isHost = false
+            router.navigate(to: .lobby(user: viewModel.user!))
         } label: {
             Text("joinGame")
                 .padding(4)
         }
-        .disabled(userRepo.user == nil)
+        .disabled(viewModel.user == nil)
     }
 }
 
 private struct UserNameField: View {
     @State private var name: String = ""
-    let userRepo: UserRepo
+    let viewModel: MainViewModel
     let userId: String
 
     var body: some View {
@@ -102,11 +93,7 @@ private struct UserNameField: View {
                 .frame(width: 200)
             Button {
                 Task {
-                    do {
-                        try await userRepo.saveUser(with: userId, and: name)
-                    } catch {
-                        print("error: \(error)")
-                    }
+                    await viewModel.saveUser(with: userId, and: name)
                 }
             } label: {
                 Text("setUserName")

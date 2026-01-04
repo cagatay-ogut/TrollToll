@@ -15,6 +15,7 @@
 		2D4D69562F041A61009C9A7B /* LobbyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69552F041A5E009C9A7B /* LobbyView.swift */; };
 		2DA2C4472F0A877C00CE2E2D /* ServerError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA2C4462F0A877A00CE2E2D /* ServerError.swift */; };
 		2DA2C4492F0A87A800CE2E2D /* FBCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA2C4482F0A87A000CE2E2D /* FBCodable.swift */; };
+		2DA2C44B2F0A93FF00CE2E2D /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA2C44A2F0A93FD00CE2E2D /* MainViewModel.swift */; };
 		2DFFCE142F04285A00EFA68C /* LobbyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE132F04285400EFA68C /* LobbyService.swift */; };
 		2DFFCE162F04287A00EFA68C /* FBLobbyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE152F04287500EFA68C /* FBLobbyService.swift */; };
 		2DFFCE182F0429FD00EFA68C /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE172F0429FC00EFA68C /* Logger.swift */; };
@@ -51,6 +52,7 @@
 		2D4D69552F041A5E009C9A7B /* LobbyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LobbyView.swift; sourceTree = "<group>"; };
 		2DA2C4462F0A877A00CE2E2D /* ServerError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerError.swift; sourceTree = "<group>"; };
 		2DA2C4482F0A87A000CE2E2D /* FBCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FBCodable.swift; sourceTree = "<group>"; };
+		2DA2C44A2F0A93FD00CE2E2D /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
 		2DFFCE132F04285400EFA68C /* LobbyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LobbyService.swift; sourceTree = "<group>"; };
 		2DFFCE152F04287500EFA68C /* FBLobbyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FBLobbyService.swift; sourceTree = "<group>"; };
 		2DFFCE172F0429FC00EFA68C /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
@@ -133,6 +135,7 @@
 				2D4D69552F041A5E009C9A7B /* LobbyView.swift */,
 				2DFFCE582F084A6C00EFA68C /* LobbyViewModel.swift */,
 				2D4D69462F0417B1009C9A7B /* MainView.swift */,
+				2DA2C44A2F0A93FD00CE2E2D /* MainViewModel.swift */,
 				2DFFCE482F07AD7100EFA68C /* Auxiliary */,
 			);
 			path = View;
@@ -315,6 +318,7 @@
 				2DFFCE4C2F07AD9B00EFA68C /* Toast.swift in Sources */,
 				2D4D694A2F0417B1009C9A7B /* MainView.swift in Sources */,
 				2D4D69542F041986009C9A7B /* Router.swift in Sources */,
+				2DA2C44B2F0A93FF00CE2E2D /* MainViewModel.swift in Sources */,
 				2DA2C4472F0A877C00CE2E2D /* ServerError.swift in Sources */,
 				2DFFCE552F07F0E200EFA68C /* FBGameService.swift in Sources */,
 				2DA2C4492F0A87A800CE2E2D /* FBCodable.swift in Sources */,
