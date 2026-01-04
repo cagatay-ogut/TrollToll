@@ -17,22 +17,34 @@ class GameViewModel {
     let lobbyService: LobbyRepo = FBLobbyRepo()
     var errorMessage: String?
 
-    var isPlayerTurn: Bool {
-        gameState.currentPlayerId == user.id
+    var currentPlayerName: String {
+        gameState.players.first { $0.id == gameState.currentPlayerId }!.name
+    }
+
+    var canTakeCard: Bool {
+        isPlayerTurn || !gameState.progress.isFinished
     }
 
     var canPutToken: Bool {
-        gameState.playerTokens[user.id] ?? 0 > 0
+        isPlayerTurn || !(gameState.playerTokens[user.id] ?? 0 > 0) || !gameState.progress.isFinished
     }
 
-    var currentPlayerName: String {
-        gameState.players.first { $0.id == gameState.currentPlayerId }!.name
+    private var isPlayerTurn: Bool {
+        gameState.currentPlayerId == user.id
+    }
+
+    private var isCardLeft: Bool {
+        !gameState.middleCards.isEmpty
     }
 
     init(user: User, match: Match, gameState: GameState) {
         self.user = user
         self.match = match
         self.gameState = gameState
+    }
+
+    func name(for playerId: String) -> String {
+        gameState.players.first { $0.id == playerId }!.name
     }
 
     func point(for playerId: String) -> Int {
@@ -60,7 +72,11 @@ class GameViewModel {
         gameState.playerTokens[user.id] = prevTokenCount + gameState.tokenInMiddle
         gameState.tokenInMiddle = 0
 
-        endPlayerTurn()
+        if isCardLeft {
+            endPlayerTurn()
+        } else {
+            finishGame()
+        }
 
         do {
             gameState = try await gameService.updateGame(for: gameState.matchId, with: gameState)
@@ -91,6 +107,11 @@ class GameViewModel {
         } else {
             gameState.currentPlayerId = gameState.players[currentPlayerIndex + 1].id
         }
+    }
+
+    private func finishGame() {
+        let victor = gameState.players.max { point(for: $0.id) < point(for: $1.id) }!
+        gameState.progress = .finished(victorId: victor.id)
     }
 
     func cancelMatch() async {

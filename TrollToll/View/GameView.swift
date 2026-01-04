@@ -21,7 +21,8 @@ struct GameView: View {
         VStack {
             Text("turn: \(viewModel.gameState.turn)")
             Text("current player: \(viewModel.currentPlayerName)")
-            Text("middle card: \(viewModel.gameState.middleCards[0])")
+            Text("middle card: \(viewModel.gameState.middleCards.first ?? 0)")
+            Text("remaining: \(viewModel.gameState.middleCards.count)")
             Text("token in middle: \(viewModel.gameState.tokenInMiddle)")
             Text("=========")
             HStack {
@@ -45,7 +46,7 @@ struct GameView: View {
                 } label: {
                     Text("takeCard")
                 }
-                .disabled(!viewModel.isPlayerTurn)
+                .disabled(!viewModel.canTakeCard)
                 Button {
                     Task {
                         await viewModel.putToken()
@@ -53,7 +54,7 @@ struct GameView: View {
                 } label: {
                     Text("putToken")
                 }
-                .disabled(!viewModel.isPlayerTurn || !viewModel.canPutToken)
+                .disabled(!viewModel.canPutToken)
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -92,6 +93,11 @@ struct GameView: View {
         .onChange(of: viewModel.errorMessage) {
             if let message = viewModel.errorMessage {
                 toast = Toast(message: message)
+            }
+        }
+        .onChange(of: viewModel.gameState.progress) {
+            if case .finished(let victor) = viewModel.gameState.progress {
+                toast = Toast(message: "Victor is: \(viewModel.name(for: victor))", type: .info, duration: .long)
             }
         }
     }
