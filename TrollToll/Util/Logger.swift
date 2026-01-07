@@ -11,4 +11,5 @@ extension Logger {
     private static var bundleId = Bundle.main.bundleIdentifier!
 
     static let multiplayer = Logger(subsystem: bundleId, category: "Multiplayer")
+    static let gameScene = Logger(subsystem: bundleId, category: "GameScene")
 }

@@ -5,6 +5,7 @@
 //  Created by Cagatay on 30.12.2025.
 //
 
+import SpriteKit
 import SwiftUI
 
 struct GameView: View {
@@ -12,32 +13,25 @@ struct GameView: View {
     @State private var viewModel: GameViewModel
     @State private var showLeaveAlert = false
     @State private var toast: Toast?
+    private let scene: GameScene
 
     init(user: User, match: Match, gameState: GameState) {
         _viewModel = State(initialValue: GameViewModel(user: user, match: match, gameState: gameState))
+        scene = GameScene()
+        scene.scaleMode = .resizeFill
     }
 
     var body: some View {
-        VStack {
-            Text("turn: \(viewModel.gameState.turn)")
-            Text("current player: \(viewModel.currentPlayerName)")
-            Text("middle card: \(viewModel.gameState.middleCards.first ?? 0)")
-            Text("remaining: \(viewModel.gameState.middleCards.count)")
-            Text("token in middle: \(viewModel.gameState.tokenInMiddle)")
-            Text("=========")
+        ZStack {
+            SpriteView(scene: scene, debugOptions: [.showsFPS, .showsNodeCount])
             HStack {
-                ForEach(viewModel.gameState.players, id: \.id) { player in
-                    VStack {
-                        Text("\(player.name)")
-                        Text("\(viewModel.gameState.playerTokens[player.id]!)")
-                        Text(String(describing: viewModel.gameState.playerCards[player.id] ?? []))
-                        Text("points: \(viewModel.point(for: player.id))")
-                    }
-                }
+                Text("current player: \(viewModel.currentPlayerName)")
+                Text("turn: \(viewModel.gameState.turn)")
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+            .foregroundStyle(Color.white)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .overlay(alignment: .bottom) {
+        .overlay(alignment: .bottomTrailing) {
             HStack {
                 Button {
                     Task {
@@ -89,6 +83,12 @@ struct GameView: View {
         }
         .task {
             await viewModel.observeGame()
+        }
+        .onAppear {
+            scene.viewModel = viewModel
+        }
+        .onChange(of: viewModel.gameState) {
+            scene.onStateChange()
         }
         .onChange(of: viewModel.errorMessage) {
             if let message = viewModel.errorMessage {

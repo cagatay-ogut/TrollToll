@@ -13,6 +13,11 @@
 		2D4D694D2F0417C1009C9A7B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 2D4D694C2F0417C1009C9A7B /* Localizable.xcstrings */; };
 		2D4D69542F041986009C9A7B /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69532F041985009C9A7B /* Router.swift */; };
 		2D4D69562F041A61009C9A7B /* LobbyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69552F041A5E009C9A7B /* LobbyView.swift */; };
+		2D54B6742F0E511C002838AA /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54B6732F0E5119002838AA /* GameScene.swift */; };
+		2D54B6772F0E5262002838AA /* DeckNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54B6762F0E5260002838AA /* DeckNode.swift */; };
+		2D54B6792F0E52A7002838AA /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54B6782F0E52A5002838AA /* Geometry.swift */; };
+		2D54B67B2F0E5975002838AA /* CardNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54B67A2F0E5973002838AA /* CardNode.swift */; };
+		2D54B67D2F0E63EA002838AA /* TokenNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54B67C2F0E63E8002838AA /* TokenNode.swift */; };
 		2DA2C4472F0A877C00CE2E2D /* ServerError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA2C4462F0A877A00CE2E2D /* ServerError.swift */; };
 		2DA2C4492F0A87A800CE2E2D /* FBCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA2C4482F0A87A000CE2E2D /* FBCodable.swift */; };
 		2DA2C44B2F0A93FF00CE2E2D /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA2C44A2F0A93FD00CE2E2D /* MainViewModel.swift */; };
@@ -50,6 +55,11 @@
 		2D4D694C2F0417C1009C9A7B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		2D4D69532F041985009C9A7B /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		2D4D69552F041A5E009C9A7B /* LobbyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LobbyView.swift; sourceTree = "<group>"; };
+		2D54B6732F0E5119002838AA /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
+		2D54B6762F0E5260002838AA /* DeckNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckNode.swift; sourceTree = "<group>"; };
+		2D54B6782F0E52A5002838AA /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
+		2D54B67A2F0E5973002838AA /* CardNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardNode.swift; sourceTree = "<group>"; };
+		2D54B67C2F0E63E8002838AA /* TokenNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenNode.swift; sourceTree = "<group>"; };
 		2DA2C4462F0A877A00CE2E2D /* ServerError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerError.swift; sourceTree = "<group>"; };
 		2DA2C4482F0A87A000CE2E2D /* FBCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FBCodable.swift; sourceTree = "<group>"; };
 		2DA2C44A2F0A93FD00CE2E2D /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
@@ -128,7 +138,9 @@
 		2D4D69522F04190D009C9A7B /* View */ = {
 			isa = PBXGroup;
 			children = (
+				2D54B6752F0E525A002838AA /* SpriteKit */,
 				2DFFCE1A2F043F1B00EFA68C /* GameView.swift */,
+				2D54B6732F0E5119002838AA /* GameScene.swift */,
 				2DFFCE562F082EBD00EFA68C /* GameViewModel.swift */,
 				2D4D69552F041A5E009C9A7B /* LobbyView.swift */,
 				2DFFCE582F084A6C00EFA68C /* LobbyViewModel.swift */,
@@ -137,6 +149,16 @@
 				2DFFCE482F07AD7100EFA68C /* Auxiliary */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		2D54B6752F0E525A002838AA /* SpriteKit */ = {
+			isa = PBXGroup;
+			children = (
+				2D54B67A2F0E5973002838AA /* CardNode.swift */,
+				2D54B6762F0E5260002838AA /* DeckNode.swift */,
+				2D54B67C2F0E63E8002838AA /* TokenNode.swift */,
+			);
+			path = SpriteKit;
 			sourceTree = "<group>";
 		};
 		2DA2C44C2F0A990000CE2E2D /* Repo */ = {
@@ -190,9 +212,10 @@
 		2DFFCE4D2F07ADCA00EFA68C /* Util */ = {
 			isa = PBXGroup;
 			children = (
-				2DA2C4482F0A87A000CE2E2D /* FBCodable.swift */,
 				2DFFCE4E2F07ADD200EFA68C /* AppColors.swift */,
 				2DFFCE2B2F051A8500EFA68C /* AppDelegate.swift */,
+				2DA2C4482F0A87A000CE2E2D /* FBCodable.swift */,
+				2D54B6782F0E52A5002838AA /* Geometry.swift */,
 				2DFFCE172F0429FC00EFA68C /* Logger.swift */,
 			);
 			path = Util;
@@ -323,7 +346,10 @@
 			files = (
 				2DFFCE4A2F07AD8100EFA68C /* ToastView.swift in Sources */,
 				2DFFCE142F04285A00EFA68C /* LobbyRepo.swift in Sources */,
+				2D54B67D2F0E63EA002838AA /* TokenNode.swift in Sources */,
 				2DFFCE4C2F07AD9B00EFA68C /* Toast.swift in Sources */,
+				2D54B6742F0E511C002838AA /* GameScene.swift in Sources */,
+				2D54B6792F0E52A7002838AA /* Geometry.swift in Sources */,
 				2D4D694A2F0417B1009C9A7B /* MainView.swift in Sources */,
 				2D4D69542F041986009C9A7B /* Router.swift in Sources */,
 				2DA2C44B2F0A93FF00CE2E2D /* MainViewModel.swift in Sources */,
@@ -346,6 +372,8 @@
 				2D4D69562F041A61009C9A7B /* LobbyView.swift in Sources */,
 				2DFFCE1B2F043F1D00EFA68C /* GameView.swift in Sources */,
 				2DFFCE162F04287A00EFA68C /* FBLobbyRepo.swift in Sources */,
+				2D54B67B2F0E5975002838AA /* CardNode.swift in Sources */,
+				2D54B6772F0E5262002838AA /* DeckNode.swift in Sources */,
 				2DFFCE352F06868E00EFA68C /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

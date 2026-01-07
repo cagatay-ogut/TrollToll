@@ -22,11 +22,11 @@ class GameViewModel {
     }
 
     var canTakeCard: Bool {
-        isPlayerTurn || !gameState.progress.isFinished
+        isPlayerTurn && !gameState.progress.isFinished
     }
 
     var canPutToken: Bool {
-        isPlayerTurn || !(gameState.playerTokens[user.id] ?? 0 > 0) || !gameState.progress.isFinished
+        isPlayerTurn && (gameState.playerTokens[user.id] ?? 0 > 0) && !gameState.progress.isFinished
     }
 
     private var isPlayerTurn: Bool {
