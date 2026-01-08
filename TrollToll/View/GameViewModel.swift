@@ -16,8 +16,10 @@ class GameViewModel {
     let gameService: GameRepo = FBGameRepo()
     let lobbyService: LobbyRepo = FBLobbyRepo()
     var errorMessage: String?
+    var infoMessage: String?
     var turnTimeLeft: Int = 10
     var hostLeft = false
+    private var exitedPlayers: [User] = []
     private var turnTimerTask: Task<Void, Never>?
 
     var currentPlayerName: String {
@@ -36,6 +38,13 @@ class GameViewModel {
         gameState.currentPlayerId == user.id
     }
 
+    private var isUserHost: Bool {
+        match.host == user
+    }
+
+    private var isExitedPlayersTurn: Bool {
+        exitedPlayers.contains { $0.id == gameState.currentPlayerId }
+    }
     private var isCardLeft: Bool {
         !gameState.middleCards.isEmpty
     }
@@ -105,7 +114,7 @@ class GameViewModel {
     private func endPlayerTurn() {
         cancelTurnTimer()
 
-        let currentPlayerIndex = gameState.players.firstIndex(of: user)!
+        let currentPlayerIndex = gameState.players.firstIndex { $0.id == gameState.currentPlayerId }!
         if currentPlayerIndex + 1 == gameState.players.count {
             gameState.currentPlayerId = gameState.players[0].id
             gameState.turn += 1
@@ -141,6 +150,9 @@ class GameViewModel {
         do {
             for try await matchData in try await lobbyService.streamMatch(of: match.id) {
                 self.match = matchData
+                if isUserHost, match.players.count + 1 != gameState.players.count {
+                    await onPlayersExited()
+                }
                 Logger.multiplayer.debug("Match updated: \(String(describing: matchData))")
             }
         } catch {
@@ -160,6 +172,10 @@ class GameViewModel {
                 self.gameState = gameData
                 if isPlayerTurn {
                     startTurnTimer()
+                }
+                if isExitedPlayersTurn {
+                    try? await Task.sleep(for: .seconds(1))
+                    await takeCard() // takes card for exited player
                 }
                 Logger.multiplayer.debug("Game updated: \(String(describing: gameData))")
             }
@@ -194,5 +210,18 @@ class GameViewModel {
     private func cancelTurnTimer() {
         turnTimerTask?.cancel()
         turnTimerTask = nil
+    }
+
+    private func onPlayersExited() async {
+        exitedPlayers = gameState.players.filter {
+            $0 != user && !match.players.contains($0)
+        }
+        let names = exitedPlayers.map { $0.name }
+        infoMessage = "Players left: \(names)"
+        if isExitedPlayersTurn {
+            try? await Task.sleep(for: .seconds(1))
+            await takeCard()
+        }
+        Logger.multiplayer.debug("Exited player list: \(self.exitedPlayers)")
     }
 }

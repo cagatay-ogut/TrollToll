@@ -102,6 +102,11 @@ struct GameView: View {
                 toast = Toast(message: message)
             }
         }
+        .onChange(of: viewModel.infoMessage) {
+            if let message = viewModel.infoMessage {
+                toast = Toast(message: message, type: .info, alignment: .top)
+            }
+        }
         .onChange(of: viewModel.gameState.progress) {
             if case .finished(let victor) = viewModel.gameState.progress {
                 toast = Toast(message: "Victor is: \(viewModel.name(for: victor))", type: .info, duration: .long)
