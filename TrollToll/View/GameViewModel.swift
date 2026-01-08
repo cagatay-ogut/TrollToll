@@ -16,6 +16,8 @@ class GameViewModel {
     let gameService: GameRepo = FBGameRepo()
     let lobbyService: LobbyRepo = FBLobbyRepo()
     var errorMessage: String?
+    var turnTimeLeft: Int = 10
+    private var turnTimerTask: Task<Void, Never>?
 
     var currentPlayerName: String {
         gameState.players.first { $0.id == gameState.currentPlayerId }!.name
@@ -29,7 +31,7 @@ class GameViewModel {
         isPlayerTurn && (gameState.playerTokens[user.id] ?? 0 > 0) && !gameState.progress.isFinished
     }
 
-    private var isPlayerTurn: Bool {
+    var isPlayerTurn: Bool {
         gameState.currentPlayerId == user.id
     }
 
@@ -100,6 +102,8 @@ class GameViewModel {
     }
 
     private func endPlayerTurn() {
+        cancelTurnTimer()
+
         let currentPlayerIndex = gameState.players.firstIndex(of: user)!
         if currentPlayerIndex + 1 == gameState.players.count {
             gameState.currentPlayerId = gameState.players[0].id
@@ -110,6 +114,8 @@ class GameViewModel {
     }
 
     private func finishGame() {
+        cancelTurnTimer()
+
         let victor = gameState.players.max { point(for: $0.id) < point(for: $1.id) }!
         gameState.progress = .finished(victorId: victor.id)
     }
@@ -148,6 +154,9 @@ class GameViewModel {
         do {
             for try await gameData in try await gameService.streamGame(of: match.id) {
                 self.gameState = gameData
+                if isPlayerTurn {
+                    startTurnTimer()
+                }
                 Logger.multiplayer.debug("Game updated: \(String(describing: gameData))")
             }
         } catch {
@@ -155,5 +164,31 @@ class GameViewModel {
         }
 
         Logger.multiplayer.debug("Game observation ended")
+    }
+
+    private func startTurnTimer() {
+        turnTimerTask?.cancel()
+
+        turnTimeLeft = 10
+        turnTimerTask = Task {
+            do {
+                for second in stride(from: 10, to: 0, by: -1) {
+                    await MainActor.run {
+                        turnTimeLeft = second
+                    }
+
+                    try await Task.sleep(for: .seconds(1))
+                    guard !Task.isCancelled else { return }
+                }
+                await takeCard()
+            } catch {
+                // cancelled task, player played
+            }
+        }
+    }
+
+    private func cancelTurnTimer() {
+        turnTimerTask?.cancel()
+        turnTimerTask = nil
     }
 }

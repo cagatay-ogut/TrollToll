@@ -31,6 +31,12 @@ struct GameView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             .foregroundStyle(Color.white)
         }
+        .overlay(alignment: .topLeading) {
+            if viewModel.isPlayerTurn {
+                Text(viewModel.turnTimeLeft, format: .number)
+                    .foregroundStyle(Color.white)
+            }
+        }
         .overlay(alignment: .bottomTrailing) {
             HStack {
                 Button {
