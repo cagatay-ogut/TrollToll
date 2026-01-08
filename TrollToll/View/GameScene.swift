@@ -13,7 +13,7 @@ class GameScene: SKScene {
     var viewModel: GameViewModel? {
         didSet {
             if let viewModel {
-                layoutGameState(with: viewModel.gameState)
+                layoutGameState(with: viewModel.gameState, for: viewModel.user)
             }
         }
     }
@@ -29,25 +29,25 @@ class GameScene: SKScene {
         Logger.gameScene.debug("Did move")
 
         if let viewModel {
-            layoutGameState(with: viewModel.gameState)
+            layoutGameState(with: viewModel.gameState, for: viewModel.user)
         }
     }
 
     func onStateChange() {
-        guard let gameState = viewModel?.gameState else { return }
-        layoutGameState(with: gameState)
+        guard let gameState = viewModel?.gameState, let user = viewModel?.user else { return }
+        layoutGameState(with: gameState, for: user)
     }
 
-    private func layoutGameState(with gameState: GameState) {
+    private func layoutGameState(with gameState: GameState, for user: User) {
         Logger.gameScene.debug("Setting game state")
         clearScene()
 
         layoutMiddleDeck(gameState.middleCards.count)
         layoutMiddleCard(gameState.middleCards.first ?? 0)
         layoutMiddleTokens(gameState.tokenInMiddle)
-        layoutPlayerInfo(gameState.players)
-        layoutPlayerTokens(gameState.playerTokens)
-        layoutPlayerCards(gameState.playerCards)
+        layoutPlayerInfo(gameState.players, userId: user.id)
+        layoutPlayerTokens(gameState.playerTokens, playerIds: gameState.players.map { $0.id }, userId: user.id)
+        layoutPlayerCards(gameState.playerCards, playerIds: gameState.players.map { $0.id }, userId: user.id)
     }
 
     private func clearScene() {
@@ -81,9 +81,13 @@ class GameScene: SKScene {
         addChild(middleTokens)
     }
 
-    private func layoutPlayerInfo(_ players: [User]) {
-        for (index, player) in players.enumerated() {
-            let playerPos = calculatePlayerPosition(index: index, total: players.count)
+    private func layoutPlayerInfo(_ players: [User], userId: String) {
+        for player in players {
+            let playerPos = calculatePlayerPosition(
+                playerId: player.id,
+                playerIds: players.map { $0.id },
+                userId: userId
+            )
             // in portrait, put it under players
             // in landscape, put it left side for players in the left and put it right side for players in the right
             let xModifier = size.width < size.height ? 0.0 : playerPos.x < size.center.x ? -1.0 : 1.0
@@ -108,21 +112,21 @@ class GameScene: SKScene {
         }
     }
 
-    private func layoutPlayerTokens(_ playerTokens: [String: Int]) {
-        for (index, playerToken) in playerTokens.enumerated() {
+    private func layoutPlayerTokens(_ playerTokens: [String: Int], playerIds: [String], userId: String) {
+        for playerToken in playerTokens {
             let token = TokenNode(
                 tokenCount: playerToken.value,
-                position: calculatePlayerPosition(index: index, total: playerTokens.count),
+                position: calculatePlayerPosition(playerId: playerToken.key, playerIds: playerIds, userId: userId),
                 radius: cardSize.width / 2
             )
             addChild(token)
         }
     }
 
-    private func layoutPlayerCards(_ playerCards: [String: [Int]]) {
-        for (index, cards) in playerCards.enumerated() {
-            let playerPos = calculatePlayerPosition(index: index, total: playerCards.count)
-            for (cardIndex, playerCard) in cards.value.enumerated() {
+    private func layoutPlayerCards(_ playerCards: [String: [Int]], playerIds: [String], userId: String) {
+        for playerCards in playerCards {
+            let playerPos = calculatePlayerPosition(playerId: playerCards.key, playerIds: playerIds, userId: userId)
+            for (cardIndex, playerCard) in playerCards.value.enumerated() {
                 // in portrait, put it above players
                 // in landscape, put it below for players in upper side and put it above for players in down side
                 let yModifier = size.width < size.height ? 1.0 : playerPos.y < size.center.y ? 1.0 : -1.0
@@ -140,14 +144,21 @@ class GameScene: SKScene {
         }
     }
 
-    private func calculatePlayerPosition(index: Int, total: Int) -> CGPoint {
+    private func calculatePlayerPosition(playerId: String, playerIds: [String], userId: String) -> CGPoint {
+        guard let playerIndex = playerIds.firstIndex(of: playerId),
+              let userIndex = playerIds.firstIndex(of: userId) else {
+            return .zero
+        }
+        // always show user itself as first
+        let shiftedIndex = (playerIndex - userIndex + playerIds.count) % playerIds.count
+
         let sizeAfterPadding = CGSize(width: size.width - 2 * padding, height: size.height - 2 * padding)
         let minSideLength = min(sizeAfterPadding.width, sizeAfterPadding.height)
         let radius = minSideLength / 2
 
         let startAngle: CGFloat = 3 / 2 * .pi  // 270 degree, bottom
-        let angleChange: CGFloat = 2 * .pi / CGFloat(total)
-        let playerAngle = startAngle - (CGFloat(index) * angleChange) // clockwise change
+        let angleChange: CGFloat = 2 * .pi / CGFloat(playerIds.count)
+        let playerAngle = startAngle - (CGFloat(shiftedIndex) * angleChange) // clockwise change
 
         return CGPoint(
             x: size.center.x + radius * cos(playerAngle),
