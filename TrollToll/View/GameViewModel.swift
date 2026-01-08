@@ -17,6 +17,7 @@ class GameViewModel {
     let lobbyService: LobbyRepo = FBLobbyRepo()
     var errorMessage: String?
     var turnTimeLeft: Int = 10
+    var hostLeft = false
     private var turnTimerTask: Task<Void, Never>?
 
     var currentPlayerName: String {
@@ -131,7 +132,6 @@ class GameViewModel {
     func leaveMatch() async {
         do {
             try await lobbyService.leaveMatch(of: match.id, with: user)
-            self.match = try await lobbyService.fetchMatch(of: match.id)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -147,6 +147,10 @@ class GameViewModel {
             Logger.multiplayer.error("Error observing match: \(error)")
         }
 
+        await leaveMatch()
+        if match.host != user {
+            hostLeft = true
+        }
         Logger.multiplayer.debug("Match observation ended")
     }
 

@@ -10,8 +10,8 @@ import SwiftUI
 
 struct GameView: View {
     @Environment(\.dismiss) private var dismiss
+    @AlertState private var alert: AlertType?
     @State private var viewModel: GameViewModel
-    @State private var showLeaveAlert = false
     @State private var toast: Toast?
     private let scene: GameScene
 
@@ -30,12 +30,6 @@ struct GameView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             .foregroundStyle(Color.white)
-        }
-        .overlay(alignment: .topLeading) {
-            if viewModel.isPlayerTurn {
-                Text(viewModel.turnTimeLeft, format: .number)
-                    .foregroundStyle(Color.white)
-            }
         }
         .overlay(alignment: .bottomTrailing) {
             HStack {
@@ -61,24 +55,31 @@ struct GameView: View {
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
-                    showLeaveAlert = true
+                    alert = .confirmLeave
                 } label: {
                     Image(systemName: "chevron.left")
                 }
             }
         }
-        .alert("alertSureToLeave", isPresented: $showLeaveAlert) {
-            Button("yes", role: .destructive) {
-                Task {
-                    if viewModel.user.isHost {
-                        await viewModel.cancelMatch()
-                    } else {
-                        await viewModel.leaveMatch()
+        .alert(alert?.title ?? "", isPresented: $alert, presenting: alert) { alertType in
+            switch alertType {
+            case .confirmLeave:
+                Button("yes", role: .destructive) {
+                    Task {
+                        if viewModel.user.isHost {
+                            await viewModel.cancelMatch()
+                        } else {
+                            await viewModel.leaveMatch()
+                        }
+                        dismiss()
                     }
+                }
+                Button("cancel", role: .cancel) { /* closes dialog */ }
+            case .hostLeft:
+                Button("ok", role: .cancel) {
                     dismiss()
                 }
             }
-            Button("cancel", role: .cancel) { /* closes dialog */ }
         }
         .toast(toast: $toast)
         .sensoryFeedback(.error, trigger: toast) { _, newValue in
@@ -105,6 +106,23 @@ struct GameView: View {
             if case .finished(let victor) = viewModel.gameState.progress {
                 toast = Toast(message: "Victor is: \(viewModel.name(for: victor))", type: .info, duration: .long)
             }
+        }
+        .onChange(of: viewModel.hostLeft) {
+            alert = .hostLeft
+        }
+    }
+}
+
+private enum AlertType {
+    case confirmLeave
+    case hostLeft
+
+    var title: LocalizedStringKey {
+        switch self {
+        case .confirmLeave:
+            "alertSureToLeave"
+        case .hostLeft:
+            "hostLeft"
         }
     }
 }
