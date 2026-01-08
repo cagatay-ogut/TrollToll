@@ -29,7 +29,7 @@ struct GameState: Codable, Hashable {
         }
         self.playerTokens = tokens
         self.playerCards = cards
-        self.middleCards = Array(3...35).shuffled()
+        self.middleCards = Array((3...35).shuffled().prefix(26))
         self.tokenInMiddle = 0
         self.progress = .inProgress
     }
