@@ -167,6 +167,7 @@ class GameScene: SKScene {
     }
 }
 
+#if DEBUG
 #Preview {
     let host = User(id: "host_id", name: "host", isHost: true)
     let player1 = User(id: "player_id", name: "player", isHost: false)
@@ -180,3 +181,4 @@ class GameScene: SKScene {
         gameState: gameState
     )
 }
+#endif

@@ -102,6 +102,8 @@ private struct UserNameField: View {
     }
 }
 
+#if DEBUG
 #Preview {
     MainView()
 }
+#endif

@@ -140,6 +140,7 @@ private struct PlayerListView: View {
     }
 }
 
+#if DEBUG
 #Preview("Player") {
     LobbyView(user: User(id: "id", name: "player", isHost: false))
         .environment(Router())
@@ -149,3 +150,4 @@ private struct PlayerListView: View {
 //      LobbyView(user: User(id: "id", name: "host", isHost: true))
 //          .environment(Router())
 // }
+#endif
