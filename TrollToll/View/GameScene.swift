@@ -57,7 +57,7 @@ class GameScene: SKScene {
     private func layoutMiddleDeck(_ cardCount: Int) {
         let middleDeck = DeckNode(
             cardCount: cardCount,
-            position: size.center,
+            position: .init(x: size.width - cardSize.width - 10, y: cardSize.height / 2 + 10),
             size: cardSize
         )
         addChild(middleDeck)
@@ -66,7 +66,7 @@ class GameScene: SKScene {
     private func layoutMiddleCard(_ cardNumber: Int) {
         let middleCard = CardNode(
             cardNumber: cardNumber,
-            position: CGPoint(x: size.center.x, y: size.center.y - 10 - cardSize.height),
+            position: size.center,
             size: cardSize
         )
         addChild(middleCard)

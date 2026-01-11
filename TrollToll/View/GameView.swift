@@ -31,25 +31,8 @@ struct GameView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             .foregroundStyle(Color.white)
         }
-        .overlay(alignment: .bottomTrailing) {
-            HStack {
-                Button {
-                    Task {
-                        await viewModel.takeCard()
-                    }
-                } label: {
-                    Text("takeCard")
-                }
-                .disabled(!viewModel.canTakeCard)
-                Button {
-                    Task {
-                        await viewModel.putToken()
-                    }
-                } label: {
-                    Text("putToken")
-                }
-                .disabled(!viewModel.canPutToken)
-            }
+        .overlay(alignment: .bottom) {
+            playerActionButtons
         }
         .overlay(alignment: .topLeading) {
             Text(viewModel.turnTimeLeft, format: .number)
@@ -119,6 +102,29 @@ struct GameView: View {
         .onChange(of: viewModel.hostLeft) {
             alert = .hostLeft
         }
+    }
+
+    private var playerActionButtons: some View {
+        HStack {
+            Button {
+                Task {
+                    await viewModel.takeCard()
+                }
+            } label: {
+                Text("takeCard")
+            }
+            .disabled(!viewModel.canTakeCard)
+            Button {
+                Task {
+                    await viewModel.putToken()
+                }
+            } label: {
+                Text("putToken")
+            }
+            .disabled(!viewModel.canPutToken)
+        }
+        .buttonStyle(.bordered)
+        .padding(8)
     }
 }
 
