@@ -32,8 +32,6 @@ class OpenCardsNode: SKSpriteNode {
                 xPos = CGFloat(xOffset) * (size.width + spacingBetweenGroups)
             }
 
-            print(group)
-            print(xPos)
             for (cardIndex, card) in group.enumerated() {
                 let cardNode = SKShapeNode(
                     rect: CGRect(origin: .init(x: -size.width / 2, y: -size.height / 2), size: size)
