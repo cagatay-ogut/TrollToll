@@ -51,6 +51,10 @@ struct GameView: View {
                 .disabled(!viewModel.canPutToken)
             }
         }
+        .overlay(alignment: .topLeading) {
+            Text(viewModel.turnTimeLeft, format: .number)
+                .foregroundStyle(.white)
+        }
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
