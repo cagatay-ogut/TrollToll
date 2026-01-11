@@ -16,21 +16,32 @@ class DeckNode: SKSpriteNode {
 
     init(cardCount: Int, position: CGPoint, size: CGSize) {
         self.cardCount = cardCount
-        super.init(texture: nil, color: UIColor.red, size: size)
+        super.init(texture: nil, color: UIColor.clear, size: size)
         self.position = position
 
-        let borderNode = SKShapeNode(
-            rect: CGRect(origin: .init(x: -size.width / 2, y: -size.height / 2), size: size)
-        )
-        borderNode.strokeColor = .black
-        let labelNode = SKLabelNode(text: "\(cardCount)")
-        labelNode.horizontalAlignmentMode = .center
-        labelNode.verticalAlignmentMode = .center
-        labelNode.fontSize = 20
-        labelNode.fontName! += "-Bold"
+        let shownCards = min(5, cardCount)
 
-        self.addChild(borderNode)
-        self.addChild(labelNode)
+        for index in 0..<shownCards {
+            let xPos = -size.width / 2 + CGFloat(index * 2)
+            let yPos = -size.height / 2 + CGFloat(index * 2)
+            let cardNode = SKShapeNode(
+                rect: CGRect(origin: .init(x: xPos, y: yPos), size: size)
+            )
+            cardNode.fillColor = .brown
+            cardNode.strokeColor = .black
+
+            if cardCount > 5, index == shownCards - 1 {
+                let labelNode = SKLabelNode(text: "\(cardCount)")
+                labelNode.horizontalAlignmentMode = .right
+                labelNode.verticalAlignmentMode = .top
+                labelNode.position = .init(x: xPos + size.width, y: yPos + size.height)
+                labelNode.fontSize = 10
+                labelNode.fontName! += "-Bold"
+
+                cardNode.addChild(labelNode)
+            }
+            self.addChild(cardNode)
+        }
     }
 
     @available(*, unavailable)
