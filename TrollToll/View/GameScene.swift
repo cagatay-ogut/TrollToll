@@ -123,24 +123,11 @@ class GameScene: SKScene {
         }
     }
 
-    private func layoutPlayerCards(_ playerCards: [String: [Int]], playerIds: [String], userId: String) {
-        for playerCards in playerCards {
+    private func layoutPlayerCards(_ playersCards: [String: [Int]], playerIds: [String], userId: String) {
+        for playerCards in playersCards {
             let playerPos = calculatePlayerPosition(playerId: playerCards.key, playerIds: playerIds, userId: userId)
-            for (cardIndex, playerCard) in playerCards.value.enumerated() {
-                // in portrait, put it above players
-                // in landscape, put it below for players in upper side and put it above for players in down side
-                let yModifier = size.width < size.height ? 1.0 : playerPos.y < size.center.y ? 1.0 : -1.0
-                let card = CardNode(
-                    cardNumber: playerCard,
-                    position: CGPoint(
-                        x: playerPos.x + (CGFloat(cardIndex) * (cardSize.width + 5)),
-                        y: playerPos.y + cardSize.height * yModifier
-                    ),
-                    size: cardSize
-                )
-
-                addChild(card)
-            }
+            let openCardsNode = OpenCardsNode(cards: playerCards.value, playerPosition: playerPos, size: cardSize)
+            addChild(openCardsNode)
         }
     }
 
@@ -174,7 +161,7 @@ class GameScene: SKScene {
     let player2 = User(id: "player_id_2", name: "player2", isHost: false)
     let match = Match(id: "match_id", status: .playing, host: host, players: [player1, player2], createdAt: Date())
     var gameState = GameState(from: match)
-    gameState.playerCards = ["host_id": [23, 24, 25], "player_id": [12, 15], "player_id_2": [17]]
+    gameState.playerCards = ["host_id": [22, 23, 24, 28], "player_id": [12, 13, 15], "player_id_2": [15, 17, 19]]
     return GameView(
         user: host,
         match: match,
