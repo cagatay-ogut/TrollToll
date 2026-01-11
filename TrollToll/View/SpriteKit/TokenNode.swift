@@ -19,17 +19,26 @@ class TokenNode: SKSpriteNode {
         super.init(texture: nil, color: UIColor.clear, size: CGSize(width: radius * 2, height: radius * 2))
         self.position = position
 
-        let circleNode = SKShapeNode(circleOfRadius: radius)
-        circleNode.strokeColor = .black
-        circleNode.fillColor = .orange
-        let labelNode = SKLabelNode(text: "\(tokenCount)")
-        labelNode.horizontalAlignmentMode = .center
-        labelNode.verticalAlignmentMode = .center
-        labelNode.fontSize = 20
-        labelNode.fontName! += "-Bold"
+        let shownTokens = min(5, tokenCount)
 
-        self.addChild(circleNode)
-        self.addChild(labelNode)
+        for index in 0..<shownTokens {
+            let xPos = CGFloat(index * 2)
+            let circleNode = SKShapeNode(circleOfRadius: radius)
+            circleNode.strokeColor = .black
+            circleNode.fillColor = .orange
+            circleNode.position = .init(x: xPos, y: 0)
+
+            if tokenCount > 5, index == shownTokens - 1 {
+                let labelNode = SKLabelNode(text: "\(tokenCount)")
+                labelNode.horizontalAlignmentMode = .center
+                labelNode.verticalAlignmentMode = .center
+                labelNode.fontSize = 10
+                labelNode.fontName! += "-Bold"
+
+                circleNode.addChild(labelNode)
+            }
+            self.addChild(circleNode)
+        }
     }
 
     @available(*, unavailable)

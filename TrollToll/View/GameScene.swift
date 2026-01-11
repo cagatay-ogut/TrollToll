@@ -19,6 +19,7 @@ class GameScene: SKScene {
     }
 
     private let cardSize = CGSize(width: 30, height: 50)
+    private let tokenRadius: CGFloat = 10
     private let padding: CGFloat = 20
 
     override func didChangeSize(_ oldSize: CGSize) {
@@ -76,7 +77,7 @@ class GameScene: SKScene {
         let middleTokens = TokenNode(
             tokenCount: tokenCount,
             position: CGPoint(x: size.center.x, y: size.center.y + 10 + cardSize.height),
-            radius: cardSize.width / 2
+            radius: tokenRadius
         )
         addChild(middleTokens)
     }
@@ -117,7 +118,7 @@ class GameScene: SKScene {
             let token = TokenNode(
                 tokenCount: playerToken.value,
                 position: calculatePlayerPosition(playerId: playerToken.key, playerIds: playerIds, userId: userId),
-                radius: cardSize.width / 2
+                radius: tokenRadius
             )
             addChild(token)
         }
