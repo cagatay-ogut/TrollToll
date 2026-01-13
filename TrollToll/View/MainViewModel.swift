@@ -16,9 +16,10 @@ class MainViewModel {
     var errorMessage: String?
 
     func authenticate() async {
-        authState = await authenticator.authenticate()
-        if case .authenticated(let userId) = authState {
+        let auth = await authenticator.authenticate()
+        if case .authenticated(let userId) = auth {
             await getUser(with: userId)
+            authState = auth
         }
     }
 
