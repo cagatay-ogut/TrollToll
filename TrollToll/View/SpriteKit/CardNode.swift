@@ -16,7 +16,7 @@ class CardNode: SKSpriteNode {
 
     init(cardNumber: Int, position: CGPoint, size: CGSize) {
         self.cardNumber = cardNumber
-        super.init(texture: nil, color: UIColor.blue, size: size)
+        super.init(texture: nil, color: UIColor.purple, size: size)
         self.position = position
 
         let borderNode = SKShapeNode(
@@ -24,9 +24,10 @@ class CardNode: SKSpriteNode {
         )
         borderNode.strokeColor = .black
         let labelNode = SKLabelNode(text: "\(cardNumber)")
-        labelNode.horizontalAlignmentMode = .center
-        labelNode.verticalAlignmentMode = .center
-        labelNode.fontSize = 20
+        labelNode.horizontalAlignmentMode = .left
+        labelNode.verticalAlignmentMode = .top
+        labelNode.position = .init(x: -size.width / 2, y: size.height / 2)
+        labelNode.fontSize = 12
         labelNode.fontName! += "-Bold"
 
         self.addChild(borderNode)

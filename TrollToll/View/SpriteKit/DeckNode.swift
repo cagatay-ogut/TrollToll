@@ -33,8 +33,8 @@ class DeckNode: SKSpriteNode {
             if cardCount > 5, index == shownCards - 1 {
                 let labelNode = SKLabelNode(text: "\(cardCount)")
                 labelNode.horizontalAlignmentMode = .right
-                labelNode.verticalAlignmentMode = .top
-                labelNode.position = .init(x: xPos + size.width, y: yPos + size.height)
+                labelNode.verticalAlignmentMode = .bottom
+                labelNode.position = .init(x: xPos + size.width, y: yPos)
                 labelNode.fontSize = 10
                 labelNode.fontName! += "-Bold"
 
