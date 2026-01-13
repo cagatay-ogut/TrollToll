@@ -35,8 +35,10 @@ struct GameView: View {
             playerActionButtons
         }
         .overlay(alignment: .topLeading) {
-            Text(viewModel.turnTimeLeft, format: .number)
-                .foregroundStyle(.white)
+            if viewModel.isPlayerTurn {
+                Text(viewModel.turnTimeLeft, format: .number)
+                    .foregroundStyle(.white)
+            }
         }
         .navigationBarBackButtonHidden(true)
         .toolbar {
