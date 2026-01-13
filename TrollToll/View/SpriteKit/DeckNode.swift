@@ -9,33 +9,31 @@ import SpriteKit
 
 class DeckNode: SKSpriteNode {
     private let maxShownCardNo = 5
-    private let screenCenter: CGPoint
     private var cardNodes: [SKShapeNode] = []
     private var labelNode: SKLabelNode?
 
     var cardCount: Int {
         didSet {
-            updateCards(oldCount: oldValue)
+            if oldValue != cardCount {
+                updateCards(oldCount: oldValue)
+            }
         }
     }
 
-    init(cardCount: Int, position: CGPoint, size: CGSize, screenCenter: CGPoint) {
+    init(cardCount: Int, position: CGPoint, size: CGSize) {
         self.cardCount = cardCount
-        self.screenCenter = screenCenter
         super.init(texture: nil, color: UIColor.clear, size: size)
         self.position = position
 
         let shownCards = min(maxShownCardNo, cardCount)
-
         for index in 0..<shownCards {
             let cardNode = createCardNode(at: index)
-
-            if cardCount > maxShownCardNo, index == shownCards - 1 {
-                createLabelNode()
-                cardNode.addChild(labelNode!)
-            }
             self.addChild(cardNode)
             cardNodes.append(cardNode)
+        }
+        if cardCount > maxShownCardNo {
+            self.labelNode = createLabelNode()
+            cardNodes.last?.addChild(labelNode!)
         }
     }
 
@@ -44,44 +42,59 @@ class DeckNode: SKSpriteNode {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func calculatePosition(for index: Int) -> CGPoint {
-        CGPoint(
-            x: CGFloat(index * 2),
-            y: CGFloat(index * 2)
-        )
-    }
-
     private func createCardNode(at index: Int) -> SKShapeNode {
-        let position = calculatePosition(for: index)
         let cardNode = SKShapeNode(rectOf: size)
         cardNode.fillColor = .brown
         cardNode.strokeColor = .black
-        cardNode.position = position
+        cardNode.position = CGPoint(x: CGFloat(index * 2), y: CGFloat(index * 2))
         cardNode.zPosition = CGFloat(index)
         return cardNode
     }
 
-    private func createLabelNode() {
-        labelNode = SKLabelNode(text: "\(cardCount)")
-        labelNode!.horizontalAlignmentMode = .right
-        labelNode!.verticalAlignmentMode = .top
-        labelNode!.position = CGPoint(x: size.width / 2, y: size.height / 2)
-        labelNode!.fontSize = 10
-        labelNode!.fontName! += "-Bold"
+    private func createLabelNode() -> SKLabelNode {
+        let labelNode = SKLabelNode(text: "\(cardCount)")
+        labelNode.horizontalAlignmentMode = .right
+        labelNode.verticalAlignmentMode = .top
+        labelNode.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        labelNode.fontSize = 10
+        labelNode.fontName! += "-Bold"
+        return labelNode
+    }
+
+    // only update is card removal
+    private func updateCards(oldCount: Int) {
+        removeTopCard()
+        if cardCount <= maxShownCardNo { // few cards left, don't show count anymore
+            removeLabel()
+        } else {
+            insertCard()
+            updateLabelParent()
+            updateLabelNode()
+        }
+    }
+
+    private func removeLabel() {
+        labelNode?.removeFromParent()
+        labelNode = nil
     }
 
     private func updateLabelNode() {
         labelNode?.text = "\(cardCount)"
     }
 
-    private func updateCards(oldCount: Int) {
-        if oldCount > cardCount {
-            if cardCount < maxShownCardNo {
-                removeLabel()
-            } else {
-                insertCard()
-            }
-            removeTopCard()
+    private func updateLabelParent() {
+        guard let labelNode else { return }
+        labelNode.removeFromParent()
+        cardNodes.last?.addChild(labelNode)
+    }
+
+    private func removeTopCard() {
+        let topCardNode = cardNodes.last!
+        self.cardNodes.removeLast()
+
+        let removeAction = SKAction.move(to: convert(scene!.size.center, from: parent!), duration: 0.6)
+        topCardNode.run(removeAction) {
+            self.removeChildren(in: [topCardNode])
         }
     }
 
@@ -95,25 +108,5 @@ class DeckNode: SKSpriteNode {
             cardNodes[index].zPosition = CGFloat(index)
             cardNodes[index].run(moveAction)
         }
-    }
-
-    private func removeTopCard() {
-        let topCardNode = cardNodes.last!
-        if let labelNode {
-            topCardNode.removeChildren(in: [labelNode])
-            self.cardNodes.removeLast()
-            self.cardNodes.last?.addChild(labelNode)
-            self.updateLabelNode()
-        }
-
-        let removeAction = SKAction.move(to: convert(screenCenter, from: parent!), duration: 0.6)
-        topCardNode.run(removeAction) {
-            self.removeChildren(in: [topCardNode])
-        }
-    }
-
-    private func removeLabel() {
-        labelNode?.removeFromParent()
-        labelNode = nil
     }
 }
