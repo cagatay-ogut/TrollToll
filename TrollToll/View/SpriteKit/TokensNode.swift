@@ -28,17 +28,14 @@ class TokensNode: SKSpriteNode {
         self.position = position
 
         let shownTokens = min(maxShownTokenNo, tokenCount)
-
         for index in 0..<shownTokens {
             let tokenNode = createTokenNode(at: index)
-
-            if tokenCount > maxShownTokenNo, index == shownTokens - 1 {
-                self.labelNode = createLabelNode()
-
-                tokenNode.addChild(labelNode!)
-            }
             self.addChild(tokenNode)
             tokenNodes.append(tokenNode)
+        }
+        if tokenCount > maxShownTokenNo {
+            self.labelNode = createLabelNode()
+            tokenNodes.last?.addChild(labelNode!)
         }
     }
 
@@ -52,6 +49,7 @@ class TokensNode: SKSpriteNode {
         tokenNode.strokeColor = .black
         tokenNode.fillColor = .orange
         tokenNode.position = .init(x: CGFloat(index * 2), y: 0)
+        tokenNode.zPosition = CGFloat(index)
         return tokenNode
     }
 
@@ -65,35 +63,25 @@ class TokensNode: SKSpriteNode {
     }
 
     private func updateTokens(oldCount: Int) {
+        let shownTokens = min(maxShownTokenNo, tokenCount)
         if oldCount > tokenCount { // if token is removed
-            while tokenNodes.count > tokenCount {
+            while tokenNodes.count > shownTokens {
                 removeTopToken()
             }
-            if tokenCount < maxShownTokenNo { // if few token left
-                removeLabel() // only show token nodes
-            } else { // if many tokens are left
-                insertToken() // insert one in beginning to make up for removed one
-                updateLabelParent() // update labels parent to new last token
-                updateLabelNode() // update labels number
+        } else {
+            while tokenNodes.count < shownTokens {
+                appendToken()
             }
-        } else { // if token added
-            if oldCount < maxShownTokenNo { // if few token exists
-                let shownTokens = min(maxShownTokenNo, tokenCount)
-                while tokenNodes.count < shownTokens {
-                    appendToken()
-                }
-                if tokenCount > maxShownTokenNo {
-                    labelNode = createLabelNode()
-                    updateLabelParent()
-                }
-            } else { // if many tokens exists
-                if labelNode != nil { // if label is already shown
-                    updateLabelNode()
-                } else { // if the thresold to show label crossed
-                    self.labelNode = createLabelNode()
-                    updateLabelParent()
-                }
+        }
+
+        if tokenCount <= maxShownTokenNo { // few tokens left, don't show count anymore
+            removeLabel()
+        } else {
+            if oldCount > tokenCount {
+                insertToken()
             }
+            createLabelOrUpdateLabelParent()
+            updateLabelNode()
         }
     }
 
@@ -106,10 +94,14 @@ class TokensNode: SKSpriteNode {
         labelNode?.text = "\(tokenCount)"
     }
 
-    private func updateLabelParent() {
-        guard let labelNode else { return }
-        labelNode.removeFromParent()
-        self.tokenNodes.last?.addChild(labelNode)
+    private func createLabelOrUpdateLabelParent() {
+        if let labelNode {
+            labelNode.removeFromParent()
+            self.tokenNodes.last?.addChild(labelNode)
+        } else {
+            self.labelNode = createLabelNode()
+            self.tokenNodes.last?.addChild(labelNode!)
+        }
     }
 
     private func removeTopToken() {
@@ -124,8 +116,8 @@ class TokensNode: SKSpriteNode {
 
     private func insertToken() {
         let tokenNode = createTokenNode(at: 0)
-        tokenNodes.insert(tokenNode, at: 0)
         self.addChild(tokenNode)
+        tokenNodes.insert(tokenNode, at: 0)
 
         let moveAction = SKAction.moveBy(x: 2, y: 0, duration: 0.2)
         for index in 1..<tokenNodes.count {
@@ -135,10 +127,8 @@ class TokensNode: SKSpriteNode {
     }
 
     private func appendToken() {
-        print(tokenNodes.count)
         let tokenNode = createTokenNode(at: tokenNodes.count)
         tokenNodes.append(tokenNode)
-        print(tokenNodes.count)
         self.addChild(tokenNode)
     }
 }
