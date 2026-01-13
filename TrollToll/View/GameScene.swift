@@ -10,17 +10,18 @@ import SpriteKit
 import SwiftUI
 
 class GameScene: SKScene {
-    var viewModel: GameViewModel? {
-        didSet {
-            if let viewModel {
-                layoutGameState(with: viewModel.gameState, for: viewModel.user)
-            }
-        }
-    }
+    var viewModel: GameViewModel?
 
     private let cardSize = CGSize(width: 30, height: 50)
     private let tokenRadius: CGFloat = 10
     private let padding: CGFloat = 70
+
+    private var deckNode: DeckNode?
+    private var middleCardNode: CardNode?
+    private var middleTokensNode: TokensNode?
+    private var playerTokensNodes: [String: TokensNode] = [:]
+    private var playerCardsNodes: [String: OpenCardsNode] = [:]
+    private var playerInfoNodes: [String: PlayerInfoNode] = [:]
 
     override func didChangeSize(_ oldSize: CGSize) {
         Logger.gameScene.debug("Changed size from: \(String(describing: oldSize)) to: \(String(describing: self.size))")
@@ -30,6 +31,7 @@ class GameScene: SKScene {
         Logger.gameScene.debug("Did move")
 
         if let viewModel {
+            clearScene()
             layoutGameState(with: viewModel.gameState, for: viewModel.user)
         }
     }
@@ -41,86 +43,110 @@ class GameScene: SKScene {
 
     private func layoutGameState(with gameState: GameState, for user: User) {
         Logger.gameScene.debug("Setting game state")
-        clearScene()
 
-        layoutMiddleDeck(gameState.middleCards.count)
-        layoutMiddleCard(gameState.middleCards.first ?? 0)
+        layoutDeck(gameState.deckCards.count)
+        layoutMiddleCard(gameState.deckCards.first ?? 0)
         layoutMiddleTokens(gameState.tokenInMiddle)
-        layoutPlayerInfo(gameState.players, userId: user.id)
         layoutPlayerTokens(gameState.playerTokens, playerIds: gameState.players.map { $0.id }, userId: user.id)
         layoutPlayerCards(gameState.playerCards, playerIds: gameState.players.map { $0.id }, userId: user.id)
+        layoutPlayerInfos(gameState.players, userId: user.id)
     }
 
     private func clearScene() {
         removeAllChildren()
     }
 
-    private func layoutMiddleDeck(_ cardCount: Int) {
-        let middleDeck = DeckNode(
-            cardCount: cardCount,
-            position: .init(x: size.width - cardSize.width - 10, y: cardSize.height / 2 + 10),
-            size: cardSize
-        )
-        addChild(middleDeck)
+    private func layoutDeck(_ cardCount: Int) {
+        if let deckNode {
+            deckNode.cardCount = cardCount
+        } else {
+            deckNode = DeckNode(
+                cardCount: cardCount,
+                position: .init(x: size.width - cardSize.width - 10, y: cardSize.height / 2 + 10),
+                size: cardSize
+            )
+            addChild(deckNode!)
+        }
     }
 
     private func layoutMiddleCard(_ cardNumber: Int) {
-        let middleCard = CardNode(
-            cardNumber: cardNumber,
-            position: size.center,
-            size: cardSize
-        )
-        addChild(middleCard)
+        if let middleCardNode {
+            middleCardNode.cardNumber = cardNumber
+        } else {
+            middleCardNode = CardNode(
+                cardNumber: cardNumber,
+                position: size.center,
+                size: cardSize
+            )
+            addChild(middleCardNode!)
+        }
     }
 
     private func layoutMiddleTokens(_ tokenCount: Int) {
-        let middleTokens = TokenNode(
-            tokenCount: tokenCount,
-            position: size.center,
-            radius: tokenRadius
-        )
-        addChild(middleTokens)
-    }
-
-    private func layoutPlayerInfo(_ players: [User], userId: String) {
-        for player in players {
-            let playerPos = calculatePlayerPosition(
-                playerId: player.id,
-                playerIds: players.map { $0.id },
-                userId: userId
+        if let middleTokensNode {
+            middleTokensNode.tokenCount = tokenCount
+        } else {
+            middleTokensNode = TokensNode(
+                tokenCount: tokenCount,
+                position: size.center,
+                radius: tokenRadius
             )
-
-            let playerInfoNode = PlayerInfoNode(
-                playerName: player.name,
-                point: viewModel?.point(for: player.id) ?? 0,
-                position: playerPos,
-                screenCenter: size.center
-            )
-            addChild(playerInfoNode)
+            addChild(middleTokensNode!)
         }
     }
 
     private func layoutPlayerTokens(_ playerTokens: [String: Int], playerIds: [String], userId: String) {
         for playerToken in playerTokens {
-            let token = TokenNode(
-                tokenCount: playerToken.value,
-                position: calculatePlayerPosition(playerId: playerToken.key, playerIds: playerIds, userId: userId),
-                radius: tokenRadius
-            )
-            addChild(token)
+            if let tokenNode = playerTokensNodes[playerToken.key] {
+                tokenNode.tokenCount = playerToken.value
+            } else {
+                playerTokensNodes[playerToken.key] = TokensNode(
+                    tokenCount: playerToken.value,
+                    position: calculatePlayerPosition(playerId: playerToken.key, playerIds: playerIds, userId: userId),
+                    radius: tokenRadius
+                )
+                addChild(playerTokensNodes[playerToken.key]!)
+            }
         }
     }
 
     private func layoutPlayerCards(_ playersCards: [String: [Int]], playerIds: [String], userId: String) {
         for playerCards in playersCards {
-            let playerPos = calculatePlayerPosition(playerId: playerCards.key, playerIds: playerIds, userId: userId)
-            let openCardsNode = OpenCardsNode(
-                cards: playerCards.value,
-                playerPosition: playerPos,
-                size: cardSize,
-                screenCenter: size.center
-            )
-            addChild(openCardsNode)
+            if let playerCardNode = playerCardsNodes[playerCards.key] {
+                playerCardNode.cards = playerCards.value
+            } else {
+                let playerPos = calculatePlayerPosition(playerId: playerCards.key, playerIds: playerIds, userId: userId)
+
+                playerCardsNodes[playerCards.key] = OpenCardsNode(
+                    cards: playerCards.value,
+                    playerPosition: playerPos,
+                    size: cardSize,
+                    screenCenter: size.center
+                )
+                addChild(playerCardsNodes[playerCards.key]!)
+            }
+        }
+    }
+
+    private func layoutPlayerInfos(_ players: [User], userId: String) {
+        for player in players {
+            if let playerInfoNode = playerInfoNodes[player.id] {
+                playerInfoNode.point = viewModel?.point(for: player.id) ?? 0
+            } else {
+                let playerPos = calculatePlayerPosition(
+                    playerId: player.id,
+                    playerIds: players.map { $0.id },
+                    userId: userId
+                )
+
+                playerInfoNodes[player.id] = PlayerInfoNode(
+                    playerName: player.name,
+                    point: viewModel?.point(for: player.id) ?? 0,
+                    position: playerPos,
+                    screenCenter: size.center
+                )
+                addChild(playerInfoNodes[player.id]!)
+            }
         }
     }
 

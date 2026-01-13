@@ -8,8 +8,12 @@
 import SpriteKit
 
 class PlayerInfoNode: SKLabelNode {
-    var playerName: String
-    var point: Int
+    let playerName: String
+    var point: Int {
+        didSet {
+            children.compactMap { $0 as? SKLabelNode }.first?.text = "\(playerName)\npoints: \(point)"
+        }
+    }
 
     init(playerName: String, point: Int, position: CGPoint, screenCenter: CGPoint) {
         self.playerName = playerName

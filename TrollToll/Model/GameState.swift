@@ -12,7 +12,7 @@ struct GameState: Codable, Hashable {
     var currentPlayerId: String
     var playerTokens: [String: Int]
     var playerCards: [String: [Int]]
-    var middleCards: [Int]
+    var deckCards: [Int]
     var tokenInMiddle: Int
     var progress: GameProgress
 
@@ -29,7 +29,7 @@ struct GameState: Codable, Hashable {
         }
         self.playerTokens = tokens
         self.playerCards = cards
-        self.middleCards = Array((3...35).shuffled().prefix(26))
+        self.deckCards = Array((3...35).shuffled().prefix(26))
         self.tokenInMiddle = 0
         self.progress = .inProgress
     }
@@ -43,7 +43,7 @@ struct GameState: Codable, Hashable {
         self.playerTokens = try container.decode([String: Int].self, forKey: .playerTokens)
         self.playerCards = try container.decodeIfPresent([String: [Int]].self, forKey: .playerCards)
             ?? Dictionary(uniqueKeysWithValues: players.map { ($0.id, []) })
-        self.middleCards = try container.decodeIfPresent([Int].self, forKey: .middleCards) ?? []
+        self.deckCards = try container.decodeIfPresent([Int].self, forKey: .deckCards) ?? []
         self.tokenInMiddle = try container.decode(Int.self, forKey: .tokenInMiddle)
         self.progress = try container.decode(GameProgress.self, forKey: .progress)
     }

@@ -1,5 +1,5 @@
 //
-//  TokenNode.swift
+//  TokensNode.swift
 //  TrollToll
 //
 //  Created by Cagatay on 7.01.2026.
@@ -7,18 +7,31 @@
 
 import SpriteKit
 
-class TokenNode: SKSpriteNode {
+class TokensNode: SKSpriteNode {
+    private let radius: CGFloat
+
     var tokenCount: Int {
         didSet {
-            children.compactMap { $0 as? SKLabelNode }.first?.text = "\(tokenCount)"
+            updateTokens()
         }
     }
 
     init(tokenCount: Int, position: CGPoint, radius: CGFloat) {
         self.tokenCount = tokenCount
+        self.radius = radius
         super.init(texture: nil, color: UIColor.clear, size: CGSize(width: radius * 2, height: radius * 2))
         self.position = position
 
+        updateTokens()
+    }
+
+    @available(*, unavailable)
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func updateTokens() {
+        removeAllChildren()
         let shownTokens = min(5, tokenCount)
 
         for index in 0..<shownTokens {
@@ -39,10 +52,5 @@ class TokenNode: SKSpriteNode {
             }
             self.addChild(circleNode)
         }
-    }
-
-    @available(*, unavailable)
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }

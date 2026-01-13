@@ -46,7 +46,7 @@ class GameViewModel {
         exitedPlayers.contains { $0.id == gameState.currentPlayerId }
     }
     private var isCardLeft: Bool {
-        !gameState.middleCards.isEmpty
+        !gameState.deckCards.isEmpty
     }
 
     init(user: User, match: Match, gameState: GameState) {
@@ -72,7 +72,7 @@ class GameViewModel {
     }
 
     func takeCard() async {
-        let card = gameState.middleCards.removeFirst()
+        let card = gameState.deckCards.removeFirst()
         if gameState.playerCards[gameState.currentPlayerId] != nil {
             gameState.playerCards[gameState.currentPlayerId]?.append(card)
         } else {

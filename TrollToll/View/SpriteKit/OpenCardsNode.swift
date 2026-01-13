@@ -8,13 +8,54 @@
 import SpriteKit
 
 class OpenCardsNode: SKSpriteNode {
-    var cards: [Int]
+    private let screenCenter: CGPoint
+    private let playerPosition: CGPoint
+
+    var cards: [Int] {
+        didSet {
+            updateCards()
+        }
+    }
 
     init(cards: [Int], playerPosition: CGPoint, size: CGSize, screenCenter: CGPoint) {
         self.cards = cards
+        self.screenCenter = screenCenter
+        self.playerPosition = playerPosition
         super.init(texture: nil, color: UIColor.clear, size: size)
         self.position = playerPosition
 
+        updateCards()
+    }
+
+    @available(*, unavailable)
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func groupConsecutive(_ numbers: [Int]) -> [[Int]] {
+        guard !numbers.isEmpty else { return [] }
+
+        var result: [[Int]] = []
+        var currentGroup: [Int] = [numbers[0]]
+
+        for index in 1..<numbers.count {
+            let current = numbers[index]
+            let previous = numbers[index - 1]
+
+            if current == previous + 1 {
+                currentGroup.append(current)
+            } else {
+                result.append(currentGroup)
+                currentGroup = [current]
+            }
+        }
+
+        result.append(currentGroup)
+        return result
+    }
+
+    private func updateCards() {
+        removeAllChildren()
         let groups = groupConsecutive(cards)
 
         let spacingBetweenGroups: CGFloat = 8
@@ -61,32 +102,5 @@ class OpenCardsNode: SKSpriteNode {
         } else if playerPosition.y > screenCenter.y + 1 {
             self.zRotation = .pi
         }
-    }
-
-    @available(*, unavailable)
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    func groupConsecutive(_ numbers: [Int]) -> [[Int]] {
-        guard !numbers.isEmpty else { return [] }
-
-        var result: [[Int]] = []
-        var currentGroup: [Int] = [numbers[0]]
-
-        for index in 1..<numbers.count {
-            let current = numbers[index]
-            let previous = numbers[index - 1]
-
-            if current == previous + 1 {
-                currentGroup.append(current)
-            } else {
-                result.append(currentGroup)
-                currentGroup = [current]
-            }
-        }
-
-        result.append(currentGroup)
-        return result
     }
 }
