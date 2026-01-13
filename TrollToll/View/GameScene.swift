@@ -76,7 +76,7 @@ class GameScene: SKScene {
     private func layoutMiddleTokens(_ tokenCount: Int) {
         let middleTokens = TokenNode(
             tokenCount: tokenCount,
-            position: CGPoint(x: size.center.x, y: size.center.y + 10 + cardSize.height),
+            position: size.center,
             radius: tokenRadius
         )
         addChild(middleTokens)
