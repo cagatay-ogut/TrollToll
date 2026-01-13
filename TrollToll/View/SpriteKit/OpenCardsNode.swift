@@ -10,7 +10,7 @@ import SpriteKit
 class OpenCardsNode: SKSpriteNode {
     var cards: [Int]
 
-    init(cards: [Int], playerPosition: CGPoint, size: CGSize) {
+    init(cards: [Int], playerPosition: CGPoint, size: CGSize, screenCenter: CGPoint) {
         self.cards = cards
         super.init(texture: nil, color: UIColor.clear, size: size)
         self.position = playerPosition
@@ -52,6 +52,14 @@ class OpenCardsNode: SKSpriteNode {
                 cardNode.addChild(labelNode)
                 self.addChild(cardNode)
             }
+        }
+
+        if playerPosition.x < screenCenter.x - 1 {
+            self.zRotation = -.pi / 2
+        } else if playerPosition.x > screenCenter.x + 1 {
+            self.zRotation = .pi / 2
+        } else if playerPosition.y > screenCenter.y + 1 {
+            self.zRotation = .pi
         }
     }
 

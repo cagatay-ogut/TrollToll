@@ -24,6 +24,7 @@
 		2DA2C4492F0A87A800CE2E2D /* FBCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA2C4482F0A87A000CE2E2D /* FBCodable.swift */; };
 		2DA2C44B2F0A93FF00CE2E2D /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA2C44A2F0A93FD00CE2E2D /* MainViewModel.swift */; };
 		2DE223F22F13BB590078CB2D /* OpenCardsNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE223F12F13BB510078CB2D /* OpenCardsNode.swift */; };
+		2DF501402F1634C900C81DA0 /* PlayerInfoNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF5013F2F1634C600C81DA0 /* PlayerInfoNode.swift */; };
 		2DFFCE142F04285A00EFA68C /* LobbyRepo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE132F04285400EFA68C /* LobbyRepo.swift */; };
 		2DFFCE162F04287A00EFA68C /* FBLobbyRepo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE152F04287500EFA68C /* FBLobbyRepo.swift */; };
 		2DFFCE182F0429FD00EFA68C /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFFCE172F0429FC00EFA68C /* Logger.swift */; };
@@ -70,6 +71,7 @@
 		2DA2C44A2F0A93FD00CE2E2D /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
 		2DE223F12F13BB510078CB2D /* OpenCardsNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenCardsNode.swift; sourceTree = "<group>"; };
 		2DF5011B2F14203700C81DA0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2DF5013F2F1634C600C81DA0 /* PlayerInfoNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerInfoNode.swift; sourceTree = "<group>"; };
 		2DFFCE132F04285400EFA68C /* LobbyRepo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LobbyRepo.swift; sourceTree = "<group>"; };
 		2DFFCE152F04287500EFA68C /* FBLobbyRepo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FBLobbyRepo.swift; sourceTree = "<group>"; };
 		2DFFCE172F0429FC00EFA68C /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
@@ -163,9 +165,10 @@
 		2D54B6752F0E525A002838AA /* SpriteKit */ = {
 			isa = PBXGroup;
 			children = (
-				2DE223F12F13BB510078CB2D /* OpenCardsNode.swift */,
 				2D54B67A2F0E5973002838AA /* CardNode.swift */,
 				2D54B6762F0E5260002838AA /* DeckNode.swift */,
+				2DE223F12F13BB510078CB2D /* OpenCardsNode.swift */,
+				2DF5013F2F1634C600C81DA0 /* PlayerInfoNode.swift */,
 				2D54B67C2F0E63E8002838AA /* TokenNode.swift */,
 			);
 			path = SpriteKit;
@@ -372,6 +375,7 @@
 				2DA2C4492F0A87A800CE2E2D /* FBCodable.swift in Sources */,
 				2DFFCE572F082EC000EFA68C /* GameViewModel.swift in Sources */,
 				2DFFCE332F0524F800EFA68C /* Match.swift in Sources */,
+				2DF501402F1634C900C81DA0 /* PlayerInfoNode.swift in Sources */,
 				2DFFCE3F2F068BBA00EFA68C /* FBUserRepo.swift in Sources */,
 				2DFFCE3D2F068B8A00EFA68C /* UserRepo.swift in Sources */,
 				2DFFCE2C2F051A8700EFA68C /* AppDelegate.swift in Sources */,

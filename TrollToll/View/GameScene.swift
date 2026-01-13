@@ -20,7 +20,7 @@ class GameScene: SKScene {
 
     private let cardSize = CGSize(width: 30, height: 50)
     private let tokenRadius: CGFloat = 10
-    private let padding: CGFloat = 20
+    private let padding: CGFloat = 70
 
     override func didChangeSize(_ oldSize: CGSize) {
         Logger.gameScene.debug("Changed size from: \(String(describing: oldSize)) to: \(String(describing: self.size))")
@@ -89,27 +89,14 @@ class GameScene: SKScene {
                 playerIds: players.map { $0.id },
                 userId: userId
             )
-            // in portrait, put it under players
-            // in landscape, put it left side for players in the left and put it right side for players in the right
-            let xModifier = size.width < size.height ? 0.0 : playerPos.x < size.center.x ? -1.0 : 1.0
-            let yModifier = size.width < size.height ? -1.0 : 0.0
 
-            let nameNode = SKLabelNode(text: "\(player.name)")
-            nameNode.horizontalAlignmentMode = .center
-            nameNode.verticalAlignmentMode = .center
-            nameNode.fontSize = 20
-            nameNode.fontName! += "-Bold"
-            nameNode.position = CGPoint(x: playerPos.x + 60 * xModifier, y: (playerPos.y + 50 * yModifier) + 10)
-
-            let pointsNode = SKLabelNode(text: "points: \(viewModel?.point(for: player.id) ?? 0)")
-            pointsNode.horizontalAlignmentMode = .center
-            pointsNode.verticalAlignmentMode = .center
-            pointsNode.fontSize = 20
-            pointsNode.fontName! += "-Bold"
-            pointsNode.position = CGPoint(x: playerPos.x + 60 * xModifier, y: (playerPos.y + 50 * yModifier) - 10)
-
-            addChild(nameNode)
-            addChild(pointsNode)
+            let playerInfoNode = PlayerInfoNode(
+                playerName: player.name,
+                point: viewModel?.point(for: player.id) ?? 0,
+                position: playerPos,
+                screenCenter: size.center
+            )
+            addChild(playerInfoNode)
         }
     }
 
@@ -127,7 +114,12 @@ class GameScene: SKScene {
     private func layoutPlayerCards(_ playersCards: [String: [Int]], playerIds: [String], userId: String) {
         for playerCards in playersCards {
             let playerPos = calculatePlayerPosition(playerId: playerCards.key, playerIds: playerIds, userId: userId)
-            let openCardsNode = OpenCardsNode(cards: playerCards.value, playerPosition: playerPos, size: cardSize)
+            let openCardsNode = OpenCardsNode(
+                cards: playerCards.value,
+                playerPosition: playerPos,
+                size: cardSize,
+                screenCenter: size.center
+            )
             addChild(openCardsNode)
         }
     }
@@ -144,10 +136,10 @@ class GameScene: SKScene {
         let minSideLength = min(sizeAfterPadding.width, sizeAfterPadding.height)
         let radius = minSideLength / 2
 
-        let startAngle: CGFloat = 3 / 2 * .pi  // 270 degree, bottom
+        //  0 degree is right in iOS, and angle increases counter-clockwise
+        let startAngle: CGFloat = 3 / 2 * .pi  // 270 degree -> bottom
         let angleChange: CGFloat = 2 * .pi / CGFloat(playerIds.count)
         let playerAngle = startAngle - (CGFloat(shiftedIndex) * angleChange) // clockwise change
-
         return CGPoint(
             x: size.center.x + radius * cos(playerAngle),
             y: size.center.y + radius * sin(playerAngle)
@@ -160,9 +152,21 @@ class GameScene: SKScene {
     let host = User(id: "host_id", name: "host", isHost: true)
     let player1 = User(id: "player_id", name: "player", isHost: false)
     let player2 = User(id: "player_id_2", name: "player2", isHost: false)
-    let match = Match(id: "match_id", status: .playing, host: host, players: [player1, player2], createdAt: Date())
+    let player3 = User(id: "player_id_3", name: "player3", isHost: false)
+    let match = Match(
+        id: "match_id",
+        status: .playing,
+        host: host,
+        players: [player1, player2, player3],
+        createdAt: Date()
+    )
     var gameState = GameState(from: match)
-    gameState.playerCards = ["host_id": [22, 23, 24, 28], "player_id": [12, 13, 15], "player_id_2": [15, 17, 19]]
+    gameState.playerCards = [
+        "host_id": [22, 23, 24, 28],
+        "player_id": [12, 13, 15],
+        "player_id_2": [15, 17, 19],
+        "player_id_3": [3, 6]
+    ]
     return GameView(
         user: host,
         match: match,
