@@ -19,6 +19,7 @@ class GameViewModel {
     var infoMessage: String?
     var turnTimeLeft: Int = 10
     var hostLeft = false
+    var lastPlayerId: String?
     private var exitedPlayers: [User] = []
     private var turnTimerTask: Task<Void, Never>?
 
@@ -114,6 +115,7 @@ class GameViewModel {
     private func endPlayerTurn() {
         cancelTurnTimer()
 
+        lastPlayerId = gameState.currentPlayerId
         let currentPlayerIndex = gameState.players.firstIndex { $0.id == gameState.currentPlayerId }!
         if currentPlayerIndex + 1 == gameState.players.count {
             gameState.currentPlayerId = gameState.players[0].id

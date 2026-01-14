@@ -32,20 +32,29 @@ class GameScene: SKScene {
 
         if let viewModel {
             clearScene()
-            layoutGameState(with: viewModel.gameState, for: viewModel.user)
+            layoutGameState(with: viewModel.gameState, for: viewModel.user, lastPlayerPos: nil)
         }
     }
 
     func onStateChange() {
+        Logger.gameScene.debug("On state change")
         guard let gameState = viewModel?.gameState, let user = viewModel?.user else { return }
-        layoutGameState(with: gameState, for: user)
+        var lastPlayerPos: CGPoint?
+        if let lastPlayerId = viewModel?.lastPlayerId {
+            lastPlayerPos = calculatePlayerPosition(
+                playerId: lastPlayerId,
+                playerIds: gameState.players.map { $0.id },
+                userId: user.id
+            )
+        }
+        layoutGameState(with: gameState, for: user, lastPlayerPos: lastPlayerPos)
     }
 
-    private func layoutGameState(with gameState: GameState, for user: User) {
+    private func layoutGameState(with gameState: GameState, for user: User, lastPlayerPos: CGPoint?) {
         Logger.gameScene.debug("Setting game state")
 
         layoutDeck(gameState.deckCards.count)
-        layoutMiddleCard(gameState.deckCards.first ?? 0)
+        layoutMiddleCard(gameState.deckCards.first ?? 0, lastPlayerPos: lastPlayerPos)
         layoutMiddleTokens(gameState.tokenInMiddle)
         layoutPlayerTokens(gameState.playerTokens, playerIds: gameState.players.map { $0.id }, userId: user.id)
         layoutPlayerCards(gameState.playerCards, playerIds: gameState.players.map { $0.id }, userId: user.id)
@@ -69,9 +78,9 @@ class GameScene: SKScene {
         }
     }
 
-    private func layoutMiddleCard(_ cardNumber: Int) {
+    private func layoutMiddleCard(_ cardNumber: Int, lastPlayerPos: CGPoint?) {
         if let middleCardNode {
-            middleCardNode.cardNumber = cardNumber
+            middleCardNode.updateCard(cardNumber, lastPlayerPos: lastPlayerPos)
         } else {
             middleCardNode = CardNode(
                 cardNumber: cardNumber,

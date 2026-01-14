@@ -10,12 +10,9 @@ import SpriteKit
 class CardNode: SKSpriteNode {
     private var cardNode: SKShapeNode
     private var labelNode: SKLabelNode
-
-    var cardNumber: Int {
+    private var cardNumber: Int {
         didSet {
-            if oldValue != cardNumber {
-                updateCard()
-            }
+            labelNode.text = "\(cardNumber)"
         }
     }
 
@@ -45,12 +42,19 @@ class CardNode: SKSpriteNode {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func updateCard() {
-        let fadeOut = SKAction.fadeAlpha(to: 0, duration: 0.3)
-        let updateNumber = SKAction.run {
-            self.labelNode.text = "\(self.cardNumber)"
+    func updateCard(_ cardNumber: Int, lastPlayerPos: CGPoint?) {
+        guard cardNumber != self.cardNumber else { return }
+        guard let lastPlayerPos else {
+            self.cardNumber = cardNumber
+            return
         }
-        let fadeIn = SKAction.fadeAlpha(to: 1, duration: 0.3)
-        cardNode.run(SKAction.sequence([fadeOut, updateNumber, fadeIn]))
+
+        // move old card to last player position, then set new card in original position
+        let initialPos = position
+        let convertedPos = parent!.convert(lastPlayerPos, from: scene!)
+        self.run(SKAction.move(to: convertedPos, duration: 0.6)) {
+            self.cardNumber = cardNumber
+            self.position = initialPos
+        }
     }
 }
