@@ -1,5 +1,5 @@
 //
-//  TokensNode.swift
+//  PlayersTokensNode.swift
 //  TrollToll
 //
 //  Created by Cagatay on 7.01.2026.
@@ -8,16 +8,14 @@
 import SpriteKit
 
 class TokensNode: SKSpriteNode {
-    private let maxShownTokenNo = 5
-    private let radius: CGFloat
-    private var tokenNodes: [SKShapeNode] = []
-    private var labelNode: SKLabelNode?
+    let maxShownTokenNo = 5
+    let radius: CGFloat
+    var tokenNodes: [SKShapeNode] = []
+    var labelNode: SKLabelNode?
 
     var tokenCount: Int {
         didSet {
-            if oldValue != tokenCount {
-                updateTokens(oldCount: oldValue)
-            }
+            labelNode?.text = "\(tokenCount)"
         }
     }
 
@@ -62,36 +60,17 @@ class TokensNode: SKSpriteNode {
         return labelNode
     }
 
-    private func updateTokens(oldCount: Int) {
-        let shownTokens = min(maxShownTokenNo, tokenCount)
-        if oldCount > tokenCount { // if token is removed
-            while tokenNodes.count > shownTokens {
-                removeTopToken()
-            }
-        } else {
-            while tokenNodes.count < shownTokens {
-                appendToken()
-            }
-        }
-
-        if tokenCount <= maxShownTokenNo { // few tokens left, don't show count anymore
+    func updateCountLabel() {
+        if tokenCount <= maxShownTokenNo { // few tokens left, don't show count
             removeLabel()
         } else {
-            if oldCount > tokenCount {
-                insertToken()
-            }
             createLabelOrUpdateLabelParent()
-            updateLabelNode()
         }
     }
 
     private func removeLabel() {
         labelNode?.removeFromParent()
         labelNode = nil
-    }
-
-    private func updateLabelNode() {
-        labelNode?.text = "\(tokenCount)"
     }
 
     private func createLabelOrUpdateLabelParent() {
@@ -104,17 +83,21 @@ class TokensNode: SKSpriteNode {
         }
     }
 
-    private func removeTopToken() {
+    func removeTopToken(movePos: CGPoint?) {
         let topTokenNode = tokenNodes.last!
         self.tokenNodes.removeLast()
 
-        let removeAction = SKAction.move(to: convert(scene!.size.center, from: parent!), duration: 0.6)
-        topTokenNode.run(removeAction) {
+        if let pos = movePos {
+            let removeAction = SKAction.move(to: convert(pos, from: parent!), duration: 0.6)
+            topTokenNode.run(removeAction) {
+                self.removeChildren(in: [topTokenNode])
+            }
+        } else {
             self.removeChildren(in: [topTokenNode])
         }
     }
 
-    private func insertToken() {
+    func insertToken() {
         let tokenNode = createTokenNode(at: 0)
         self.addChild(tokenNode)
         tokenNodes.insert(tokenNode, at: 0)
@@ -126,7 +109,7 @@ class TokensNode: SKSpriteNode {
         }
     }
 
-    private func appendToken() {
+    func appendToken() {
         let tokenNode = createTokenNode(at: tokenNodes.count)
         tokenNodes.append(tokenNode)
         self.addChild(tokenNode)

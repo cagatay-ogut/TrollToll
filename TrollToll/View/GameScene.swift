@@ -18,8 +18,8 @@ class GameScene: SKScene {
 
     private var deckNode: DeckNode?
     private var middleCardNode: CardNode?
-    private var middleTokensNode: TokensNode?
-    private var playerTokensNodes: [String: TokensNode] = [:]
+    private var middleTokensNode: MiddleTokensNode?
+    private var playerTokensNodes: [String: PlayerTokensNode] = [:]
     private var playerCardsNodes: [String: OpenCardsNode] = [:]
     private var playerInfoNodes: [String: PlayerInfoNode] = [:]
 
@@ -55,7 +55,7 @@ class GameScene: SKScene {
 
         layoutDeck(gameState.deckCards.count)
         layoutMiddleCard(gameState.deckCards.first ?? 0, lastPlayerPos: lastPlayerPos)
-        layoutMiddleTokens(gameState.tokenInMiddle)
+        layoutMiddleTokens(gameState.tokenInMiddle, lastPlayerPos: lastPlayerPos)
         layoutPlayerTokens(gameState.playerTokens, playerIds: gameState.players.map { $0.id }, userId: user.id)
         layoutPlayerCards(gameState.playerCards, playerIds: gameState.players.map { $0.id }, userId: user.id)
         layoutPlayerInfos(gameState.players, userId: user.id)
@@ -91,11 +91,11 @@ class GameScene: SKScene {
         }
     }
 
-    private func layoutMiddleTokens(_ tokenCount: Int) {
+    private func layoutMiddleTokens(_ tokenCount: Int, lastPlayerPos: CGPoint?) {
         if let middleTokensNode {
-            middleTokensNode.tokenCount = tokenCount
+            middleTokensNode.updateTokens(newTokenCount: tokenCount, movePos: lastPlayerPos)
         } else {
-            middleTokensNode = TokensNode(
+            middleTokensNode = MiddleTokensNode(
                 tokenCount: tokenCount,
                 position: size.center,
                 radius: tokenRadius
@@ -107,9 +107,9 @@ class GameScene: SKScene {
     private func layoutPlayerTokens(_ playerTokens: [String: Int], playerIds: [String], userId: String) {
         for playerToken in playerTokens {
             if let tokenNode = playerTokensNodes[playerToken.key] {
-                tokenNode.tokenCount = playerToken.value
+                tokenNode.updateTokens(newTokenCount: playerToken.value, movePos: size.center)
             } else {
-                playerTokensNodes[playerToken.key] = TokensNode(
+                playerTokensNodes[playerToken.key] = PlayerTokensNode(
                     tokenCount: playerToken.value,
                     position: calculatePlayerPosition(playerId: playerToken.key, playerIds: playerIds, userId: userId),
                     radius: tokenRadius
