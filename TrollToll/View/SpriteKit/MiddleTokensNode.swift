@@ -9,6 +9,8 @@ import SpriteKit
 
 class MiddleTokensNode: TokensNode {
     func updateTokens(newTokenCount: Int, movePos: CGPoint?) {
+        guard newTokenCount != tokenCount else { return }
+
         let shownTokens = min(maxShownTokenNo, newTokenCount)
         if tokenCount > newTokenCount { // if token is removed
             while tokenNodes.count > shownTokens {
