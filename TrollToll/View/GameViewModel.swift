@@ -93,7 +93,7 @@ class GameViewModel {
         }
 
         do {
-            gameState = try await gameService.updateGame(for: gameState.matchId, with: gameState)
+            try await gameService.updateGame(for: gameState.matchId, with: gameState)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -107,7 +107,7 @@ class GameViewModel {
         endPlayerTurn()
 
         do {
-            gameState = try await gameService.updateGame(for: gameState.matchId, with: gameState)
+            try await gameService.updateGame(for: gameState.matchId, with: gameState)
         } catch {
             errorMessage = error.localizedDescription
         }
