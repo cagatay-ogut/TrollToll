@@ -38,7 +38,11 @@ class PlayerInfoNode: SKLabelNode {
         } else if position.x > screenCenter.x + 1 {
             zRotation = .pi / 2
         } else if position.y > screenCenter.y + 1 {
-            zRotation = .pi
+            if position.x > screenCenter.x - 1, position.x < screenCenter.x + 1 {
+                nameNode.position = CGPoint(x: 0, y: 40)
+            } else {
+                zRotation = .pi
+            }
         }
     }
 
