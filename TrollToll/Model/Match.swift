@@ -13,6 +13,7 @@ struct Match: Codable, Hashable, Identifiable {
     let host: User
     let players: [User]
     let createdAt: Date
+    let version: String
 
     init(id: String, status: MatchStatus, host: User, players: [User] = [], createdAt: Date = Date()) {
         self.id = id
@@ -20,6 +21,7 @@ struct Match: Codable, Hashable, Identifiable {
         self.host = host
         self.players = players
         self.createdAt = createdAt
+        self.version = AppInfo.version
     }
 
     init(from decoder: any Decoder) throws {
@@ -29,6 +31,7 @@ struct Match: Codable, Hashable, Identifiable {
         self.host = try container.decode(User.self, forKey: .host)
         self.players = try container.decodeIfPresent([User].self, forKey: .players) ?? []
         self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.version = try container.decode(String.self, forKey: .version)
     }
 }
 

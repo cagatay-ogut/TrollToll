@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2D495CB42F17F5CB00C39AA2 /* MiddleTokensNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D495CB32F17F5C600C39AA2 /* MiddleTokensNode.swift */; };
 		2D495CB62F18001200C39AA2 /* TokensNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D495CB52F18001000C39AA2 /* TokensNode.swift */; };
+		2D495CBC2F1908B400C39AA2 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D495CBB2F1908B100C39AA2 /* AppInfo.swift */; };
 		2D4D69492F0417B1009C9A7B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D4D69452F0417B1009C9A7B /* Assets.xcassets */; };
 		2D4D694A2F0417B1009C9A7B /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69462F0417B1009C9A7B /* MainView.swift */; };
 		2D4D694B2F0417B1009C9A7B /* TrollTollApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69472F0417B1009C9A7B /* TrollTollApp.swift */; };
@@ -56,6 +57,7 @@
 /* Begin PBXFileReference section */
 		2D495CB32F17F5C600C39AA2 /* MiddleTokensNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddleTokensNode.swift; sourceTree = "<group>"; };
 		2D495CB52F18001000C39AA2 /* TokensNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensNode.swift; sourceTree = "<group>"; };
+		2D495CBB2F1908B100C39AA2 /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
 		2D4D692E2F0412D2009C9A7B /* TrollToll.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrollToll.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D4D69452F0417B1009C9A7B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2D4D69462F0417B1009C9A7B /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -231,6 +233,7 @@
 		2DFFCE4D2F07ADCA00EFA68C /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				2D495CBB2F1908B100C39AA2 /* AppInfo.swift */,
 				2D54B6972F100C71002838AA /* AlertState.swift */,
 				2DFFCE4E2F07ADD200EFA68C /* AppColors.swift */,
 				2DFFCE2B2F051A8500EFA68C /* AppDelegate.swift */,
@@ -390,6 +393,7 @@
 				2DFFCE4F2F07ADD300EFA68C /* AppColors.swift in Sources */,
 				2DFFCE5B2F09293D00EFA68C /* GameState.swift in Sources */,
 				2DFFCE372F0687BA00EFA68C /* Authenticator.swift in Sources */,
+				2D495CBC2F1908B400C39AA2 /* AppInfo.swift in Sources */,
 				2DFFCE592F084A7000EFA68C /* LobbyViewModel.swift in Sources */,
 				2D4D694B2F0417B1009C9A7B /* TrollTollApp.swift in Sources */,
 				2DFFCE182F0429FD00EFA68C /* Logger.swift in Sources */,

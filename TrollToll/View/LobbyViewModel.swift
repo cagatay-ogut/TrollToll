@@ -108,6 +108,10 @@ class LobbyViewModel {
     }
 
     func joinMatch(_ match: Match) async {
+        guard match.version == AppInfo.version else {
+            errorMessage = String(localized: "versionMismatch")
+            return
+        }
         do {
             try await lobbyService.joinMatch(match, with: user)
             self.match = match
