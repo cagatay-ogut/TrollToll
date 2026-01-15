@@ -123,7 +123,7 @@ class GameScene: SKScene {
     private func layoutPlayerCards(_ playersCards: [String: [Int]], playerIds: [String], userId: String) {
         for playerCards in playersCards {
             if let playerCardNode = playerCardsNodes[playerCards.key] {
-                playerCardNode.cards = playerCards.value
+                playerCardNode.updateCards(with: playerCards.value)
             } else {
                 let playerPos = calculatePlayerPosition(playerId: playerCards.key, playerIds: playerIds, userId: userId)
 

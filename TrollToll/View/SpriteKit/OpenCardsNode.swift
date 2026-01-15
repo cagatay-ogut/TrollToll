@@ -11,9 +11,9 @@ class OpenCardsNode: SKSpriteNode {
     private let screenCenter: CGPoint
     private let playerPosition: CGPoint
 
-    var cards: [Int] {
+    private var cards: [Int] {
         didSet {
-            updateCards()
+            layoutCards()
         }
     }
 
@@ -24,7 +24,7 @@ class OpenCardsNode: SKSpriteNode {
         super.init(texture: nil, color: UIColor.clear, size: size)
         self.position = playerPosition
 
-        updateCards()
+        updateCards(with: cards)
     }
 
     @available(*, unavailable)
@@ -54,8 +54,17 @@ class OpenCardsNode: SKSpriteNode {
         return result
     }
 
-    private func updateCards() {
-        removeAllChildren()
+    func updateCards(with newCards: [Int]) {
+        guard cards != newCards else { return }
+        run(SKAction.sequence([
+            SKAction.fadeAlpha(to: 0, duration: GameScene.animDuration / 2),
+            SKAction.run { self.removeAllChildren() },
+            SKAction.fadeAlpha(to: 1, duration: GameScene.animDuration / 2),
+            SKAction.run { self.cards = newCards }
+        ]))
+    }
+
+    private func layoutCards() {
         let groups = groupConsecutive(cards)
 
         let spacingBetweenGroups: CGFloat = 8
