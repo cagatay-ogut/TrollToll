@@ -68,7 +68,7 @@ class GameScene: SKScene {
 
     private func layoutDeck(_ cardCount: Int) {
         if let deckNode {
-            deckNode.cardCount = cardCount
+            deckNode.updateDeck(newCardCount: cardCount)
         } else {
             deckNode = DeckNode(
                 cardCount: cardCount,
@@ -141,7 +141,7 @@ class GameScene: SKScene {
     private func layoutPlayerInfos(_ players: [User], userId: String) {
         for player in players {
             if let playerInfoNode = playerInfoNodes[player.id] {
-                playerInfoNode.point = viewModel?.point(for: player.id) ?? 0
+                playerInfoNode.updatePlayerPoint(newPoint: viewModel?.point(for: player.id) ?? 0)
             } else {
                 let playerPos = calculatePlayerPosition(
                     playerId: player.id,

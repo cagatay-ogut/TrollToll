@@ -10,6 +10,7 @@ import SpriteKit
 class MiddleCardNode: SKSpriteNode {
     private var cardNode: SKShapeNode
     private var labelNode: SKLabelNode
+
     private var cardNumber: Int {
         didSet {
             labelNode.text = "\(cardNumber)"

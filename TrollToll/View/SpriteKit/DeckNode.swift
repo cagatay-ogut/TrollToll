@@ -12,11 +12,9 @@ class DeckNode: SKSpriteNode {
     private var cardNodes: [SKShapeNode] = []
     private var labelNode: SKLabelNode?
 
-    var cardCount: Int {
+    private var cardCount: Int {
         didSet {
-            if oldValue != cardCount {
-                updateCards(oldCount: oldValue)
-            }
+            labelNode?.text = "\(cardCount)"
         }
     }
 
@@ -62,24 +60,21 @@ class DeckNode: SKSpriteNode {
     }
 
     // only update is card removal
-    private func updateCards(oldCount: Int) {
+    func updateDeck(newCardCount: Int) {
+        guard cardCount != newCardCount else { return }
         removeTopCard()
         if cardCount <= maxShownCardNo { // few cards left, don't show count anymore
             removeLabel()
         } else {
             insertCard()
             updateLabelParent()
-            updateLabelNode()
+            cardCount = newCardCount
         }
     }
 
     private func removeLabel() {
         labelNode?.removeFromParent()
         labelNode = nil
-    }
-
-    private func updateLabelNode() {
-        labelNode?.text = "\(cardCount)"
     }
 
     private func updateLabelParent() {

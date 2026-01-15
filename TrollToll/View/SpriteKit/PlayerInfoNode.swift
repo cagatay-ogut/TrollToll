@@ -8,10 +8,12 @@
 import SpriteKit
 
 class PlayerInfoNode: SKLabelNode {
-    let playerName: String
-    var point: Int {
+    private let playerName: String
+    private var labelNode: SKLabelNode?
+
+    private var point: Int {
         didSet {
-            children.compactMap { $0 as? SKLabelNode }.first?.text = "\(playerName)\npoints: \(point)"
+            labelNode?.text = "\(playerName)\npoints: \(point)"
         }
     }
 
@@ -22,16 +24,16 @@ class PlayerInfoNode: SKLabelNode {
         self.position = position
 
         let text = "\(playerName)\npoints: \(point)"
-        let nameNode = SKLabelNode(text: "\(text)")
-        nameNode.numberOfLines = 2
-        nameNode.horizontalAlignmentMode = .center
-        nameNode.verticalAlignmentMode = .center
-        nameNode.fontSize = 20
-        nameNode.fontName! += "-Bold"
+        labelNode = SKLabelNode(text: "\(text)")
+        labelNode?.numberOfLines = 2
+        labelNode?.horizontalAlignmentMode = .center
+        labelNode?.verticalAlignmentMode = .center
+        labelNode?.fontSize = 20
+        labelNode?.fontName! += "-Bold"
 
-        nameNode.position = CGPoint(x: 0, y: -40)
+        labelNode?.position = CGPoint(x: 0, y: -40)
 
-        addChild(nameNode)
+        addChild(labelNode!)
 
         if position.x < screenCenter.x - 1 {
             zRotation = -.pi / 2
@@ -39,7 +41,7 @@ class PlayerInfoNode: SKLabelNode {
             zRotation = .pi / 2
         } else if position.y > screenCenter.y + 1 {
             if position.x > screenCenter.x - 1, position.x < screenCenter.x + 1 {
-                nameNode.position = CGPoint(x: 0, y: 40)
+                labelNode!.position = CGPoint(x: 0, y: 40)
             } else {
                 zRotation = .pi
             }
@@ -49,5 +51,10 @@ class PlayerInfoNode: SKLabelNode {
     @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func updatePlayerPoint(newPoint: Int) {
+        guard point != newPoint else { return }
+        point = newPoint
     }
 }
