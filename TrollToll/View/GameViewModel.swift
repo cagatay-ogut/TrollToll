@@ -10,6 +10,7 @@ import SwiftUI
 
 @Observable
 class GameViewModel {
+    private let turnTime: Int = 60
     let user: User
     var match: Match
     var gameState: GameState
@@ -17,7 +18,7 @@ class GameViewModel {
     let lobbyService: LobbyRepo = FBLobbyRepo()
     var errorMessage: String?
     var infoMessage: String?
-    var turnTimeLeft: Int = 10
+    var turnTimeLeft: Int = 0
     var hostLeft = false
     var lastPlayerId: String?
     private var exitedPlayers: [User] = []
@@ -191,10 +192,10 @@ class GameViewModel {
     private func startTurnTimer() {
         turnTimerTask?.cancel()
 
-        turnTimeLeft = 10
+        turnTimeLeft = turnTime
         turnTimerTask = Task {
             do {
-                for second in stride(from: 10, to: 0, by: -1) {
+                for second in stride(from: turnTime, to: 0, by: -1) {
                     await MainActor.run {
                         turnTimeLeft = second
                     }
