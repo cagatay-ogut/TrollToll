@@ -22,6 +22,7 @@ enum SceneCoordination {
             rotation = .pi / 2
             position = CGPoint(x: playerPos.x - offset.y, y: playerPos.y)
         } else if playerPos.y > center.y + 1 {
+            rotation = .pi
             position = CGPoint(x: playerPos.x, y: playerPos.y - offset.y)
         }
         return (rotation, position)
