@@ -10,6 +10,7 @@
 		2D495CB42F17F5CB00C39AA2 /* MiddleTokensNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D495CB32F17F5C600C39AA2 /* MiddleTokensNode.swift */; };
 		2D495CB62F18001200C39AA2 /* TokensNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D495CB52F18001000C39AA2 /* TokensNode.swift */; };
 		2D495CBC2F1908B400C39AA2 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D495CBB2F1908B100C39AA2 /* AppInfo.swift */; };
+		2D495CBE2F19749B00C39AA2 /* SceneCoordination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D495CBD2F19749400C39AA2 /* SceneCoordination.swift */; };
 		2D4D69492F0417B1009C9A7B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D4D69452F0417B1009C9A7B /* Assets.xcassets */; };
 		2D4D694A2F0417B1009C9A7B /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69462F0417B1009C9A7B /* MainView.swift */; };
 		2D4D694B2F0417B1009C9A7B /* TrollTollApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69472F0417B1009C9A7B /* TrollTollApp.swift */; };
@@ -19,7 +20,7 @@
 		2D54B6742F0E511C002838AA /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54B6732F0E5119002838AA /* GameScene.swift */; };
 		2D54B6772F0E5262002838AA /* DeckNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54B6762F0E5260002838AA /* DeckNode.swift */; };
 		2D54B6792F0E52A7002838AA /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54B6782F0E52A5002838AA /* Geometry.swift */; };
-		2D54B67B2F0E5975002838AA /* CardNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54B67A2F0E5973002838AA /* CardNode.swift */; };
+		2D54B67B2F0E5975002838AA /* MiddleCardNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54B67A2F0E5973002838AA /* MiddleCardNode.swift */; };
 		2D54B67D2F0E63EA002838AA /* PlayerTokensNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54B67C2F0E63E8002838AA /* PlayerTokensNode.swift */; };
 		2D54B6982F100C77002838AA /* AlertState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54B6972F100C71002838AA /* AlertState.swift */; };
 		2D54BA192F1267BB00F43A4D /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 2D54BA182F1267BB00F43A4D /* AppIcon.icon */; };
@@ -58,6 +59,7 @@
 		2D495CB32F17F5C600C39AA2 /* MiddleTokensNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddleTokensNode.swift; sourceTree = "<group>"; };
 		2D495CB52F18001000C39AA2 /* TokensNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensNode.swift; sourceTree = "<group>"; };
 		2D495CBB2F1908B100C39AA2 /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
+		2D495CBD2F19749400C39AA2 /* SceneCoordination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneCoordination.swift; sourceTree = "<group>"; };
 		2D4D692E2F0412D2009C9A7B /* TrollToll.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrollToll.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D4D69452F0417B1009C9A7B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2D4D69462F0417B1009C9A7B /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -68,7 +70,7 @@
 		2D54B6732F0E5119002838AA /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		2D54B6762F0E5260002838AA /* DeckNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckNode.swift; sourceTree = "<group>"; };
 		2D54B6782F0E52A5002838AA /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
-		2D54B67A2F0E5973002838AA /* CardNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardNode.swift; sourceTree = "<group>"; };
+		2D54B67A2F0E5973002838AA /* MiddleCardNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddleCardNode.swift; sourceTree = "<group>"; };
 		2D54B67C2F0E63E8002838AA /* PlayerTokensNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerTokensNode.swift; sourceTree = "<group>"; };
 		2D54B6972F100C71002838AA /* AlertState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertState.swift; sourceTree = "<group>"; };
 		2D54BA182F1267BB00F43A4D /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
@@ -171,8 +173,8 @@
 		2D54B6752F0E525A002838AA /* SpriteKit */ = {
 			isa = PBXGroup;
 			children = (
-				2D54B67A2F0E5973002838AA /* CardNode.swift */,
 				2D54B6762F0E5260002838AA /* DeckNode.swift */,
+				2D54B67A2F0E5973002838AA /* MiddleCardNode.swift */,
 				2DE223F12F13BB510078CB2D /* OpenCardsNode.swift */,
 				2DF5013F2F1634C600C81DA0 /* PlayerInfoNode.swift */,
 				2D495CB52F18001000C39AA2 /* TokensNode.swift */,
@@ -240,6 +242,7 @@
 				2DA2C4482F0A87A000CE2E2D /* FBCodable.swift */,
 				2D54B6782F0E52A5002838AA /* Geometry.swift */,
 				2DFFCE172F0429FC00EFA68C /* Logger.swift */,
+				2D495CBD2F19749400C39AA2 /* SceneCoordination.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -375,6 +378,7 @@
 				2DE223F22F13BB590078CB2D /* OpenCardsNode.swift in Sources */,
 				2DFFCE4C2F07AD9B00EFA68C /* Toast.swift in Sources */,
 				2D54B6982F100C77002838AA /* AlertState.swift in Sources */,
+				2D495CBE2F19749B00C39AA2 /* SceneCoordination.swift in Sources */,
 				2D54B6742F0E511C002838AA /* GameScene.swift in Sources */,
 				2D54B6792F0E52A7002838AA /* Geometry.swift in Sources */,
 				2D4D694A2F0417B1009C9A7B /* MainView.swift in Sources */,
@@ -402,7 +406,7 @@
 				2D4D69562F041A61009C9A7B /* LobbyView.swift in Sources */,
 				2DFFCE1B2F043F1D00EFA68C /* GameView.swift in Sources */,
 				2DFFCE162F04287A00EFA68C /* FBLobbyRepo.swift in Sources */,
-				2D54B67B2F0E5975002838AA /* CardNode.swift in Sources */,
+				2D54B67B2F0E5975002838AA /* MiddleCardNode.swift in Sources */,
 				2D54B6772F0E5262002838AA /* DeckNode.swift in Sources */,
 				2DFFCE352F06868E00EFA68C /* User.swift in Sources */,
 			);

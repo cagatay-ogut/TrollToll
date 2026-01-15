@@ -95,12 +95,7 @@ class OpenCardsNode: SKSpriteNode {
             }
         }
 
-        if playerPosition.x < screenCenter.x - 1 {
-            self.zRotation = -.pi / 2
-        } else if playerPosition.x > screenCenter.x + 1 {
-            self.zRotation = .pi / 2
-        } else if playerPosition.y > screenCenter.y + 1 {
-            self.zRotation = .pi
-        }
+        self.zRotation = SceneCoordination
+            .rotationAndPositionOfCard(for: playerPosition, basedOn: screenCenter, offset: .zero).rotation
     }
 }

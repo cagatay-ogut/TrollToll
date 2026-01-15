@@ -13,3 +13,9 @@ extension CGSize {
         CGPoint(x: width / 2, y: height / 2)
     }
 }
+
+extension CGSize {
+    var inPoint: CGPoint {
+        CGPoint(x: width, y: height)
+    }
+}

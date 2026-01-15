@@ -18,7 +18,7 @@ class GameScene: SKScene {
     private let padding: CGFloat = 70
 
     private var deckNode: DeckNode?
-    private var middleCardNode: CardNode?
+    private var middleCardNode: MiddleCardNode?
     private var middleTokensNode: MiddleTokensNode?
     private var playerTokensNodes: [String: PlayerTokensNode] = [:]
     private var playerCardsNodes: [String: OpenCardsNode] = [:]
@@ -83,7 +83,7 @@ class GameScene: SKScene {
         if let middleCardNode {
             middleCardNode.updateCard(cardNumber, lastPlayerPos: lastPlayerPos)
         } else {
-            middleCardNode = CardNode(
+            middleCardNode = MiddleCardNode(
                 cardNumber: cardNumber,
                 position: size.center,
                 size: cardSize

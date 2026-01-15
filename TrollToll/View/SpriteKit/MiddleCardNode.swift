@@ -7,7 +7,7 @@
 
 import SpriteKit
 
-class CardNode: SKSpriteNode {
+class MiddleCardNode: SKSpriteNode {
     private var cardNode: SKShapeNode
     private var labelNode: SKLabelNode
     private var cardNumber: Int {
@@ -49,12 +49,17 @@ class CardNode: SKSpriteNode {
             return
         }
 
+        let (rotation, cardPosition) = SceneCoordination
+            .rotationAndPositionOfCard(for: lastPlayerPos, basedOn: scene!.size.center, offset: size.inPoint)
+        let moveAction = SKAction.move(to: cardPosition, duration: GameScene.animDuration)
+        let rotateAction = SKAction.rotate(byAngle: rotation, duration: GameScene.animDuration)
+
         // move old card to last player position, then set new card in original position
         let initialPos = position
-        let convertedPos = parent!.convert(lastPlayerPos, from: scene!)
-        self.run(SKAction.move(to: convertedPos, duration: GameScene.animDuration)) {
+        self.run(SKAction.group([moveAction, rotateAction])) {
             self.cardNumber = cardNumber
             self.position = initialPos
+            self.zRotation = 0
         }
     }
 }
