@@ -23,6 +23,7 @@ class GameViewModel {
     var lastPlayerId: String?
     private var exitedPlayers: [User] = []
     private var turnTimerTask: Task<Void, Never>?
+    private var tempGameState: GameState
 
     var currentPlayerName: String {
         gameState.players.first { $0.id == gameState.currentPlayerId }!.name
@@ -55,6 +56,7 @@ class GameViewModel {
         self.user = user
         self.match = match
         self.gameState = gameState
+        self.tempGameState = gameState
     }
 
     func name(for playerId: String) -> String {
@@ -74,17 +76,17 @@ class GameViewModel {
     }
 
     func takeCard() async {
-        let card = gameState.deckCards.removeFirst()
-        if gameState.playerCards[gameState.currentPlayerId] != nil {
-            gameState.playerCards[gameState.currentPlayerId]?.append(card)
+        let card = tempGameState.deckCards.removeFirst()
+        if tempGameState.playerCards[gameState.currentPlayerId] != nil {
+            tempGameState.playerCards[gameState.currentPlayerId]?.append(card)
         } else {
-            gameState.playerCards[gameState.currentPlayerId] = [card]
+            tempGameState.playerCards[gameState.currentPlayerId] = [card]
         }
-        gameState.playerCards[gameState.currentPlayerId]?.sort()
+        tempGameState.playerCards[gameState.currentPlayerId]?.sort()
 
-        let prevTokenCount = gameState.playerTokens[user.id] ?? 0
-        gameState.playerTokens[user.id] = prevTokenCount + gameState.tokenInMiddle
-        gameState.tokenInMiddle = 0
+        let prevTokenCount = tempGameState.playerTokens[user.id] ?? 0
+        tempGameState.playerTokens[user.id] = prevTokenCount + gameState.tokenInMiddle
+        tempGameState.tokenInMiddle = 0
 
         if isCardLeft {
             endPlayerTurn()
@@ -93,21 +95,21 @@ class GameViewModel {
         }
 
         do {
-            try await gameService.updateGame(for: gameState.matchId, with: gameState)
+            try await gameService.updateGame(for: gameState.matchId, with: tempGameState)
         } catch {
             errorMessage = error.localizedDescription
         }
     }
 
     func putToken() async {
-        let currentTokenCount = gameState.playerTokens[user.id]!
-        gameState.playerTokens[user.id] = currentTokenCount - 1
-        gameState.tokenInMiddle += 1
+        let currentTokenCount = tempGameState.playerTokens[user.id]!
+        tempGameState.playerTokens[user.id] = currentTokenCount - 1
+        tempGameState.tokenInMiddle += 1
 
         endPlayerTurn()
 
         do {
-            try await gameService.updateGame(for: gameState.matchId, with: gameState)
+            try await gameService.updateGame(for: gameState.matchId, with: tempGameState)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -116,21 +118,21 @@ class GameViewModel {
     private func endPlayerTurn() {
         cancelTurnTimer()
 
-        lastPlayerId = gameState.currentPlayerId
-        let currentPlayerIndex = gameState.players.firstIndex { $0.id == gameState.currentPlayerId }!
-        if currentPlayerIndex + 1 == gameState.players.count {
-            gameState.currentPlayerId = gameState.players[0].id
-            gameState.turn += 1
+        lastPlayerId = tempGameState.currentPlayerId
+        let currentPlayerIndex = tempGameState.players.firstIndex { $0.id == tempGameState.currentPlayerId }!
+        if currentPlayerIndex + 1 == tempGameState.players.count {
+            tempGameState.currentPlayerId = tempGameState.players[0].id
+            tempGameState.turn += 1
         } else {
-            gameState.currentPlayerId = gameState.players[currentPlayerIndex + 1].id
+            tempGameState.currentPlayerId = tempGameState.players[currentPlayerIndex + 1].id
         }
     }
 
     private func finishGame() {
         cancelTurnTimer()
 
-        let victor = gameState.players.max { point(for: $0.id) < point(for: $1.id) }!
-        gameState.progress = .finished(victorId: victor.id)
+        let victor = tempGameState.players.max { point(for: $0.id) < point(for: $1.id) }!
+        tempGameState.progress = .finished(victorId: victor.id)
     }
 
     func cancelMatch() async {
@@ -173,6 +175,7 @@ class GameViewModel {
         do {
             for try await gameData in try await gameService.streamGame(of: match.id) {
                 self.gameState = gameData
+                self.tempGameState = gameState
                 if isPlayerTurn {
                     startTurnTimer()
                 }
