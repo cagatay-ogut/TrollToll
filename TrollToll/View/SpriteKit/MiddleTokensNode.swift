@@ -20,7 +20,7 @@ class MiddleTokensNode: TokensNode {
             insertToken()
         }
         tokenCount = newTokenCount
-        run(SKAction.wait(forDuration: GameScene.animDuration)) {
+        run(SKAction.wait(forDuration: GameScene.animDuration / 5)) {
             self.updateCountLabel()
         }
     }
