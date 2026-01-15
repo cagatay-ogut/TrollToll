@@ -118,7 +118,6 @@ class GameViewModel {
     private func endPlayerTurn() {
         cancelTurnTimer()
 
-        lastPlayerId = tempGameState.currentPlayerId
         let currentPlayerIndex = tempGameState.players.firstIndex { $0.id == tempGameState.currentPlayerId }!
         if currentPlayerIndex + 1 == tempGameState.players.count {
             tempGameState.currentPlayerId = tempGameState.players[0].id
@@ -174,6 +173,8 @@ class GameViewModel {
     func observeGame() async {
         do {
             for try await gameData in try await gameService.streamGame(of: match.id) {
+                // only change last player id if current player id change, i.e first round doesn't change
+                lastPlayerId = gameData.currentPlayerId != gameState.currentPlayerId ? gameState.currentPlayerId : nil
                 self.gameState = gameData
                 self.tempGameState = gameState
                 if isPlayerTurn {
