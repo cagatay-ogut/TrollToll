@@ -54,8 +54,8 @@ class DeckNode: SKSpriteNode {
     private func createLabelNode() -> SKLabelNode {
         let labelNode = SKLabelNode(text: "\(cardCount)")
         labelNode.horizontalAlignmentMode = .right
-        labelNode.verticalAlignmentMode = .top
-        labelNode.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        labelNode.verticalAlignmentMode = .bottom
+        labelNode.position = CGPoint(x: size.width / 2, y: -size.height / 2)
         labelNode.fontSize = 10
         labelNode.fontName! += "-Bold"
         return labelNode
