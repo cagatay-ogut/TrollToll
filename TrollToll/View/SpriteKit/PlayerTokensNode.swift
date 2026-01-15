@@ -14,6 +14,9 @@ class PlayerTokensNode: TokensNode {
         let shownTokens = min(maxShownTokenNo, newTokenCount)
         if tokenCount > newTokenCount { // if token is removed
             removeTopToken(movePos: movePos)
+            if tokenCount > maxShownTokenNo {
+                insertToken()
+            }
         } else {
             while tokenNodes.count < shownTokens {
                 appendToken()
