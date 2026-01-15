@@ -8,6 +8,7 @@
 import SpriteKit
 
 class TokensNode: SKSpriteNode {
+    private let stackShiftDistance: CGFloat = 6
     let maxShownTokenNo = 5
     let radius: CGFloat
     var tokenNodes: [SKShapeNode] = []
@@ -46,7 +47,7 @@ class TokensNode: SKSpriteNode {
         let tokenNode = SKShapeNode(circleOfRadius: radius)
         tokenNode.strokeColor = .black
         tokenNode.fillColor = .orange
-        tokenNode.position = .init(x: CGFloat(index * 2), y: 0)
+        tokenNode.position = .init(x: CGFloat(index) * stackShiftDistance, y: 0)
         tokenNode.zPosition = CGFloat(index)
         return tokenNode
     }
@@ -102,7 +103,7 @@ class TokensNode: SKSpriteNode {
         self.addChild(tokenNode)
         tokenNodes.insert(tokenNode, at: 0)
 
-        let moveAction = SKAction.moveBy(x: 2, y: 0, duration: GameScene.animDuration / 3)
+        let moveAction = SKAction.moveBy(x: stackShiftDistance, y: 0, duration: GameScene.animDuration / 3)
         for index in 1..<tokenNodes.count {
             tokenNodes[index].zPosition = CGFloat(index)
             tokenNodes[index].run(moveAction)
