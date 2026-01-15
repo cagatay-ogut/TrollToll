@@ -92,7 +92,10 @@ class DeckNode: SKSpriteNode {
         let topCardNode = cardNodes.last!
         self.cardNodes.removeLast()
 
-        let removeAction = SKAction.move(to: convert(scene!.size.center, from: parent!), duration: 0.6)
+        let removeAction = SKAction.move(
+            to: convert(scene!.size.center, from: parent!),
+            duration: GameScene.animDuration
+        )
         topCardNode.run(removeAction) {
             self.removeChildren(in: [topCardNode])
         }
@@ -103,7 +106,7 @@ class DeckNode: SKSpriteNode {
         self.addChild(cardNode)
         cardNodes.insert(cardNode, at: 0)
 
-        let moveAction = SKAction.moveBy(x: 2, y: 2, duration: 0.2)
+        let moveAction = SKAction.moveBy(x: 2, y: 2, duration: GameScene.animDuration / 3)
         for index in 1..<cardNodes.count {
             cardNodes[index].zPosition = CGFloat(index)
             cardNodes[index].run(moveAction)

@@ -88,7 +88,7 @@ class TokensNode: SKSpriteNode {
         self.tokenNodes.removeLast()
 
         if let pos = movePos {
-            let removeAction = SKAction.move(to: convert(pos, from: parent!), duration: 0.6)
+            let removeAction = SKAction.move(to: convert(pos, from: parent!), duration: GameScene.animDuration)
             topTokenNode.run(removeAction) {
                 self.removeChildren(in: [topTokenNode])
             }
@@ -102,7 +102,7 @@ class TokensNode: SKSpriteNode {
         self.addChild(tokenNode)
         tokenNodes.insert(tokenNode, at: 0)
 
-        let moveAction = SKAction.moveBy(x: 2, y: 0, duration: 0.2)
+        let moveAction = SKAction.moveBy(x: 2, y: 0, duration: GameScene.animDuration / 3)
         for index in 1..<tokenNodes.count {
             tokenNodes[index].zPosition = CGFloat(index)
             tokenNodes[index].run(moveAction)

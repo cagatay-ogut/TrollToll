@@ -52,7 +52,7 @@ class CardNode: SKSpriteNode {
         // move old card to last player position, then set new card in original position
         let initialPos = position
         let convertedPos = parent!.convert(lastPlayerPos, from: scene!)
-        self.run(SKAction.move(to: convertedPos, duration: 0.6)) {
+        self.run(SKAction.move(to: convertedPos, duration: GameScene.animDuration)) {
             self.cardNumber = cardNumber
             self.position = initialPos
         }

@@ -12,6 +12,7 @@ import SwiftUI
 class GameScene: SKScene {
     var viewModel: GameViewModel?
 
+    static let animDuration: TimeInterval = 0.6
     private let cardSize = CGSize(width: 30, height: 50)
     private let tokenRadius: CGFloat = 10
     private let padding: CGFloat = 70
