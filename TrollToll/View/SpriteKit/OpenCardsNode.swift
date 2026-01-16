@@ -89,13 +89,14 @@ class OpenCardsNode: SKSpriteNode {
                 cardNode.strokeColor = .black
                 cardNode.fillColor = .purple
                 cardNode.position = .init(x: xPos + CGFloat(cardIndex) * stackOffset, y: size.height)
+                cardNode.zPosition = CGFloat(group.count - cardIndex)
                 let middle = group.count / 2
                 let xOffset = cardIndex - middle
                 cardNode.zRotation = (-.pi / 6) * CGFloat(xOffset)
                 let labelNode = SKLabelNode(text: "\(card)")
-                labelNode.horizontalAlignmentMode = .left
+                labelNode.horizontalAlignmentMode = .right
                 labelNode.verticalAlignmentMode = .top
-                labelNode.position = .init(x: -size.width / 2, y: size.height / 2)
+                labelNode.position = .init(x: size.width / 2, y: size.height / 2)
                 labelNode.fontSize = 12
                 labelNode.fontName! += "-Bold"
 
