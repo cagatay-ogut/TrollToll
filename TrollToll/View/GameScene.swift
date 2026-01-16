@@ -67,11 +67,12 @@ class GameScene: SKScene {
     }
 
     private func layoutDeck(_ cardCount: Int) {
+        // removing 1, because 1 card is at the middle
         if let deckNode {
-            deckNode.updateDeck(newCardCount: cardCount)
+            deckNode.updateDeck(newCardCount: cardCount - 1)
         } else {
             deckNode = DeckNode(
-                cardCount: cardCount,
+                cardCount: cardCount - 1,
                 position: .init(x: size.width - cardSize.width - 10, y: cardSize.height / 2 + 20),
                 size: cardSize
             )
