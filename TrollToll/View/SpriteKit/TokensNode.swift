@@ -98,15 +98,17 @@ class TokensNode: SKSpriteNode {
         }
     }
 
-    func insertToken() {
-        let tokenNode = createTokenNode(at: 0)
-        self.addChild(tokenNode)
-        tokenNodes.insert(tokenNode, at: 0)
+    func insertToken(wait: Bool) {
+        run(SKAction.wait(forDuration: wait ? GameScene.animDuration : 0)) {
+            let tokenNode = self.createTokenNode(at: 0)
+            self.addChild(tokenNode)
+            self.tokenNodes.insert(tokenNode, at: 0)
 
-        let moveAction = SKAction.moveBy(x: stackShiftDistance, y: 0, duration: GameScene.animDuration / 3)
-        for index in 1..<tokenNodes.count {
-            tokenNodes[index].zPosition = CGFloat(index)
-            tokenNodes[index].run(moveAction)
+            let moveAction = SKAction.moveBy(x: self.stackShiftDistance, y: 0, duration: GameScene.animDuration / 3)
+            for index in 1..<self.tokenNodes.count {
+                self.tokenNodes[index].zPosition = CGFloat(index)
+                self.tokenNodes[index].run(moveAction)
+            }
         }
     }
 

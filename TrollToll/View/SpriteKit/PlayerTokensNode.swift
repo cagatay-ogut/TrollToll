@@ -15,7 +15,7 @@ class PlayerTokensNode: TokensNode {
         if tokenCount > newTokenCount { // if token is removed
             removeTopToken(movePos: movePos)
             if tokenCount > maxShownTokenNo {
-                insertToken()
+                insertToken(wait: false)
             }
         } else {
             while tokenNodes.count < shownTokens {

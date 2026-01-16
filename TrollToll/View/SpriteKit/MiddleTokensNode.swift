@@ -17,10 +17,10 @@ class MiddleTokensNode: TokensNode {
                 removeTopToken(movePos: movePos)
             }
         } else if newTokenCount <= maxShownTokenNo {
-            insertToken()
+            insertToken(wait: true)
         }
         tokenCount = newTokenCount
-        run(SKAction.wait(forDuration: GameScene.animDuration / 5)) {
+        run(SKAction.wait(forDuration: GameScene.animDuration / 3)) {
             self.updateCountLabel()
         }
     }
