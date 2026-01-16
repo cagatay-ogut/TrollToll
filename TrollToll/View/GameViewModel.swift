@@ -176,7 +176,7 @@ class GameViewModel {
                 lastPlayerId = gameData.currentPlayerId != gameState.currentPlayerId ? gameState.currentPlayerId : nil
                 self.gameState = gameData
                 self.tempGameState = gameState
-                if isPlayerTurn {
+                if isPlayerTurn, !gameState.progress.isFinished {
                     startTurnTimer()
                 }
                 if isExitedPlayersTurn {
@@ -224,7 +224,7 @@ class GameViewModel {
         }
         let names = exitedPlayers.map { $0.name }
         infoMessage = "Players left: \(names)"
-        if isExitedPlayersTurn {
+        if isExitedPlayersTurn, !gameState.progress.isFinished {
             try? await Task.sleep(for: .seconds(1))
             await takeCard()
         }
