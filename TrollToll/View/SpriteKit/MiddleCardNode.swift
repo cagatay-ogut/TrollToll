@@ -58,9 +58,13 @@ class MiddleCardNode: SKSpriteNode {
         // move old card to last player position, then set new card in original position
         let initialPos = position
         self.run(SKAction.group([moveAction, rotateAction])) {
-            self.cardNumber = cardNumber
-            self.position = initialPos
-            self.zRotation = 0
+            if cardNumber == 0 {
+                self.removeAllChildren()
+            } else {
+                self.cardNumber = cardNumber
+                self.position = initialPos
+                self.zRotation = 0
+            }
         }
     }
 }

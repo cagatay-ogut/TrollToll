@@ -61,7 +61,7 @@ class DeckNode: SKSpriteNode {
 
     // only update is card removal
     func updateDeck(newCardCount: Int) {
-        guard cardCount != newCardCount else { return }
+        guard cardCount != newCardCount, newCardCount >= 0 else { return }
         removeTopCard()
         if cardCount <= maxShownCardNo { // few cards left, don't show count anymore
             removeLabel()

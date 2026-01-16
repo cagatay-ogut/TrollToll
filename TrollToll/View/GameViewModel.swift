@@ -49,7 +49,7 @@ class GameViewModel {
         exitedPlayers.contains { $0.id == gameState.currentPlayerId }
     }
     private var isCardLeft: Bool {
-        !gameState.deckCards.isEmpty
+        !tempGameState.deckCards.isEmpty
     }
 
     init(user: User, match: Match, gameState: GameState) {
@@ -88,9 +88,8 @@ class GameViewModel {
         tempGameState.playerTokens[user.id] = prevTokenCount + gameState.tokenInMiddle
         tempGameState.tokenInMiddle = 0
 
-        if isCardLeft {
-            endPlayerTurn()
-        } else {
+        endPlayerTurn()
+        if !isCardLeft {
             finishGame()
         }
 
