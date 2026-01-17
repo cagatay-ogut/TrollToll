@@ -67,17 +67,16 @@ class OpenCardsNode: SKSpriteNode {
     private func layoutCards() {
         let groups = groupConsecutive(cards)
 
-        let spacingBetweenGroups: CGFloat = 8
-        let stackOffset: CGFloat = 6
+        let spacingBetweenGroups: CGFloat = 12
+        let stackOffset: CGFloat = 8
         for (groupIndex, group) in groups.enumerated() {
             let xPos: CGFloat
+            let middle = groups.count / 2
             if groups.count.isMultiple(of: 2) {
-                let middle = groups.count / 2
                 let xOffset = groupIndex < middle ? groupIndex - middle + 1 : groupIndex - middle
                 let initialOffset = (groupIndex < middle ? -1 : 1) * (size.width + spacingBetweenGroups) / 2
                 xPos = CGFloat(xOffset) * (size.width + spacingBetweenGroups) + initialOffset
             } else { // odd
-                let middle = groups.count / 2
                 let xOffset = groupIndex - middle
                 xPos = CGFloat(xOffset) * (size.width + spacingBetweenGroups)
             }
@@ -88,11 +87,11 @@ class OpenCardsNode: SKSpriteNode {
                 )
                 cardNode.strokeColor = .black
                 cardNode.fillColor = .purple
-                cardNode.position = .init(x: xPos + CGFloat(cardIndex) * stackOffset, y: size.height)
+                let middleInGroup = group.count / 2
+                cardNode.position = .init(x: xPos + CGFloat(cardIndex - middleInGroup) * stackOffset, y: size.height)
                 cardNode.zPosition = CGFloat(group.count - cardIndex)
-                let middle = group.count / 2
-                let xOffset = cardIndex - middle
-                cardNode.zRotation = (-.pi / 6) * CGFloat(xOffset)
+                let xOffset = cardIndex - middleInGroup
+                cardNode.zRotation = (-.pi / 8) * CGFloat(xOffset)
                 let labelNode = SKLabelNode(text: "\(card)")
                 labelNode.horizontalAlignmentMode = .right
                 labelNode.verticalAlignmentMode = .top
