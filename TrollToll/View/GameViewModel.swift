@@ -72,7 +72,7 @@ class GameViewModel {
             }
         }
 
-        return gameState.playerTokens[playerId]! - lowestCards.reduce(0, +)
+        return lowestCards.reduce(0, +) - gameState.playerTokens[playerId]!
     }
 
     func takeCard() async {
