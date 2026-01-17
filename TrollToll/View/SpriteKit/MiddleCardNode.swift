@@ -8,7 +8,7 @@
 import SpriteKit
 
 class MiddleCardNode: SKSpriteNode {
-    private var cardNode: SKShapeNode
+    private var cardNode: SKSpriteNode
     private var labelNode: SKLabelNode
 
     private var cardNumber: Int {
@@ -20,14 +20,11 @@ class MiddleCardNode: SKSpriteNode {
     init(cardNumber: Int, position: CGPoint, size: CGSize) {
         self.cardNumber = cardNumber
         self.labelNode = SKLabelNode(text: "\(cardNumber)")
-        self.cardNode = SKShapeNode(
-            rect: CGRect(origin: .init(x: -size.width / 2, y: -size.height / 2), size: size)
-        )
+        self.cardNode = SKSpriteNode(imageNamed: "card")
         super.init(texture: nil, color: UIColor.clear, size: size)
         self.position = position
 
-        cardNode.strokeColor = .black
-        cardNode.fillColor = .purple
+        cardNode.size = size
         labelNode.horizontalAlignmentMode = .left
         labelNode.verticalAlignmentMode = .top
         labelNode.position = .init(x: -size.width / 2, y: size.height / 2)

@@ -84,11 +84,8 @@ class OpenCardsNode: SKSpriteNode {
             }
 
             for (cardIndex, card) in group.enumerated() {
-                let cardNode = SKShapeNode(
-                    rect: CGRect(origin: .init(x: -size.width / 2, y: -size.height / 2), size: size)
-                )
-                cardNode.strokeColor = .black
-                cardNode.fillColor = .purple
+                let cardNode = SKSpriteNode(imageNamed: "card")
+                cardNode.size = size
                 let middleInGroup = group.count / 2
                 let xOffset = cardIndex - middleInGroup
                 cardNode.position = .init(x: xPos + CGFloat(xOffset) * stackOffset, y: size.height)

@@ -9,7 +9,7 @@ import SpriteKit
 
 class DeckNode: SKSpriteNode {
     private let maxShownCardNo = 5
-    private var cardNodes: [SKShapeNode] = []
+    private var cardNodes: [SKSpriteNode] = []
     private var labelNode: SKLabelNode?
 
     private var cardCount: Int {
@@ -40,10 +40,9 @@ class DeckNode: SKSpriteNode {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func createCardNode(at index: Int) -> SKShapeNode {
-        let cardNode = SKShapeNode(rectOf: size)
-        cardNode.fillColor = .brown
-        cardNode.strokeColor = .black
+    private func createCardNode(at index: Int) -> SKSpriteNode {
+        let cardNode = SKSpriteNode(imageNamed: "card_back")
+        cardNode.size = size
         cardNode.position = CGPoint(x: CGFloat(index * 2), y: CGFloat(index * 2))
         cardNode.zPosition = CGFloat(index)
         return cardNode
