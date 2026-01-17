@@ -93,7 +93,8 @@ class OpenCardsNode: SKSpriteNode {
                 let xOffset = cardIndex - middleInGroup
                 cardNode.position = .init(x: xPos + CGFloat(xOffset) * stackOffset, y: size.height)
                 cardNode.zPosition = CGFloat(totalCardCount - totalCountInGroups - cardIndex)
-                cardNode.zRotation = (-.pi / 8) * CGFloat(xOffset)
+                let zRotation = middleInGroup == 0 ? 0 : (-.pi / 4) * (CGFloat(xOffset) / CGFloat(middleInGroup))
+                cardNode.zRotation = zRotation
                 let labelNode = SKLabelNode(text: "\(card)")
                 labelNode.horizontalAlignmentMode = .right
                 labelNode.verticalAlignmentMode = .top
