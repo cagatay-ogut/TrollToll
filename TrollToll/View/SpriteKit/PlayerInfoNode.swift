@@ -35,16 +35,15 @@ class PlayerInfoNode: SKLabelNode {
 
         addChild(labelNode!)
 
-        if position.x < screenCenter.x - 1 {
+        switch SceneCoordination.getScreenPosition(for: position, basedOn: screenCenter) {
+        case .left:
             zRotation = -.pi / 2
-        } else if position.x > screenCenter.x + 1 {
+        case .right:
             zRotation = .pi / 2
-        } else if position.y > screenCenter.y + 1 {
-            if position.x > screenCenter.x - 1, position.x < screenCenter.x + 1 {
-                labelNode!.position = CGPoint(x: 0, y: 40)
-            } else {
-                zRotation = .pi
-            }
+        case .top:
+            labelNode!.position = CGPoint(x: 0, y: 40)
+        case .bottom:
+            break
         }
     }
 

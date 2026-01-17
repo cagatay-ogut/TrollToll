@@ -100,7 +100,8 @@ class GameScene: SKScene {
             middleTokensNode = MiddleTokensNode(
                 tokenCount: tokenCount,
                 position: size.center,
-                radius: tokenRadius
+                radius: tokenRadius,
+                screenCenter: size.center
             )
             addChild(middleTokensNode!)
         }
@@ -114,7 +115,8 @@ class GameScene: SKScene {
                 playerTokensNodes[playerToken.key] = PlayerTokensNode(
                     tokenCount: playerToken.value,
                     position: calculatePlayerPosition(playerId: playerToken.key, playerIds: playerIds, userId: userId),
-                    radius: tokenRadius
+                    radius: tokenRadius,
+                    screenCenter: size.center
                 )
                 addChild(playerTokensNodes[playerToken.key]!)
             }

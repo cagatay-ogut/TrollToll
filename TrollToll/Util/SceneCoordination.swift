@@ -27,4 +27,20 @@ enum SceneCoordination {
         }
         return (rotation, position)
     }
+
+    static func getScreenPosition(for position: CGPoint, basedOn center: CGPoint) -> ScreenPosition {
+        if position.x < center.x - 1 {
+            .left
+        } else if position.x > center.x + 1 {
+            .right
+        } else if position.y > center.y + 1 {
+            .top
+        } else {
+            .bottom
+        }
+    }
+}
+
+enum ScreenPosition {
+    case left, right, top, bottom
 }

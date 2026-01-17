@@ -20,7 +20,7 @@ class TokensNode: SKSpriteNode {
         }
     }
 
-    init(tokenCount: Int, position: CGPoint, radius: CGFloat) {
+    init(tokenCount: Int, position: CGPoint, radius: CGFloat, screenCenter: CGPoint) {
         self.tokenCount = tokenCount
         self.radius = radius
         super.init(texture: nil, color: UIColor.clear, size: CGSize(width: radius * 2, height: radius * 2))
@@ -35,6 +35,15 @@ class TokensNode: SKSpriteNode {
         if tokenCount > maxShownTokenNo {
             self.labelNode = createLabelNode()
             tokenNodes.last?.addChild(labelNode!)
+        }
+
+        switch SceneCoordination.getScreenPosition(for: position, basedOn: screenCenter) {
+        case .left:
+            zRotation = -.pi / 2
+        case .right:
+            zRotation = .pi / 2
+        case .top, .bottom:
+            break
         }
     }
 
