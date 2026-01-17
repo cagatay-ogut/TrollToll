@@ -11,6 +11,7 @@ class TokensNode: SKSpriteNode {
     private let stackShiftDistance: CGFloat = 6
     let maxShownTokenNo = 5
     let radius: CGFloat
+    let centerPosition: CGPoint
     var tokenNodes: [SKShapeNode] = []
     var labelNode: SKLabelNode?
 
@@ -23,10 +24,13 @@ class TokensNode: SKSpriteNode {
     init(tokenCount: Int, position: CGPoint, radius: CGFloat, screenCenter: CGPoint) {
         self.tokenCount = tokenCount
         self.radius = radius
+        self.centerPosition = position
         super.init(texture: nil, color: UIColor.clear, size: CGSize(width: radius * 2, height: radius * 2))
-        self.position = position
 
         let shownTokens = min(maxShownTokenNo, tokenCount)
+        self.position = CGPoint(
+            x: centerPosition.x - CGFloat(shownTokens / 2) * stackShiftDistance, y: centerPosition.y
+        )
         for index in 0..<shownTokens {
             let tokenNode = createTokenNode(at: index)
             self.addChild(tokenNode)
@@ -68,6 +72,11 @@ class TokensNode: SKSpriteNode {
         labelNode.fontSize = 10
         labelNode.fontName! += "-Bold"
         return labelNode
+    }
+
+    func calculateNodeXPosition() -> CGFloat {
+        let shownTokens = min(maxShownTokenNo, tokenCount)
+        return centerPosition.x - (CGFloat(shownTokens) / 2) * stackShiftDistance
     }
 
     func updateCountLabel() {

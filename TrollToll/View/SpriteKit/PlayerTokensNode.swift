@@ -23,6 +23,7 @@ class PlayerTokensNode: TokensNode {
             }
         }
         tokenCount = newTokenCount
+        run(SKAction.moveTo(x: calculateNodeXPosition(), duration: GameScene.animDuration / 3))
         run(SKAction.wait(forDuration: GameScene.animDuration / 5)) {
             self.updateCountLabel()
         }
