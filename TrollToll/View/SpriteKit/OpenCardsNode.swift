@@ -24,7 +24,7 @@ class OpenCardsNode: SKSpriteNode {
         super.init(texture: nil, color: UIColor.clear, size: size)
         self.position = playerPosition
 
-        updateCards(with: cards)
+        layoutCards()
     }
 
     @available(*, unavailable)
