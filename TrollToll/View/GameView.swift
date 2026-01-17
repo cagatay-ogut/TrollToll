@@ -31,7 +31,7 @@ struct GameView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             .foregroundStyle(Color.white)
         }
-        .overlay(alignment: .bottom) {
+        .overlay(alignment: .bottomTrailing) {
             playerActionButtons
         }
         .overlay(alignment: .topLeading) {
@@ -107,7 +107,7 @@ struct GameView: View {
     }
 
     private var playerActionButtons: some View {
-        HStack {
+        VStack {
             Button {
                 Task {
                     await viewModel.takeCard()

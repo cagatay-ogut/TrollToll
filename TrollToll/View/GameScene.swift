@@ -73,7 +73,7 @@ class GameScene: SKScene {
         } else {
             deckNode = DeckNode(
                 cardCount: cardCount - 1,
-                position: .init(x: size.width - cardSize.width - 10, y: cardSize.height / 2 + 20),
+                position: .init(x: cardSize.width, y: cardSize.height / 2 + 20),
                 size: cardSize
             )
             addChild(deckNode!)
