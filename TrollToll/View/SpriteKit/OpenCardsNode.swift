@@ -90,9 +90,9 @@ class OpenCardsNode: SKSpriteNode {
                 cardNode.strokeColor = .black
                 cardNode.fillColor = .purple
                 let middleInGroup = group.count / 2
-                cardNode.position = .init(x: xPos + CGFloat(cardIndex - middleInGroup) * stackOffset, y: size.height)
-                cardNode.zPosition = CGFloat(totalCardCount - totalCountInGroups - cardIndex)
                 let xOffset = cardIndex - middleInGroup
+                cardNode.position = .init(x: xPos + CGFloat(xOffset) * stackOffset, y: size.height)
+                cardNode.zPosition = CGFloat(totalCardCount - totalCountInGroups - cardIndex)
                 cardNode.zRotation = (-.pi / 8) * CGFloat(xOffset)
                 let labelNode = SKLabelNode(text: "\(card)")
                 labelNode.horizontalAlignmentMode = .right
