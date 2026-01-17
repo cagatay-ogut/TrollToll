@@ -13,7 +13,7 @@ class GameScene: SKScene {
     var viewModel: GameViewModel?
 
     static let animDuration: TimeInterval = 0.6
-    private let cardSize = CGSize(width: 30, height: 50)
+    private let cardSize = CGSize(width: 30, height: 45)
     private let tokenRadius: CGFloat = 10
     private let padding: CGFloat = 70
 
@@ -206,6 +206,7 @@ class GameScene: SKScene {
         "player_id_2": [14, 17, 19],
         "player_id_3": [3, 6]
     ]
+    gameState.tokenInMiddle = 4
     return GameView(
         user: host,
         match: match,
