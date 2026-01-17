@@ -7,16 +7,31 @@
 
 import SpriteKit
 
-class CardLabelNode: SKLabelNode {
+class CardLabelNode: SKNode {
+    private let labelNode: SKLabelNode
+
+    var text: String {
+        didSet {
+            labelNode.text = text
+        }
+    }
+
     init(text: String) {
+        self.text = text
+        self.labelNode = SKLabelNode(text: text)
         super.init()
 
-        self.text = text
-        horizontalAlignmentMode = .right
-        verticalAlignmentMode = .top
-        fontSize = 12
-        fontName! += "-Bold"
-        fontColor = .black
+        labelNode.verticalAlignmentMode = .top
+        labelNode.horizontalAlignmentMode = .right
+        labelNode.fontSize = 12
+        labelNode.fontName! += "-Bold"
+
+        let bgNode = SKShapeNode(rect: CGRect(x: -15, y: -12, width: 15, height: 12))
+        bgNode.fillColor = .accent
+        bgNode.strokeColor = .clear
+
+        addChild(bgNode)
+        addChild(labelNode)
     }
 
     @available(*, unavailable)

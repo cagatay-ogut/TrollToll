@@ -9,7 +9,7 @@ import SpriteKit
 
 class MiddleCardNode: SKSpriteNode {
     private var cardNode: SKSpriteNode
-    private var labelNode: SKLabelNode
+    private var labelNode: CardLabelNode
 
     private var cardNumber: Int {
         didSet {
