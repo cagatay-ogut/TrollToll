@@ -69,6 +69,8 @@ class OpenCardsNode: SKSpriteNode {
 
         let spacingBetweenGroups: CGFloat = 12
         let stackOffset: CGFloat = 8
+        let totalCardCount = cards.count
+        var totalCountInGroups = 0
         for (groupIndex, group) in groups.enumerated() {
             let xPos: CGFloat
             let middle = groups.count / 2
@@ -89,7 +91,7 @@ class OpenCardsNode: SKSpriteNode {
                 cardNode.fillColor = .purple
                 let middleInGroup = group.count / 2
                 cardNode.position = .init(x: xPos + CGFloat(cardIndex - middleInGroup) * stackOffset, y: size.height)
-                cardNode.zPosition = CGFloat(group.count - cardIndex)
+                cardNode.zPosition = CGFloat(totalCardCount - totalCountInGroups - cardIndex)
                 let xOffset = cardIndex - middleInGroup
                 cardNode.zRotation = (-.pi / 8) * CGFloat(xOffset)
                 let labelNode = SKLabelNode(text: "\(card)")
@@ -102,6 +104,7 @@ class OpenCardsNode: SKSpriteNode {
                 cardNode.addChild(labelNode)
                 self.addChild(cardNode)
             }
+            totalCountInGroups += group.count
         }
 
         self.zRotation = SceneCoordination
