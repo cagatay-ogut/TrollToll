@@ -199,9 +199,9 @@ class GameScene: SKScene {
     )
     var gameState = GameState(from: match)
     gameState.playerCards = [
-        "host_id": [22, 23, 24, 28],
+        "host_id": [18, 22, 23, 24, 25, 28],
         "player_id": [12, 13, 15],
-        "player_id_2": [15, 17, 19],
+        "player_id_2": [14, 17, 19],
         "player_id_3": [3, 6]
     ]
     return GameView(

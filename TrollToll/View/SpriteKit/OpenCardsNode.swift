@@ -92,7 +92,9 @@ class OpenCardsNode: SKSpriteNode {
                 let middleInGroup = group.count / 2
                 let xOffset = cardIndex - middleInGroup
                 cardNode.position = .init(x: xPos + CGFloat(xOffset) * stackOffset, y: size.height)
+                // set left(smaller) cards priority, so that they are not blocked
                 cardNode.zPosition = CGFloat(totalCardCount - totalCountInGroups - cardIndex)
+                // limit rotation to pi/4 at max, so more card in group, less rotation per card
                 let zRotation = middleInGroup == 0 ? 0 : (-.pi / 4) * (CGFloat(xOffset) / CGFloat(middleInGroup))
                 cardNode.zRotation = zRotation
                 let labelNode = SKLabelNode(text: "\(card)")
