@@ -94,12 +94,8 @@ class OpenCardsNode: SKSpriteNode {
                 // limit rotation to pi/4 at max, so more card in group, less rotation per card
                 let zRotation = middleInGroup == 0 ? 0 : (-.pi / 4) * (CGFloat(xOffset) / CGFloat(middleInGroup))
                 cardNode.zRotation = zRotation
-                let labelNode = SKLabelNode(text: "\(card)")
-                labelNode.horizontalAlignmentMode = .right
-                labelNode.verticalAlignmentMode = .top
+                let labelNode = CardLabelNode(text: "\(card)")
                 labelNode.position = .init(x: size.width / 2, y: size.height / 2)
-                labelNode.fontSize = 12
-                labelNode.fontName! += "-Bold"
 
                 cardNode.addChild(labelNode)
                 self.addChild(cardNode)

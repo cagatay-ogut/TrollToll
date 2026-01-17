@@ -11,6 +11,7 @@
 		2D495CB62F18001200C39AA2 /* TokensNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D495CB52F18001000C39AA2 /* TokensNode.swift */; };
 		2D495CBC2F1908B400C39AA2 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D495CBB2F1908B100C39AA2 /* AppInfo.swift */; };
 		2D495CBE2F19749B00C39AA2 /* SceneCoordination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D495CBD2F19749400C39AA2 /* SceneCoordination.swift */; };
+		2D495CC62F1BA24700C39AA2 /* CardLabelNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D495CC52F1BA24200C39AA2 /* CardLabelNode.swift */; };
 		2D4D69492F0417B1009C9A7B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D4D69452F0417B1009C9A7B /* Assets.xcassets */; };
 		2D4D694A2F0417B1009C9A7B /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69462F0417B1009C9A7B /* MainView.swift */; };
 		2D4D694B2F0417B1009C9A7B /* TrollTollApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D69472F0417B1009C9A7B /* TrollTollApp.swift */; };
@@ -60,6 +61,7 @@
 		2D495CB52F18001000C39AA2 /* TokensNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensNode.swift; sourceTree = "<group>"; };
 		2D495CBB2F1908B100C39AA2 /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
 		2D495CBD2F19749400C39AA2 /* SceneCoordination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneCoordination.swift; sourceTree = "<group>"; };
+		2D495CC52F1BA24200C39AA2 /* CardLabelNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardLabelNode.swift; sourceTree = "<group>"; };
 		2D4D692E2F0412D2009C9A7B /* TrollToll.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrollToll.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D4D69452F0417B1009C9A7B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2D4D69462F0417B1009C9A7B /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -173,6 +175,7 @@
 		2D54B6752F0E525A002838AA /* SpriteKit */ = {
 			isa = PBXGroup;
 			children = (
+				2D495CC52F1BA24200C39AA2 /* CardLabelNode.swift */,
 				2D54B6762F0E5260002838AA /* DeckNode.swift */,
 				2D54B67A2F0E5973002838AA /* MiddleCardNode.swift */,
 				2DE223F12F13BB510078CB2D /* OpenCardsNode.swift */,
@@ -405,6 +408,7 @@
 				2DFFCE532F07F04F00EFA68C /* GameRepo.swift in Sources */,
 				2D4D69562F041A61009C9A7B /* LobbyView.swift in Sources */,
 				2DFFCE1B2F043F1D00EFA68C /* GameView.swift in Sources */,
+				2D495CC62F1BA24700C39AA2 /* CardLabelNode.swift in Sources */,
 				2DFFCE162F04287A00EFA68C /* FBLobbyRepo.swift in Sources */,
 				2D54B67B2F0E5975002838AA /* MiddleCardNode.swift in Sources */,
 				2D54B6772F0E5262002838AA /* DeckNode.swift in Sources */,

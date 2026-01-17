@@ -19,17 +19,13 @@ class MiddleCardNode: SKSpriteNode {
 
     init(cardNumber: Int, position: CGPoint, size: CGSize) {
         self.cardNumber = cardNumber
-        self.labelNode = SKLabelNode(text: "\(cardNumber)")
+        self.labelNode = CardLabelNode(text: "\(cardNumber)")
         self.cardNode = SKSpriteNode(imageNamed: "card")
         super.init(texture: nil, color: UIColor.clear, size: size)
         self.position = position
 
         cardNode.size = size
-        labelNode.horizontalAlignmentMode = .left
-        labelNode.verticalAlignmentMode = .top
-        labelNode.position = .init(x: -size.width / 2, y: size.height / 2)
-        labelNode.fontSize = 12
-        labelNode.fontName! += "-Bold"
+        labelNode.position = .init(x: size.width / 2, y: size.height / 2)
 
         cardNode.addChild(labelNode)
         self.addChild(cardNode)
